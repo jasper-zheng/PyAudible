@@ -48,14 +48,14 @@ class Transmitter(object):
         self.SHARED_CHANNEL = shared_channel
         self.VOLUME = volume
         
-        for i in range(self,CHANNEL_NUM):
+        for i in range(CHANNEL_NUM):
             channel_freq = []
             for n in range(16):
                 channel_freq.append(BASE_CH_FREQ[i] + n * SPACED_FREQ)
             self.ch_freqs.append(channel_freq)
         
     def __str__(self):
-        return " - PyAudiable Transmitter - \nShared Channel: " + self.SHARED_CHANNEL + "\n Transmitting Volume: " + self.VOLUME
+        return ' - PyAudiable Transmitter - \nShared Channel: {}\nTransmitting Volume: {}'.format(self.SHARED_CHANNEL, self.VOLUME)
     
     
     def ch_freq_seq(self, binary_message, ch_number):
@@ -128,9 +128,7 @@ class Transmitter(object):
         T = float(format(((len(freq_seqs[0])+2) * TRANS_SPEED), '.2f')) #the length of the waveform (in sec)
         timeline = np.arange(0,T,1/Fs)
         
-        
         signals = []
-        #s_channel = []
         
         for i in range(len(freq_seqs)):
             signal = np.zeros(sym_length*(len(freq_seqs[0])+2))
@@ -175,4 +173,6 @@ class Transmitter(object):
         fsk = self.modulate(message)
         wavfile.write(filename+'.wav', Fs, fsk)
         
+    def modulate_and_play(self, message):
+        i = 0
     
