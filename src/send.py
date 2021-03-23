@@ -6,11 +6,11 @@ Created on Tue Dec  8 22:41:47 2020
 @author: winter_camp
 """
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from math import pi
 from scipy.io import wavfile
-#import gen_binary as gb
-plt.close('all')
+
+#plt.close('all')
 
 
 def gen_binary(sym_length = 500, sym_num = 16):
@@ -27,6 +27,7 @@ def gen_binary(sym_length = 500, sym_num = 16):
 
 
 #
+'''
 Fs = 44100;
 T = 2;
 fc = 500; #carrier freq
@@ -35,6 +36,7 @@ t = np.arange(0,T,1/Fs) #time axis (s)
 
 #generate binary signal waveform
 sym_duration = 0.1 #unit duration 单段unit时间间隔 (s)
+
 sym_length = int(sym_duration * Fs) #single unit total samples 单段unit采样量
 
 sym_num = int(np.floor(np.size(t) / sym_length)) #number of units in binary signal 多少段信息unit
@@ -76,7 +78,7 @@ plt.xlabel('Time(s)')
 plt.ylabel('Amplitude')
 plt.plot(t, fsk)
 plt.tight_layout()
-
+'''
 #wavfile.write('Sine.wav', Fs, fsk)
 
 
@@ -93,6 +95,7 @@ angle -> fsk
 
 
 '''
+Fs = 44100
 
 BASE_FREQ = 1238 #Hz
 SPACED_FREQ = 21.5 * 2 #Hz
@@ -121,33 +124,6 @@ SAMPLE_RATE = 44100
 def generate_random_message(length = 4*8):
     binary_str = gen_binary(1,length)
     return binary_str
-
-def generate_freq_seq(binary_message):
-    adjusted_message = np.copy(binary_message)
-    if (len(binary_message)%4 != 0):
-        for i in range(4-len(binary_message)%4):
-            adjusted_message = np.append(adjusted_message, [0])
-    print('original shape: %d' % (binary_message.shape)) 
-    print('adjusted shape: %d' % (adjusted_message.shape)) 
-    freq_seq = []
-    freq_seq_ch2 = []
-    freq_seq_ch3 = []
-    freq_seq_ch4 = []
-    
-    print('adjusted_message: ')
-    print(adjusted_message)
-    for i in range(int(len(adjusted_message)/4)):
-        #chunk = '' + int(adjusted_message[0 + i*4]) + int(adjusted_message[1 + i*4]) + int(adjusted_message[2 + i*4]) + int(adjusted_message[3 + i*4])
-        this_chunk = np.array2string(adjusted_message.astype(int),separator='')[1+i*4:5+i*4]
-        #print('chunk: ')
-        #print(this_chunk)
-        for n in range(len(chunk)):
-            if (this_chunk == chunk[n]):
-                freq_seq.append(ch1_freq[n])
-                freq_seq_ch2.append(ch2_freq[n])
-                freq_seq_ch3.append(ch3_freq[n])
-                freq_seq_ch4.append(ch4_freq[n])
-    return freq_seq, freq_seq_ch2, freq_seq_ch3, freq_seq_ch4, len(binary_message)
 
 def ch_freq_seq(binary_message, ch_number):
     adjusted_message = np.copy(binary_message)
@@ -207,9 +183,9 @@ for i in range(16):
     ch4_freq.append(BASE_CH4 + i * SPACED_FREQ)
 '''
 
-message = generate_random_message(32)
-message = np.array([0,0,0,0, 0,0,0,1, 0,0,1,0, 0,0,1,1, 0,1,0,0, 0,1,0,1, 0,1,1,0, 0,1,1,1, 
-                    1,0,0,0, 1,0,0,1, 1,0,1,0, 1,0,1,1, 1,1,0,0, 1,1,0,1, 1,1,1,0, 1,1,1,1])
+#message = generate_random_message(32)
+#message = np.array([0,0,0,0, 0,0,0,1, 0,0,1,0, 0,0,1,1, 0,1,0,0, 0,1,0,1, 0,1,1,0, 0,1,1,1, 
+#                   1,0,0,0, 1,0,0,1, 1,0,1,0, 1,0,1,1, 1,1,0,0, 1,1,0,1, 1,1,1,0, 1,1,1,1])
 message = ascii_to_bin('world hello')
 #message = ascii_to_bin('Documents')
 
@@ -228,7 +204,7 @@ for i in range(int(len(message)/4)):
         ch_msg[turn][ int((i-turn)/SHARED_CHANNEL*4) + n ] = message[i*4+n]
         
         
-print('stop')
+#print('stop')
 
 
 track_num = int(CHANNEL_NUM/SHARED_CHANNEL)
@@ -236,7 +212,7 @@ for i in range(SHARED_CHANNEL):
     for j in range(track_num):
         freq_seqs.append(ch_freq_seq(ch_msg[i], j*SHARED_CHANNEL+i))
 
-print('stop')
+#print('stop')
 
 sym_length = int(TRANS_SPEED * SAMPLE_RATE)
 sym_num = len(freq_seqs[0])
