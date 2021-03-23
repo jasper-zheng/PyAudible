@@ -273,6 +273,6 @@ for i in range(len(signals)-1):
 #fsk = np.sin(signals[0])/2 + np.sin(signals[1])/2 
 #fsk = np.sin(signals[0])/2
 
-wavfile.write('Sine05.wav', Fs, fsk)
+#wavfile.write('Sine05.wav', Fs, fsk)
 
 
