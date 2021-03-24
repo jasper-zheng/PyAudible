@@ -152,6 +152,9 @@ class Transmitter(object):
             
         fsk = np.sin(signals[0])/CHANNEL_NUM
         
+        for i in range(len(signals)-1):
+            fsk += np.sin(signals[i+1])/CHANNEL_NUM
+        
         return fsk
     
     def modulate_and_save_file(self, message, filename):

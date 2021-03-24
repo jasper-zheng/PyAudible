@@ -132,6 +132,7 @@ class Reciever(object):
         for i in range(16):
             if freq_bin in self.d_channel[n][i]:
                 return i
+        print('request {} in number {} channel'.format(freq_bin,n))
         return 99
     
     def update_statue(self, freq_bins,status):
@@ -159,17 +160,24 @@ class Reciever(object):
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[0][0] != self.active_freq_bin[0] and freq_bins[1][3] != self.active_freq_bin[2]):
+                '''
                 for i in range(self.SHARED_CHANNEL):
                     freq_bin_nums = []
                     for j in range(self.TRACK_NUM):
                         freq_bin_nums.append(self.get_bin_num(freq_bins[i][j],j*self.SHARED_CHANNEL))
                     self.current_bins[i][0] = self.most_frequent(freq_bin_nums)
+                    
+                    
+                    
+                    
                     self.pointers[i] = 1
                 status = 3
+                '''
+                print(self.activation_info)
                 self.received_info.append(100*self.get_bin_num(self.most_frequent(self.activation_info[0]),1) + 10*self.get_bin_num(self.most_frequent(self.activation_info[1]),2) + self.get_bin_num(self.most_frequent(self.activation_info[2]),3))
                 print('Estimated length: {}'.format(self.received_info[0]))
                 print('On recieving...')
-                
+                status = self.check_channels(freq_bins)
             else:
                 self.activation_info[0].append(freq_bins[1][0])
                 self.activation_info[1].append(freq_bins[0][1])
@@ -201,7 +209,10 @@ class Reciever(object):
                     freq_bin_nums.append(self.get_bin_num(freq_bin[j],j*self.SHARED_CHANNEL+i))
                 print(freq_bin_nums)
                 freq_bin_num = self.most_frequent(freq_bin_nums)
-                if ( freq_bin_num == current_bin[self.pointers[i]-1]) or (self.pointers[i] < 3):
+                if (self.pointers[i]==0):
+                    current_bin[self.pointers[i]] = freq_bin_num
+                    self.pointers[i] += 1
+                elif ( freq_bin_num == current_bin[self.pointers[i]-1]) or (self.pointers[i] < 3):
                     #if this bit is the same as the last bit
                     current_bin[self.pointers[i]] = freq_bin_num
                     self.pointers[i] += 1
