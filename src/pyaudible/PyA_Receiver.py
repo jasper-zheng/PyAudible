@@ -30,7 +30,8 @@ class Reciever(object):
     FRAME_TIME = 0.2
     
     active_freq_bin = [55,185,313]
-    ending_freq_bin = 53
+    ending_freq_bin = [53,188,313]
+    ending_channel_num = [0,4,7]
     
     d_channel_1 = [[53,57,58],[59,60],[61,62],[63,64],[65,66],[67,68],[69,70],[71,72],[73,74],[75,76],[77,78],[79,80],[81,82],[83,84],[85,86],[87,88]]
     d_channel_2 = [[89,90],[91,92],[93,94],[95,96],[97,98],[99,100],[101,102],[103,104],[105,106],[107,108],[109,110],[111,112],[113,114],[115,116],[117,118],[119,120]]
@@ -47,6 +48,10 @@ class Reciever(object):
     
     activation_info = [[],[],[]]
     received_info = []
+    ending_info = [[],[],[],[],[]]
+    ending_mark = [0,0] #i0: ending pointer, i1:
+    
+    status = 0
     
     def __init__(self):
         self.d_channel.append(self.d_channel_1)
@@ -76,13 +81,13 @@ class Reciever(object):
         return (input_data, pyaudio.paContinue)
 
     def start_listen(self):
-        frame_count = 0
+        #frame_count = 0
         frame_num = 0
         start_time = time.time()
         frame_start_time = time.time()
         #freqs = fftfreq(self.CHUNK)
         
-        status = 0
+        #status = 0
         self.current_bins = []
         self.pointers = []
         self.recieved_bins = []
@@ -95,29 +100,26 @@ class Reciever(object):
         while (time.time()-start_time < 30):
             while (time.time() - frame_start_time < 0.2):
                 frame_num += 1
-                data = self.stream.read(self.CHUNK, exception_on_overflow = False)
-                data_int = np.frombuffer(data, dtype = np.int16)
-                y_fft = fft(data_int)
-                
-                freq_bins = []
-                for i in range(self.SHARED_CHANNEL):
-                    candidate_freq = []
-                    for j in range(int(self.CHANNEL_NUMBER/self.SHARED_CHANNEL)):
-                        freq_bin = np.abs(y_fft[self.d_channel[j*self.SHARED_CHANNEL+i][0][0]:self.d_channel[j*self.SHARED_CHANNEL+i+1][0][0]]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
-                        candidate_freq.append(freq_bin)
-                    freq_bins.append(candidate_freq)
-                #print(freq_bins)
-                #freq = freqs[freq_bins[0]]
-                #freq_in_hertz = abs(freq * self.RATE)
-                frame_count += 1
-                status = self.update_statue(freq_bins,status)
-
+                self.update_frame()
             frame_start_time = time.time()
             frame_num = 0
         
         return self.recieved_bins
     
-   
+    def update_frame(self):
+        data = self.stream.read(self.CHUNK, exception_on_overflow = False)
+        data_int = np.frombuffer(data, dtype = np.int16)
+        y_fft = fft(data_int)
+        freq_bins = []
+        for i in range(self.SHARED_CHANNEL):
+            candidate_freq = []
+            for j in range(int(self.CHANNEL_NUMBER/self.SHARED_CHANNEL)):
+                freq_bin = np.abs(y_fft[self.d_channel[j*self.SHARED_CHANNEL+i][0][0]:self.d_channel[j*self.SHARED_CHANNEL+i+1][0][0]]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
+                candidate_freq.append(freq_bin)
+            freq_bins.append(candidate_freq)
+        self.status = self.update_statue(freq_bins,self.status)
+        
+        
 
     def most_frequent(self, List): 
         counter = 0
@@ -139,6 +141,8 @@ class Reciever(object):
          # if the activation frequency is been detected three times, 
         if (status == 0):
             if (freq_bins[0][0] == self.active_freq_bin[0] and freq_bins[0][2] == self.active_freq_bin[1] and freq_bins[1][3] == self.active_freq_bin[2]):
+                self.activation_info = [[],[],[]]
+                self.received_info = []
                 self.pointers[0] = 1
                 status = 1
                 print('activating...')
@@ -151,7 +155,12 @@ class Reciever(object):
                 self.activation_info[0].append(freq_bins[1][0])
                 self.activation_info[1].append(freq_bins[0][1])
                 self.activation_info[2].append(freq_bins[1][1])
-                if (self.pointers[0] == 3):
+                if (self.pointers[0] == 2):
+                    self.current_bins = []
+                    self.recieved_bins = []
+                    for i in range(self.SHARED_CHANNEL):
+                        self.current_bins.append([0,0,0,0,0,0,0])
+                        self.recieved_bins.append([])
                     status = 2
                     self.pointers[0] = 0
                     print("Activated, on preparing")
@@ -160,23 +169,12 @@ class Reciever(object):
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[0][0] != self.active_freq_bin[0] and freq_bins[1][3] != self.active_freq_bin[2]):
-                '''
-                for i in range(self.SHARED_CHANNEL):
-                    freq_bin_nums = []
-                    for j in range(self.TRACK_NUM):
-                        freq_bin_nums.append(self.get_bin_num(freq_bins[i][j],j*self.SHARED_CHANNEL))
-                    self.current_bins[i][0] = self.most_frequent(freq_bin_nums)
-                    
-                    
-                    
-                    
-                    self.pointers[i] = 1
-                status = 3
-                '''
                 print(self.activation_info)
                 self.received_info.append(100*self.get_bin_num(self.most_frequent(self.activation_info[0]),1) + 10*self.get_bin_num(self.most_frequent(self.activation_info[1]),2) + self.get_bin_num(self.most_frequent(self.activation_info[2]),3))
                 print('Estimated length: {}'.format(self.received_info[0]))
                 print('On recieving...')
+                self.d_channel[0][0] = [57,58]
+                #self.d_channel[7][15] = [311,312]
                 status = self.check_channels(freq_bins)
             else:
                 self.activation_info[0].append(freq_bins[1][0])
@@ -185,49 +183,120 @@ class Reciever(object):
                        
         elif (status == 3):
             status = self.check_channels(freq_bins)
+            
+            if (self.ending_mark[0]>=1):
+                self.ending_mark[0] += 1
+                self.ending_info[0].append(freq_bins[0][0])
+                self.ending_info[1].append(freq_bins[1][0])
+                self.ending_info[2].append(freq_bins[0][1])
+                self.ending_info[3].append(freq_bins[1][1])
+                self.ending_info[4].append(freq_bins[0][2])
+                self.ending_info[7].append(freq_bins[1][3])
+                
+                if self.ending_mark[0] == 5:
+                    
+                    #if validated:
+                    validated = 0
+                    for i in range(3):
+                        count = 0
+                        for info in self.ending_info[self.ending_channel_num[i]]:
+                            if info == self.ending_freq_bin[i]:
+                                count += 1
+                                if count == 3:
+                                    validated += 1
+                                    break
+                    if validated == 3:
+                        
+                        print('Recieved: {}, length: {}, {}'.format(self.coyp_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
+                        self.convert_result()
+                        return 0
+                    else:
+                        self.d_channel[0][0] = [57,58]
+                        self.ending_mark[0] = 0
+                
+            elif (freq_bins[1][3] == self.ending_freq_bin[2]):
+                #if one of the ending bit appears, expande the fft scope, start monitoring for 5 frames
+                #create copy of recieved_bin
+                self.ending_mark[0] = 1
+                self.d_channel[0][0] = [53,57,58]
+                self.ending_info = [[],[],[],[],[]]
+                self.ending_info[0].append(freq_bins[0][0])
+                self.ending_info[1].append(freq_bins[1][0])
+                self.ending_info[2].append(freq_bins[0][1])
+                self.ending_info[3].append(freq_bins[1][1])
+                self.ending_info[4].append(freq_bins[0][2])
+                self.ending_info[7].append(freq_bins[1][3])
+                
+                self.copy_recieved_bins = self.recieved_bins.copy()
+                for pointer, current_bin, recieved_bin in zip(self.pointers, self.current_bins, self.copy_recieved_bins):
+                    if pointer >= 3:
+                        recieved_bin.append(current_bin[pointer-1])
 
+        
+        
         return status
     
     def check_channels(self, freq_bins):
+        '''
         #if ending bit appears
-        if (freq_bins[0][0] == self.ending_freq_bin):
+        if (self.ending_mark[0]>=1):
+            self.ending_mark[0] += 1
+        elif (freq_bins[1][3] == self.ending_freq_bin[2]):
+            #if (self.ending_mark[0]==0):
+            self.d_channel[0][0] = [53,57,58]
+            self.ending_mark[0] = 1
+            self.ending_info = [[],[],[],[],[]]
+            #elif (freq_bins[0][0] == self.ending_freq_bin[0])
+            
+            
+            
+            
+            
+            
             #if (pointers[0]
             for pointer, current_bin, recieved_bin in zip(self.pointers, self.current_bins, self.recieved_bins):
-                if pointer > 3:
+                if pointer >= 3:
                     recieved_bin.append(current_bin[pointer-1])
             #self.pointers[0] = 0
-            print('Recieved: {}, length: {}'.format(self.recieved_bins,len(self.recieved_bins[0])))
+            print('Recieved: {}, length: {}, {}'.format(self.recieved_bins,len(self.recieved_bins[0]),len(self.recieved_bins[1])))
+            self.d_channel[0][0] = [53,57,58]
+            #self.d_channel[7][15] = [311,312,313]
             self.convert_result()
             return 0
         
-        else:
-            for freq_bin, current_bin, recieved_bin,i in zip(freq_bins,self.current_bins,self.recieved_bins,range(self.SHARED_CHANNEL)):   
-                #freq_bin_num = self.get_bin_num(freq_bin,i)
-                
-                freq_bin_nums = []
-                for j in range(self.TRACK_NUM):
-                    freq_bin_nums.append(self.get_bin_num(freq_bin[j],j*self.SHARED_CHANNEL+i))
-                print(freq_bin_nums)
-                freq_bin_num = self.most_frequent(freq_bin_nums)
-                if (self.pointers[i]==0):
-                    current_bin[self.pointers[i]] = freq_bin_num
-                    self.pointers[i] += 1
-                elif ( freq_bin_num == current_bin[self.pointers[i]-1]) or (self.pointers[i] < 3):
-                    #if this bit is the same as the last bit
-                    current_bin[self.pointers[i]] = freq_bin_num
-                    self.pointers[i] += 1
-                    if (self.pointers[i] == 7):
-                        recieved_bin.append(current_bin[self.pointers[i]-1])
-                        current_bin[0] = freq_bin_num
-                        self.pointers[i] = 3
-                else:
-                    #if new bit appears,
-                    number = self.most_frequent(current_bin[0:self.pointers[i]-1])
-                    recieved_bin.append(number)
+        '''
+        #else:
+        frame_result = []
+        for freq_bin, current_bin, recieved_bin,i in zip(freq_bins,self.current_bins,self.recieved_bins,range(self.SHARED_CHANNEL)):   
+            #freq_bin_num = self.get_bin_num(freq_bin,i)
+            
+            freq_bin_nums = []
+            for j in range(self.TRACK_NUM):
+                freq_bin_nums.append(self.get_bin_num(freq_bin[j],j*self.SHARED_CHANNEL+i))
+            
+        
+            frame_result.append(freq_bin_nums)
+            freq_bin_num = self.most_frequent(freq_bin_nums)
+            if (self.pointers[i]==0):
+                current_bin[self.pointers[i]] = freq_bin_num
+                self.pointers[i] += 1
+            elif ( freq_bin_num == current_bin[self.pointers[i]-1]) or (self.pointers[i] < 3):
+                #if this bit is the same as the last bit
+                current_bin[self.pointers[i]] = freq_bin_num
+                self.pointers[i] += 1
+                if (self.pointers[i] == 7):
+                    recieved_bin.append(current_bin[self.pointers[i]-1])
                     current_bin[0] = freq_bin_num
-                    self.pointers[i] = 1
-
-            return 3
+                    self.pointers[i] = 3
+            else:
+                #if new bit appears,
+                number = self.most_frequent(current_bin[0:self.pointers[i]-1])
+                recieved_bin.append(number)
+                current_bin[0] = freq_bin_num
+                self.pointers[i] = 1
+        print(frame_result)
+        
+        return 3
         
     def bin_to_ascii(self,bin_data):
         st = ''
@@ -245,4 +314,6 @@ class Reciever(object):
             for i in range(len(self.recieved_bins[0])):
                 for j in range(self.SHARED_CHANNEL):
                     binary += self.chunk_list[self.recieved_bins[j][i]]
-            print(self.bin_to_ascii(binary))
+            result = self.bin_to_ascii(binary)
+            print(result)
+        return result

@@ -18,3 +18,8 @@ Pack everything into py interface
 ### 23.03.21  
 Create a demostration application with GUI  
 
+
+### 24.03.21
+Fix the scope of fft in OnPreparing and OnReceiving phases
+
+
