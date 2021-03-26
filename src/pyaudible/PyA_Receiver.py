@@ -12,7 +12,7 @@ import time
 
 from scipy.fftpack import fft
 
-class Reciever(object):
+class Receiver(object):
     
     CHUNK = 1024 * 2
     FORMAT = pyaudio.paInt16
@@ -30,7 +30,7 @@ class Reciever(object):
     FRAME_TIME = 0.2
     
     active_freq_bin = [55,185,313]
-    ending_freq_bin = [53,188,313]
+    ending_freq_bin = [56,188,313]
     ending_channel_num = [0,4,7]
     
     d_channel_1 = [[53,57,58],[59,60],[61,62],[63,64],[65,66],[67,68],[69,70],[71,72],[73,74],[75,76],[77,78],[79,80],[81,82],[83,84],[85,86],[87,88]]
@@ -48,7 +48,7 @@ class Reciever(object):
     
     activation_info = [[],[],[]]
     received_info = []
-    ending_info = [[],[],[],[],[]]
+    ending_info = [[],[],[],[],[],[],[],[]]
     ending_mark = [0,0] #i0: ending pointer, i1:
     
     status = 0
@@ -161,8 +161,9 @@ class Reciever(object):
                     for i in range(self.SHARED_CHANNEL):
                         self.current_bins.append([0,0,0,0,0,0,0])
                         self.recieved_bins.append([])
+                        self.pointers[i] = 0
                     status = 2
-                    self.pointers[0] = 0
+                    #self.pointers[0] = 0
                     print("Activated, on preparing")
             else:
                 status = 0
@@ -202,32 +203,37 @@ class Reciever(object):
                         for info in self.ending_info[self.ending_channel_num[i]]:
                             if info == self.ending_freq_bin[i]:
                                 count += 1
-                                if count == 3:
+                                if count == 2:
                                     validated += 1
                                     break
+                    print(validated)
                     if validated == 3:
                         
-                        print('Recieved: {}, length: {}, {}'.format(self.coyp_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
+                        print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
                         self.convert_result()
+                        self.d_channel[0][0] = [53,57,58]
+                        self.ending_mark[0] = 0
                         return 0
                     else:
                         self.d_channel[0][0] = [57,58]
                         self.ending_mark[0] = 0
                 
             elif (freq_bins[1][3] == self.ending_freq_bin[2]):
+                
+                print('detecting ending...')
                 #if one of the ending bit appears, expande the fft scope, start monitoring for 5 frames
                 #create copy of recieved_bin
+                #undo the pointer
                 self.ending_mark[0] = 1
-                self.d_channel[0][0] = [53,57,58]
-                self.ending_info = [[],[],[],[],[]]
-                self.ending_info[0].append(freq_bins[0][0])
-                self.ending_info[1].append(freq_bins[1][0])
-                self.ending_info[2].append(freq_bins[0][1])
-                self.ending_info[3].append(freq_bins[1][1])
-                self.ending_info[4].append(freq_bins[0][2])
-                self.ending_info[7].append(freq_bins[1][3])
+                self.d_channel[0][0] = [56,57,58]
+                self.ending_info = [[],[],[],[],[],[],[],[]]
                 
-                self.copy_recieved_bins = self.recieved_bins.copy()
+                
+                #self.copy_recieved_bins = self.recieved_bins.copy()
+                self.copy_recieved_bins = []
+                for bins in self.recieved_bins:
+                    copy_bins = bins.copy()
+                    self.copy_recieved_bins.append(copy_bins)
                 for pointer, current_bin, recieved_bin in zip(self.pointers, self.current_bins, self.copy_recieved_bins):
                     if pointer >= 3:
                         recieved_bin.append(current_bin[pointer-1])
@@ -237,35 +243,6 @@ class Reciever(object):
         return status
     
     def check_channels(self, freq_bins):
-        '''
-        #if ending bit appears
-        if (self.ending_mark[0]>=1):
-            self.ending_mark[0] += 1
-        elif (freq_bins[1][3] == self.ending_freq_bin[2]):
-            #if (self.ending_mark[0]==0):
-            self.d_channel[0][0] = [53,57,58]
-            self.ending_mark[0] = 1
-            self.ending_info = [[],[],[],[],[]]
-            #elif (freq_bins[0][0] == self.ending_freq_bin[0])
-            
-            
-            
-            
-            
-            
-            #if (pointers[0]
-            for pointer, current_bin, recieved_bin in zip(self.pointers, self.current_bins, self.recieved_bins):
-                if pointer >= 3:
-                    recieved_bin.append(current_bin[pointer-1])
-            #self.pointers[0] = 0
-            print('Recieved: {}, length: {}, {}'.format(self.recieved_bins,len(self.recieved_bins[0]),len(self.recieved_bins[1])))
-            self.d_channel[0][0] = [53,57,58]
-            #self.d_channel[7][15] = [311,312,313]
-            self.convert_result()
-            return 0
-        
-        '''
-        #else:
         frame_result = []
         for freq_bin, current_bin, recieved_bin,i in zip(freq_bins,self.current_bins,self.recieved_bins,range(self.SHARED_CHANNEL)):   
             #freq_bin_num = self.get_bin_num(freq_bin,i)
@@ -307,13 +284,13 @@ class Reciever(object):
         return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
     
     def convert_result(self):
-        if (len(self.recieved_bins[0]) != len(self.recieved_bins[1])):
+        if (len(self.copy_recieved_bins[0]) != len(self.copy_recieved_bins[1])):
             print('recieve failed')
         else:
             binary = ''
-            for i in range(len(self.recieved_bins[0])):
+            for i in range(len(self.copy_recieved_bins[0])):
                 for j in range(self.SHARED_CHANNEL):
-                    binary += self.chunk_list[self.recieved_bins[j][i]]
+                    binary += self.chunk_list[self.copy_recieved_bins[j][i]]
             result = self.bin_to_ascii(binary)
             print(result)
-        return result
+            return result

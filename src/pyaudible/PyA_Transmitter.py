@@ -29,7 +29,7 @@ BASE_CH_FREQ = [1238,1928,2616,3306,3994,4683,5372,6062]
 CHANNEL_NUM = 8
 
 ACTIVE_FREQ = [1185,3984,6740]
-ENDING_FREQ = 1142
+ENDING_FREQ = [1206,4048,6740]
 TRANS_SPEED = 0.2 #sec
 SAMPLE_RATE = 44100
 
@@ -134,19 +134,26 @@ class Transmitter(object):
             signal = np.zeros(sym_length*(len(freq_seqs[0])+2))
             if i==0:
                 signal[0 : sym_length] = ACTIVE_FREQ[0]
-                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[0]
             elif i==1:
                 signal[0 : sym_length] = self.ch_freqs[1][activation_info[0]]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = self.ch_freqs[1][activation_info[0]]
             elif i==2:
                 signal[0 : sym_length] = self.ch_freqs[2][activation_info[1]]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = self.ch_freqs[2][activation_info[1]]
             elif i==3:
                 signal[0 : sym_length] = self.ch_freqs[3][activation_info[2]]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = self.ch_freqs[3][activation_info[2]]
             elif i==4:
                 signal[0 : sym_length] = ACTIVE_FREQ[1]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[1]
             elif i==7:
                 signal[0 : sym_length] = ACTIVE_FREQ[2]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[2]
+                
             for n in range(len(freq_seqs[0])):
                 signal[(n+1)*sym_length : (n+2)*sym_length] = freq_seqs[i][n]
+    
             s = 2*pi * signal * timeline
             signals.append(s)
             
@@ -157,7 +164,7 @@ class Transmitter(object):
         
         return fsk
     
-    def modulate_and_save_file(self, message, filename):
+    def modulate_to_file(self, message, filename):
         '''
         Generate a modulated audio waveform and save it as .wav format to file.
 
