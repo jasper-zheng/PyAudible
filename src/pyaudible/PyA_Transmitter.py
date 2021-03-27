@@ -85,6 +85,10 @@ class Transmitter(object):
             m[i] = int(res[i])
         return m
     
+    def fill_empty_bits(self, message):
+        full_length = (int(len(message) / 32) + 1) * 32
+        return np.concatenate((message, np.zeros(full_length - len(message))), axis=None)
+    
     def modulate(self, message):
         '''
         Generate a modulated audio waveform in ndarray format.
@@ -100,21 +104,36 @@ class Transmitter(object):
             Modulated waveform
 
         '''
-        message = self.ascii_to_bin(message)
+        sym_num = len(self.ascii_to_bin(message))
+        message = self.fill_empty_bits(self.ascii_to_bin(message))
+        
+        
+        
         freq_seqs = []
-        ch_msg = []
+        ch_msg = [] #2d array with [1,0,0,1,0....,0,1]
+        print(message)
+        print(len(message))
         
         #create empty freqency channel
         for i in range(self.SHARED_CHANNEL):
             msg = np.zeros(int(len(message)/self.SHARED_CHANNEL))
             ch_msg.append(msg)
-        
+        '''
         #assign binary seqence to empty freqency channel
         for i in range(int(len(message)/4)):
             turn = (int(len(message)/4)-i) % self.SHARED_CHANNEL
+            print('turn:{}'.format(turn))
             for n in range(4):
                 ch_msg[turn][ int((i-turn)/self.SHARED_CHANNEL*4) + n ] = message[i*4+n]
-                
+        
+        '''
+        for i in range(int(len(message)/4)):
+            turn = i % self.SHARED_CHANNEL
+            for n in range(4):
+                ch_msg[turn][ int(i/self.SHARED_CHANNEL)*4 + n ] = message[i*4+n]
+        print('ch_msg: {}'.format(ch_msg))   
+        
+        
         #assign freqency in herz into the 8 channels
         track_num = int(CHANNEL_NUM/self.SHARED_CHANNEL)
         for i in range(self.SHARED_CHANNEL):
@@ -122,7 +141,8 @@ class Transmitter(object):
                 freq_seqs.append(self.ch_freq_seq(ch_msg[i], j*self.SHARED_CHANNEL+i))
     
         sym_length = int(TRANS_SPEED * SAMPLE_RATE) # 8820
-        sym_num = len(freq_seqs[0]) # 11
+        #sym_num = len(freq_seqs[0]) # 11
+        print('sym_num: {}'.format(sym_num))
         activation_info = [int(sym_num/100),int(sym_num%100/10),sym_num%100%10]
         
         T = float(format(((len(freq_seqs[0])+2) * TRANS_SPEED), '.2f')) #the length of the waveform (in sec)
