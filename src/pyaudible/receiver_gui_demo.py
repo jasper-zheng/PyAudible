@@ -133,16 +133,13 @@ while (time.time()-start_time < 30):
         ax2.draw_artist(line_fft)
         
         fig.canvas.blit()
-    
+
         fig.canvas.flush_events()
-        #fig.clear()
         frame_time = time.time()
         root.update_idletasks()
         root.update()
     
     frame_count += 1
-    
-    
     
     
 
