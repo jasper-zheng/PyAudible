@@ -74,6 +74,17 @@ class Receiver(object):
             output = True,
             frames_per_buffer = self.CHUNK
             )
+        
+        self.current_bins = []
+        self.pointers = []
+        self.recieved_bins = []
+        self.fft = []
+        self.retrieved_data = []
+        for i in range(self.SHARED_CHANNEL):
+            self.pointers.append(0)
+            self.current_bins.append([0,0,0,0,0,0,0])
+            self.recieved_bins.append([])
+        
         print(self.stream)
     
     def callback(self, input_data, frame_count, time_info, flags):
@@ -100,24 +111,40 @@ class Receiver(object):
         while (time.time()-start_time < 30):
             while (time.time() - frame_start_time < 0.2):
                 frame_num += 1
-                self.update_frame()
+                self.read()
             frame_start_time = time.time()
             frame_num = 0
         
         return self.recieved_bins
     
-    def update_frame(self):
+    def read(self):
+        '''
+        
+
+        Returns
+        -------
+        None.
+
+        '''
         data = self.stream.read(self.CHUNK, exception_on_overflow = False)
         data_int = np.frombuffer(data, dtype = np.int16)
-        y_fft = fft(data_int)
+        self.fft = fft(data_int)
         freq_bins = []
         for i in range(self.SHARED_CHANNEL):
             candidate_freq = []
             for j in range(int(self.CHANNEL_NUMBER/self.SHARED_CHANNEL)):
-                freq_bin = np.abs(y_fft[self.d_channel[j*self.SHARED_CHANNEL+i][0][0]:self.d_channel[j*self.SHARED_CHANNEL+i+1][0][0]]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
+                freq_bin = np.abs(self.fft[self.d_channel[j*self.SHARED_CHANNEL+i][0][0]:self.d_channel[j*self.SHARED_CHANNEL+i+1][0][0]]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
                 candidate_freq.append(freq_bin)
             freq_bins.append(candidate_freq)
         self.status = self.update_statue(freq_bins,self.status)
+        if self.status == 6:
+            
+            self.status = 0
+            
+            return self.retrieved_data[-1]
+        
+        else:
+            return ''
         
         
 
@@ -210,7 +237,8 @@ class Receiver(object):
                     if validated == 3:
                         
                         print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
-                        self.convert_result()
+                        if(self.convert_result() == 1):
+                            return 6
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
                         return 0
@@ -228,8 +256,6 @@ class Receiver(object):
                 self.d_channel[0][0] = [56,57,58]
                 self.ending_info = [[],[],[],[],[],[],[],[]]
                 
-                
-                #self.copy_recieved_bins = self.recieved_bins.copy()
                 self.copy_recieved_bins = []
                 for bins in self.recieved_bins:
                     copy_bins = bins.copy()
@@ -286,11 +312,13 @@ class Receiver(object):
     def convert_result(self):
         if (len(self.copy_recieved_bins[0]) != len(self.copy_recieved_bins[1])):
             print('recieve failed')
+            return 0
         else:
             binary = ''
             for i in range(len(self.copy_recieved_bins[0])):
                 for j in range(self.SHARED_CHANNEL):
                     binary += self.chunk_list[self.copy_recieved_bins[j][i]]
             result = self.bin_to_ascii(binary)
+            self.retrieved_data.append(result)
             print(result)
-            return result
+            return 1
