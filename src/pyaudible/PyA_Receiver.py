@@ -117,7 +117,7 @@ class Receiver(object):
         
         return self.recieved_bins
     
-    def read(self):
+    def read(self, log = False):
         '''
         
 
@@ -137,14 +137,32 @@ class Receiver(object):
                 candidate_freq.append(freq_bin)
             freq_bins.append(candidate_freq)
         self.status = self.update_statue(freq_bins,self.status)
-        if self.status == 6:
-            
-            self.status = 0
-            
-            return self.retrieved_data[-1]
         
+        
+        if log:
+            if self.status == 3:
+                self.status = 0
+                return '', 3
+            elif self.status == 5:
+                self.status = 0
+                return self.retrieved_data[-1], 5
+            elif self.status == 6:
+                self.status = 0
+                return '', 6
+            else:
+                return '', self.status
         else:
-            return ''
+            if self.status == 3:
+                self.status = 0
+                return ''
+            elif self.status == 5:
+                self.status = 0
+                return self.retrieved_data[-1]
+            elif self.status == 6:
+                self.status = 0
+                return ''
+            else:
+                return ''
         
         
 
@@ -164,6 +182,20 @@ class Receiver(object):
         print('request {} in number {} channel'.format(freq_bin,n))
         return 99
     
+    
+    '''
+    Status:
+        0: Unactivated
+        1: Activating
+        2: Activated, Preparing
+        3: Activation Failed, rollback to unactivated
+        4: Listening
+            4.5 (Hide): Terminating
+        5: Terminated, Received Successfully
+        6: Terminated, Received Failed
+    
+    
+    '''
     def update_statue(self, freq_bins,status):
          # if the activation frequency is been detected three times, 
         if (status == 0):
@@ -193,7 +225,7 @@ class Receiver(object):
                     #self.pointers[0] = 0
                     print("Activated, on preparing")
             else:
-                status = 0
+                status = 3
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[0][0] != self.active_freq_bin[0] and freq_bins[1][3] != self.active_freq_bin[2]):
@@ -209,7 +241,7 @@ class Receiver(object):
                 self.activation_info[1].append(freq_bins[0][1])
                 self.activation_info[2].append(freq_bins[1][1])
                        
-        elif (status == 3):
+        elif (status == 4):
             status = self.check_channels(freq_bins)
             
             if (self.ending_mark[0]>=1):
@@ -223,7 +255,7 @@ class Receiver(object):
                 
                 if self.ending_mark[0] == 5:
                     
-                    #if validated:
+                    
                     validated = 0
                     for i in range(3):
                         count = 0
@@ -234,15 +266,20 @@ class Receiver(object):
                                     validated += 1
                                     break
                     print(validated)
+                    
+                    
                     if validated == 3:
-                        
+                        #if validated ended
                         print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
-                        if(self.convert_result() == 1):
-                            return 6
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
-                        return 0
+                        if(self.convert_result() == 1):
+                            return 5
+                        else:
+                            return 6
+                        
                     else:
+                        #if not ended
                         self.d_channel[0][0] = [57,58]
                         self.ending_mark[0] = 0
                 
@@ -299,7 +336,7 @@ class Receiver(object):
                 self.pointers[i] = 1
         print(frame_result)
         
-        return 3
+        return 4
         
     def bin_to_ascii(self,bin_data):
         st = ''
