@@ -91,14 +91,25 @@ class Receiver(object):
     
         return (input_data, pyaudio.paContinue)
 
-    def start_listen(self):
-        #frame_count = 0
-        frame_num = 0
+    def read_block(self, standby_time):
+        '''
+        Read the input audio (Blocking Mode):
+            Standby and listen until all the equested frames have been recorded.
+
+        Parameters
+        ----------
+        standby_time : int
+            The requested time (in second).
+
+        Returns
+        -------
+        retrieved_data: list
+            Every retrieved data during the standby time
+
+        '''
+        frame_count = 0
         start_time = time.time()
-        frame_start_time = time.time()
-        #freqs = fftfreq(self.CHUNK)
         
-        #status = 0
         self.current_bins = []
         self.pointers = []
         self.recieved_bins = []
@@ -107,23 +118,38 @@ class Receiver(object):
             self.pointers.append(0)
             self.current_bins.append([0,0,0,0,0,0,0])
             self.recieved_bins.append([])
+
+        while (time.time() - start_time < standby_time):
+            self.read()
+            frame_count += 1
         
-        while (time.time()-start_time < 30):
-            while (time.time() - frame_start_time < 0.2):
-                frame_num += 1
-                self.read()
-            frame_start_time = time.time()
-            frame_num = 0
-        
-        return self.recieved_bins
+        return self.retrieved_data
+    
     
     def read(self, log = False):
         '''
-        
+        Read the input audio (Callback Mode):
+            Called each frame to listen to the audio.
+
+        Parameters
+        ----------
+        log : bool, optional
+            If true, it will add a status flag to the returns, accompany with the retrived result. 
+            The default is False.
 
         Returns
         -------
-        None.
+        retrieved_data: String
+            The retrieved and demodulated data, empty if the receiver have not detected anything yet.
+        
+        status: int
+            0: Unactivated
+            1: Activating
+            2: Activated, preparing
+            3: Activation Failed, rollback to unactivated
+            4: Listening
+            5: Terminated, received auccessfully
+            6: Terminated, received failed
 
         '''
         data = self.stream.read(self.CHUNK, exception_on_overflow = False)
@@ -193,8 +219,6 @@ class Receiver(object):
             4.5 (Hide): Terminating
         5: Terminated, Received Successfully
         6: Terminated, Received Failed
-    
-    
     '''
     def update_statue(self, freq_bins,status):
          # if the activation frequency is been detected three times, 
@@ -255,7 +279,6 @@ class Receiver(object):
                 
                 if self.ending_mark[0] == 5:
                     
-                    
                     validated = 0
                     for i in range(3):
                         count = 0
@@ -265,9 +288,6 @@ class Receiver(object):
                                 if count == 2:
                                     validated += 1
                                     break
-                    print(validated)
-                    
-                    
                     if validated == 3:
                         #if validated ended
                         print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
@@ -277,7 +297,6 @@ class Receiver(object):
                             return 5
                         else:
                             return 6
-                        
                     else:
                         #if not ended
                         self.d_channel[0][0] = [57,58]
@@ -300,21 +319,14 @@ class Receiver(object):
                 for pointer, current_bin, recieved_bin in zip(self.pointers, self.current_bins, self.copy_recieved_bins):
                     if pointer >= 3:
                         recieved_bin.append(current_bin[pointer-1])
-
-        
-        
         return status
     
     def check_channels(self, freq_bins):
         frame_result = []
-        for freq_bin, current_bin, recieved_bin,i in zip(freq_bins,self.current_bins,self.recieved_bins,range(self.SHARED_CHANNEL)):   
-            #freq_bin_num = self.get_bin_num(freq_bin,i)
-            
+        for freq_bin, current_bin, recieved_bin,i in zip(freq_bins,self.current_bins,self.recieved_bins,range(self.SHARED_CHANNEL)):
             freq_bin_nums = []
             for j in range(self.TRACK_NUM):
                 freq_bin_nums.append(self.get_bin_num(freq_bin[j],j*self.SHARED_CHANNEL+i))
-            
-        
             frame_result.append(freq_bin_nums)
             freq_bin_num = self.most_frequent(freq_bin_nums)
             if (self.pointers[i]==0):
