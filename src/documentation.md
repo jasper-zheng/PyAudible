@@ -12,18 +12,18 @@ It uses cyclic redundancy check (CRC) for error detection to improve robustness.
 
 * [Requirements and Installation](#requirements-and-installation)
 * [Getting started with PyAudiable](#)
- * [Example: Modulate and Transmit Data](#)
- * [Example: Receive and Demodulate Data (Blocking Mode)](#)
- * [Example: Receive and Demodulate Data (Callback Mode)](#)
+  * [Example: Modulate and Transmit Data](#)
+  * [Example: Receive and Demodulate Data (Blocking Mode)](#)
+  * [Example: Receive and Demodulate Data (Callback Mode)](#)
 * [Class Transmitter](#)
- * [Volume](#)
- * [Transmission Speed](#)
+  * [Volume](#)
+  * [Transmission Speed](#)
 * [Class Receiver](#)
- * [Listening Modes](#)
-   * [Blocking Mode](#)
-   * [Callback Mode](#)
- * [Retrieved Data](#)
- * [System Logs and FFT Logs](#)
+  * [Listening Modes](#)
+    * [Blocking Mode](#)
+    * [Callback Mode](#)
+  * [Retrieved Data](#)
+  * [System Logs and FFT Logs](#)
 
 
 
