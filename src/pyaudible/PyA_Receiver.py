@@ -53,7 +53,7 @@ class Receiver(object):
     
     status = 0
     
-    def __init__(self):
+    def __init__(self, actived_channel = 8, speed = 'medium', sensitivity = 'medium'):
         self.d_channel.append(self.d_channel_1)
         self.d_channel.append(self.d_channel_2)
         self.d_channel.append(self.d_channel_3)
@@ -85,7 +85,7 @@ class Receiver(object):
             self.current_bins.append([0,0,0,0,0,0,0])
             self.recieved_bins.append([])
         
-        print(self.stream)
+        #print(self.stream)
     
     def callback(self, input_data, frame_count, time_info, flags):
     
@@ -371,3 +371,35 @@ class Receiver(object):
             self.retrieved_data.append(result)
             print(result)
             return 1
+        
+    def clear(self):
+        '''
+        Clear the retrieved data
+
+        Returns
+        -------
+        None.
+
+        '''
+        self.status = 0
+        self.current_bins = []
+        self.pointers = []
+        self.recieved_bins = []
+        self.fft = []
+        self.retrieved_data = []
+        for i in range(self.SHARED_CHANNEL):
+            self.pointers.append(0)
+            self.current_bins.append([0,0,0,0,0,0,0])
+            self.recieved_bins.append([])
+            
+    def received_data(self):
+        '''
+        Return all received data
+
+        Returns
+        -------
+        retrieved_data: list
+            All retrieved data during the standby time
+
+        '''
+        return self.retrieved_data

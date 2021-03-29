@@ -58,6 +58,7 @@ class Transmitter(object):
         return ' - PyAudiable Transmitter - \nShared Channel: {}\nTransmitting Volume: {}'.format(self.SHARED_CHANNEL, self.VOLUME)
     
     
+    
     def ch_freq_seq(self, binary_message, ch_number):
         adjusted_message = np.copy(binary_message)
         if (len(binary_message)%4 != 0):
@@ -201,7 +202,7 @@ class Transmitter(object):
 
         '''
         fsk = self.modulate(message)
-        wavfile.write(filename+'.wav', Fs, fsk)
+        wavfile.write(filename, Fs, fsk)
         
     def modulate_and_play(self, message):
         i = 0
