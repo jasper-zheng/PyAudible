@@ -10,7 +10,7 @@ PyAudible includes:
 It allows a configurable transmitting speed between 5 - 20 bytes/sec.  
 It uses cyclic redundancy check (CRC) for error detection to improve robustness.
 
-* [Requirements and Installation](#Installation)
+* [Requirements and Installation](#requirements-and-installation)
 * [Getting started with PyAudiable](#)
  * [Example: Modulate and Transmit Data](#)
  * [Example: Receive and Demodulate Data (Blocking Mode)](#)
