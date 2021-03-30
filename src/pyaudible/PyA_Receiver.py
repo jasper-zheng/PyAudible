@@ -79,6 +79,7 @@ class Receiver(object):
         self.pointers = []
         self.recieved_bins = []
         self.fft = []
+        self.scheduled_pointer = 0
         self.retrieved_data = []
         for i in range(self.SHARED_CHANNEL):
             self.pointers.append(0)
@@ -113,14 +114,16 @@ class Receiver(object):
         self.current_bins = []
         self.pointers = []
         self.recieved_bins = []
-
+        self.scheduled_pointer = 0
         for i in range(self.SHARED_CHANNEL):
             self.pointers.append(0)
             self.current_bins.append([0,0,0,0,0,0,0])
             self.recieved_bins.append([])
+            #self.scheduled_bins.append([])
 
         while (time.time() - start_time < standby_time):
-            self.read()
+            bit = self.read()
+            print(bit, end=(''))
             frame_count += 1
         
         return self.retrieved_data
@@ -164,20 +167,31 @@ class Receiver(object):
             freq_bins.append(candidate_freq)
         self.status = self.update_statue(freq_bins,self.status)
         
-        
-        
+        bit = ''
+        if self.status==4 and len(self.recieved_bins[0]) != self.scheduled_pointer:
+            length = True
+            for i in range(self.SHARED_CHANNEL-1):
+                if len(self.recieved_bins[i])==len(self.recieved_bins[i+1]):
+                    continue
+                else:
+                    length = False
+                    break
+            if length:
+                bit = self.convert_result([[item[-1]] for item in self.recieved_bins])
+                #[item[-1] for item in my_list]
+                self.scheduled_pointer = len(self.recieved_bins[0])
         if log:
             if self.status == 3:
                 self.status = 0
-                return '', 3
+                return bit, 3
             elif self.status == 5:
                 self.status = 0
                 return self.retrieved_data[-1], 5
             elif self.status == 6:
                 self.status = 0
-                return '', 6
+                return bit, 6
             else:
-                return '', self.status
+                return bit, self.status
         else:
             if self.status == 3:
                 self.status = 0
@@ -189,7 +203,7 @@ class Receiver(object):
                 self.status = 0
                 return ''
             else:
-                return ''
+                return bit
         
     #def refresh_result(self):
         
@@ -255,7 +269,7 @@ class Receiver(object):
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[0][0] != self.active_freq_bin[0] and freq_bins[1][3] != self.active_freq_bin[2]):
-                print(self.activation_info)
+                #print(self.activation_info)
                 self.received_info.append(100*self.get_bin_num(self.most_frequent(self.activation_info[0]),1) + 10*self.get_bin_num(self.most_frequent(self.activation_info[1]),2) + self.get_bin_num(self.most_frequent(self.activation_info[2]),3))
                 print('Estimated length: {}'.format(self.received_info[0]))
                 print('On recieving...')
@@ -292,11 +306,14 @@ class Receiver(object):
                                     break
                     if validated == 3:
                         #if validated ended
+                        print('')
                         print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
                         if(self.check_result() == 1):
-                            self.convert_result()
+                            result = self.convert_result(self.copy_recieved_bins)
+                            self.retrieved_data.append(result)
+                            print(result)
                             return 5
                         else:
                             return 6
@@ -307,7 +324,7 @@ class Receiver(object):
                 
             elif (freq_bins[1][3] == self.ending_freq_bin[2]):
                 
-                print('detecting ending...')
+                #print('detecting ending...')
                 #if one of the ending bit appears, expande the fft scope, start monitoring for 5 frames
                 #create copy of recieved_bin
                 #undo the pointer
@@ -349,7 +366,7 @@ class Receiver(object):
                 recieved_bin.append(number)
                 current_bin[0] = freq_bin_num
                 self.pointers[i] = 1
-        print(frame_result)
+        #print(frame_result)
         
         return 4
         
@@ -369,14 +386,29 @@ class Receiver(object):
             return 1
         
         
-    def convert_result(self):
+    def convert_result(self, received):
+        '''
+        Convert received binaries from all channels to demodulated message
+
+        Parameters
+        ----------
+        received : ndarray (binaries)
+            received binaries from all channels.
+
+        Returns
+        -------
+        result : string
+            converted message.
+
+        '''
         binary = ''
-        for i in range(len(self.copy_recieved_bins[0])):
+        for i in range(len(received[0])):
             for j in range(self.SHARED_CHANNEL):
-                binary += self.chunk_list[self.copy_recieved_bins[j][i]]
-        result = self.bin_to_ascii(binary)
-        self.retrieved_data.append(result)
-        print(result)
+                binary += self.chunk_list[received[j][i]]
+        return self.bin_to_ascii(binary)
+        
+    def fft(self):
+        return self.fft
         
     def clear(self):
         '''
