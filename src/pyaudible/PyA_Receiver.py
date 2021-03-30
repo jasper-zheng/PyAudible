@@ -165,6 +165,7 @@ class Receiver(object):
         self.status = self.update_statue(freq_bins,self.status)
         
         
+        
         if log:
             if self.status == 3:
                 self.status = 0
@@ -190,6 +191,7 @@ class Receiver(object):
             else:
                 return ''
         
+    #def refresh_result(self):
         
 
     def most_frequent(self, List): 
@@ -293,7 +295,8 @@ class Receiver(object):
                         print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
-                        if(self.convert_result() == 1):
+                        if(self.check_result() == 1):
+                            self.convert_result()
                             return 5
                         else:
                             return 6
@@ -358,19 +361,22 @@ class Receiver(object):
         n = int(st, 2)
         return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
     
-    def convert_result(self):
+    def check_result(self):
         if (len(self.copy_recieved_bins[0]) != len(self.copy_recieved_bins[1])):
             print('recieve failed')
             return 0
         else:
-            binary = ''
-            for i in range(len(self.copy_recieved_bins[0])):
-                for j in range(self.SHARED_CHANNEL):
-                    binary += self.chunk_list[self.copy_recieved_bins[j][i]]
-            result = self.bin_to_ascii(binary)
-            self.retrieved_data.append(result)
-            print(result)
             return 1
+        
+        
+    def convert_result(self):
+        binary = ''
+        for i in range(len(self.copy_recieved_bins[0])):
+            for j in range(self.SHARED_CHANNEL):
+                binary += self.chunk_list[self.copy_recieved_bins[j][i]]
+        result = self.bin_to_ascii(binary)
+        self.retrieved_data.append(result)
+        print(result)
         
     def clear(self):
         '''
