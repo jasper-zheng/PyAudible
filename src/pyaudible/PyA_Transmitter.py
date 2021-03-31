@@ -36,6 +36,7 @@ SAMPLE_RATE = 44100
 chunk = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111',
          '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
 
+#%%
 
 class Transmitter(object):
 
@@ -44,8 +45,16 @@ class Transmitter(object):
     
     ch_freqs = []
     
-    def __init__(self, shared_channel = 2, volume = 1.0):
-        self.SHARED_CHANNEL = shared_channel
+    def __init__(self, speed = 'slow', volume = 1.0):
+        if speed == 'slow':
+            self.SHARED_CHANNEL = 2
+        elif speed == 'medium':
+            self.SHARED_CHANNEL = 4
+        elif speed == 'fast':
+            self.SHARED_CHANNEL = 8
+        else:
+            raise ParameterError
+            
         self.VOLUME = volume
         
         for i in range(CHANNEL_NUM):
@@ -87,7 +96,8 @@ class Transmitter(object):
         return m
     
     def fill_empty_bits(self, message):
-        full_length = (int(len(message) / 32) + 1) * 32
+        minimum_block_length = self.SHARED_CHANNEL * 4
+        full_length = (int((len(message)-1) / minimum_block_length) + 1) * minimum_block_length
         return np.concatenate((message, np.zeros(full_length - len(message))), axis=None)
     
     def modulate(self, message):
@@ -112,7 +122,7 @@ class Transmitter(object):
         
         freq_seqs = []
         ch_msg = [] #2d array with [1,0,0,1,0....,0,1]
-        print(message)
+        #print(message)
         print(len(message))
         
         #create empty freqency channel
@@ -132,7 +142,7 @@ class Transmitter(object):
             turn = i % self.SHARED_CHANNEL
             for n in range(4):
                 ch_msg[turn][ int(i/self.SHARED_CHANNEL)*4 + n ] = message[i*4+n]
-        print('ch_msg: {}'.format(ch_msg))   
+        #print('ch_msg: {}'.format(ch_msg))   
         
         
         #assign freqency in herz into the 8 channels
@@ -168,6 +178,10 @@ class Transmitter(object):
             elif i==4:
                 signal[0 : sym_length] = ACTIVE_FREQ[1]
                 signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[1]
+            elif i==5:
+                signal[0 : sym_length] = self.ch_freqs[i][self.SHARED_CHANNEL]
+            elif i==6:
+                signal[0 : sym_length] = self.ch_freqs[i][self.SHARED_CHANNEL]
             elif i==7:
                 signal[0 : sym_length] = ACTIVE_FREQ[2]
                 signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[2]
@@ -180,8 +194,11 @@ class Transmitter(object):
             
         fsk = np.sin(signals[0])/CHANNEL_NUM
         
+        a = 1
+        
         for i in range(len(signals)-1):
-            fsk += np.sin(signals[i+1])/CHANNEL_NUM
+            fsk += a * np.sin(signals[i+1])/CHANNEL_NUM
+            a = a * 0.8
         
         return fsk
     
@@ -207,3 +224,15 @@ class Transmitter(object):
     def modulate_and_play(self, message):
         i = 0
     
+    
+#%% 
+
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class ParameterError(Error):
+    
+    def __init__(self, message = 'speed could only be slow, medium or fast'):
+        self.message = message
+        super().__init__(self.message)

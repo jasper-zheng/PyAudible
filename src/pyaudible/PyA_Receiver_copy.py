@@ -46,14 +46,13 @@ class Receiver(object):
     d_channel = []    
     chunk_list = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
     
-    activation_info = [[],[],[],[],[]]
+    activation_info = [[],[],[]]
     received_info = []
     ending_info = [[],[],[],[],[],[],[],[]]
     ending_mark = [0,0] #i0: ending pointer, i1:
     
     status = 0
-    #speed_info = [[0,0],[0,2],[1,3]]
-    speed_info = [[0,0],[4,0],[7,0]]
+    speed_info = [[0,0],[0,2],[1,3]]
     
     def __init__(self, actived_channel = 8, speed = 'medium', sensitivity = 'medium'):
         self.d_channel.append(self.d_channel_1)
@@ -97,14 +96,6 @@ class Receiver(object):
         
         #print(self.stream)
     
-    def update_speed_info(self):
-        if (self.SHARED_CHANNEL == 8):
-            self.speed_info = [[0,0],[4,0],[7,0]]
-        elif (self.SHARED_CHANNEL == 2):
-            self.speed_info = [[0,0],[0,2],[1,3]]
-        else:
-            self.speed_info = [[0,0],[0,1],[3,1]]
-    
     def callback(self, input_data, frame_count, time_info, flags):
     
         return (input_data, pyaudio.paContinue)
@@ -128,17 +119,16 @@ class Receiver(object):
         frame_count = 0
         start_time = time.time()
         
-        #self.current_bins = []
-        #self.pointers = []
-        #self.recieved_bins = []
+        self.current_bins = []
+        self.pointers = []
+        self.recieved_bins = []
         self.scheduled_pointer = 0
-        '''
         for i in range(self.SHARED_CHANNEL):
             self.pointers.append(0)
             self.current_bins.append([0,0,0,0,0,0,0])
             self.recieved_bins.append([])
             #self.scheduled_bins.append([])
-        '''
+
         while (time.time() - start_time < standby_time):
             bit = self.read()
             print(bit, end=(''))
@@ -183,11 +173,7 @@ class Receiver(object):
                 freq_bin = np.abs(self.fft[self.d_channel[j*self.SHARED_CHANNEL+i][0][0]:self.d_channel[j*self.SHARED_CHANNEL+i+1][0][0]]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
                 candidate_freq.append(freq_bin)
             freq_bins.append(candidate_freq)
-        
-        try:
-            self.status = self.update_statue(freq_bins,self.status)
-        except ActivationError as ae:
-            print(ae)
+        self.status = self.update_statue(freq_bins,self.status)
         
         bit = ''
         if self.status==4 and len(self.recieved_bins[0]) != self.scheduled_pointer:
@@ -265,40 +251,39 @@ class Receiver(object):
          # if the activation frequency is been detected three times, 
         if (status == 0):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] == self.active_freq_bin[0] and freq_bins[self.speed_info[1][0]][self.speed_info[1][1]] == self.active_freq_bin[1] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.active_freq_bin[2]):
-                self.activation_info = [[],[],[],[],[]]
+                self.activation_info = [[],[],[]]
                 self.received_info = []
                 self.pointers[0] = 1
                 status = 1
                 print('activating...')
                 ########## TODO ##########
-                self.activation_info[0].append(freq_bins[1][0])
-                self.activation_info[1].append(freq_bins[2][0])
-                self.activation_info[2].append(freq_bins[3][0])
-                self.activation_info[3].append(self.get_bin_num(freq_bins[5][0],5))
-                self.activation_info[4].append(self.get_bin_num(freq_bins[6][0],6))
-                    
+                if self.SHARED_CHANNEL == 8:
+                    self.activation_info[0].append(freq_bins[1][0])
+                    self.activation_info[1].append(freq_bins[2][0])
+                    self.activation_info[2].append(freq_bins[3][0])
+                else:
+                    self.activation_info[0].append(freq_bins[1][0])
+                    self.activation_info[1].append(freq_bins[0][1])
+                    self.activation_info[2].append(freq_bins[1][1])
         elif (status == 1):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] == self.active_freq_bin[0] and freq_bins[self.speed_info[1][0]][self.speed_info[1][1]] == self.active_freq_bin[1] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.active_freq_bin[2]):
                 self.pointers[0] += 1
                 ########## TODO ##########
-                self.activation_info[0].append(freq_bins[1][0])
-                self.activation_info[1].append(freq_bins[2][0])
-                self.activation_info[2].append(freq_bins[3][0])
-                self.activation_info[3].append(self.get_bin_num(freq_bins[5][0],5))
-                self.activation_info[4].append(self.get_bin_num(freq_bins[6][0],6))
-                
+                if self.SHARED_CHANNEL == 8:
+                    self.activation_info[0].append(freq_bins[1][0])
+                    self.activation_info[1].append(freq_bins[2][0])
+                    self.activation_info[2].append(freq_bins[3][0])
+                else:
+                    self.activation_info[0].append(freq_bins[1][0])
+                    self.activation_info[1].append(freq_bins[0][1])
+                    self.activation_info[2].append(freq_bins[1][1])
                 if (self.pointers[0] == 2):
-                    self.SHARED_CHANNEL = self.most_frequent(self.activation_info[3]+self.activation_info[4])
-                    if self.SHARED_CHANNEL!=4 and self.SHARED_CHANNEL!=8 and self.SHARED_CHANNEL!=2:
-                        raise ActivationError
-                    self.update_speed_info()
                     self.current_bins = []
                     self.recieved_bins = []
-                    self.pointers = []
                     for i in range(self.SHARED_CHANNEL):
                         self.current_bins.append([0,0,0,0,0,0,0])
                         self.recieved_bins.append([])
-                        self.pointers.append(0)
+                        self.pointers[i] = 0
                     status = 2
                     #self.pointers[0] = 0
                     print("Activated, on preparing")
@@ -307,10 +292,8 @@ class Receiver(object):
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] != self.active_freq_bin[0] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] != self.active_freq_bin[2]):
-                print(self.activation_info)
+                #print(self.activation_info)
                 self.received_info.append(100*self.get_bin_num(self.most_frequent(self.activation_info[0]),1) + 10*self.get_bin_num(self.most_frequent(self.activation_info[1]),2) + self.get_bin_num(self.most_frequent(self.activation_info[2]),3))
-                
-                
                 print('Estimated length: {}'.format(self.received_info[0]))
                 print('On recieving...')
                 self.d_channel[0][0] = [57,58]
@@ -322,14 +305,10 @@ class Receiver(object):
                     self.activation_info[0].append(freq_bins[1][0])
                     self.activation_info[1].append(freq_bins[2][0])
                     self.activation_info[2].append(freq_bins[3][0])
-                elif self.SHARED_CHANNEL == 2:
+                else:
                     self.activation_info[0].append(freq_bins[1][0])
                     self.activation_info[1].append(freq_bins[0][1])
                     self.activation_info[2].append(freq_bins[1][1])
-                else:
-                    self.activation_info[0].append(freq_bins[1][0])
-                    self.activation_info[1].append(freq_bins[2][0])
-                    self.activation_info[2].append(freq_bins[3][0])
                        
         elif (status == 4):
             status = self.check_channels(freq_bins)
@@ -344,20 +323,13 @@ class Receiver(object):
                     self.ending_info[3].append(freq_bins[3][0])
                     self.ending_info[4].append(freq_bins[4][0])
                     self.ending_info[7].append(freq_bins[7][0])
-                elif self.SHARED_CHANNEL == 2:
+                else:
                     self.ending_info[0].append(freq_bins[0][0])
                     self.ending_info[1].append(freq_bins[1][0])
                     self.ending_info[2].append(freq_bins[0][1])
                     self.ending_info[3].append(freq_bins[1][1])
                     self.ending_info[4].append(freq_bins[0][2])
                     self.ending_info[7].append(freq_bins[1][3])
-                else:
-                    self.ending_info[0].append(freq_bins[0][0])
-                    self.ending_info[1].append(freq_bins[1][0])
-                    self.ending_info[2].append(freq_bins[2][0])
-                    self.ending_info[3].append(freq_bins[3][0])
-                    self.ending_info[4].append(freq_bins[0][1])
-                    self.ending_info[7].append(freq_bins[3][1])
                 
                 if self.ending_mark[0] == 5:
                     
@@ -507,16 +479,3 @@ class Receiver(object):
 
         '''
         return self.retrieved_data
-    
-#%%
-    
-class Error(Exception):
-    """Base class for exceptions in this module."""
-pass
-
-
-class ActivationError(Error):
-    
-    def __init__(self, message = 'Activation failed, increase volume'):
-        self.message = message
-        super().__init__(self.message)
