@@ -16,20 +16,24 @@ Fs = 44100 #Sampling Rate
 BASE_FREQ = 1238 #Hz
 SPACED_FREQ = 21.5 * 2 #Hz
 
-BASE_CH2 = 1928
-BASE_CH3 = 2616
-BASE_CH4 = 3306
-BASE_CH5 = 3994
-BASE_CH6 = 4683
-BASE_CH7 = 5372
-BASE_CH8 = 6062
+BASE_CH2 = 1971
+BASE_CH3 = 2703
+BASE_CH4 = 3435
+BASE_CH5 = 4124
+BASE_CH6 = 4813
+BASE_CH7 = 5545
+BASE_CH8 = 6277
 
-BASE_CH_FREQ = [1238,1928,2616,3306,3994,4683,5372,6062]
+#BASE_CH_FREQ = [1238,1928,2616,3306,3994,4683,5372,6062]
+BASE_CH_FREQ = [1238,1971,2703,3435,4124,4813,5545,6277]
 
 CHANNEL_NUM = 8
 
-ACTIVE_FREQ = [1185,3984,6740]
-ENDING_FREQ = [1206,4048,6740]
+#ACTIVE_FREQ = [1185,3984,6740]
+ACTIVE_FREQ = [1185,4156,6957]
+
+#ENDING_FREQ = [1206,4048,6740]
+ENDING_FREQ = [1206,4222,6957]
 TRANS_SPEED = 0.2 #sec
 SAMPLE_RATE = 44100
 
@@ -88,7 +92,7 @@ class Transmitter(object):
                     freq_seq.append(self.ch_freqs[ch_number][n])
         return freq_seq
     
-    def ascii_to_bin(self, text):
+    def text_to_bin(self, text):
         res = bin(int.from_bytes(text.encode(), 'big')).replace('b', '')
         m = np.zeros(len(res))
         for i in range(len(res)):
@@ -115,8 +119,8 @@ class Transmitter(object):
             Modulated waveform
 
         '''
-        sym_num = len(self.ascii_to_bin(message))
-        message = self.fill_empty_bits(self.ascii_to_bin(message))
+        sym_num = len(self.text_to_bin(message))
+        message = self.fill_empty_bits(self.text_to_bin(message))
         
         
         
@@ -198,7 +202,7 @@ class Transmitter(object):
         
         for i in range(len(signals)-1):
             fsk += a * np.sin(signals[i+1])/CHANNEL_NUM
-            a = a * 0.8
+            a = a * 0.9
         
         return fsk
     

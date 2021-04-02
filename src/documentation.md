@@ -57,7 +57,7 @@ message = 'Hello World!'
 # then store the modulated signal to an audio file
 transmitter.modulate_to_file(message, 'transmitter_sample.wav')
 ```
-To modulate a message to an audio file, first instantiate PyAudiable by ``pyaudiable.Transmitter()`` with desired parameters (see [Class Transmitter](#)). It will initialise a transmitter for modulating data.   
+To convert a message to electrical signals and generate the modulated audio file, first instantiate PyAudiable by ``pyaudiable.Transmitter()`` with desired parameters (see [Class Transmitter](#)). It will initialise a transmitter for modulating data.   
 
 Modulate a message by calling ``pyaudiable.Transmitter.modulate_to_file()`` with input data and the file name, it will modulate the data to audio waveforms and save it to a playable file.
 
@@ -114,3 +114,14 @@ while (time.time() - start_time < 30):
 # it contains messages demodulated from each singal during the standby time
 message_list = receiver.received_data()
 ```
+
+
+## Class Transmitter
+
+
+``class pyaudiable.Transmitter``  
+
+Python interface to modulate and transmit data. Provides methods to:  
+  * Convert text to modulated audio waveform
+  * Write a modulated waveform as a uncompressed WAV file
+  * Open PyAudio to stream the modulated audio

@@ -29,10 +29,10 @@ class Receiver(object):
     
     FRAME_TIME = 0.2
     
-    active_freq_bin = [55,185,313]
-    ending_freq_bin = [56,188,313]
+    active_freq_bin = [55,193,323]
+    ending_freq_bin = [56,196,323]
     ending_channel_num = [0,4,7]
-    
+    '''
     d_channel_1 = [[53,57,58],[59,60],[61,62],[63,64],[65,66],[67,68],[69,70],[71,72],[73,74],[75,76],[77,78],[79,80],[81,82],[83,84],[85,86],[87,88]]
     d_channel_2 = [[89,90],[91,92],[93,94],[95,96],[97,98],[99,100],[101,102],[103,104],[105,106],[107,108],[109,110],[111,112],[113,114],[115,116],[117,118],[119,120]]
     d_channel_3 = [[121,122],[123,124],[125,126],[127,128],[129,130],[131,132],[133,134],[135,136],[137,138],[139,140],[141,142],[143,144],[145,146],[147,148],[149,150],[151,152]]
@@ -42,6 +42,16 @@ class Receiver(object):
     d_channel_7 = [[249,250],[251,252],[253,254],[255,256],[257,258],[259,260],[261,262],[263,264],[265,266],[267,268],[269,270],[271,272],[273,274],[275,276],[277,278],[279,280]]
     d_channel_8 = [[281,282],[283,284],[285,286],[287,288],[289,290],[291,292],[293,294],[295,296],[297,298],[299,300],[301,302],[303,304],[305,306],[307,308],[309,310],[311,312,313]]
     d_channel_9 = [[314]]
+    '''
+    d_channel_1 = [[53,57,58],[59,60],[61,62],[63,64],[65,66],[67,68],[69,70],[71,72],[73,74],[75,76],[77,78],[79,80],[81,82],[83,84],[85,86],[87,88]]
+    d_channel_2 = [[91,92],[93,94],[95,96],[97,98],[99,100],[101,102],[103,104],[105,106],[107,108],[109,110],[111,112],[113,114],[115,116],[117,118],[119,120],[121,122]]
+    d_channel_3 = [[125,126],[127,128],[129,130],[131,132],[133,134],[135,136],[137,138],[139,140],[141,142],[143,144],[145,146],[147,148],[149,150],[151,152],[153,154],[155,156]]
+    d_channel_4 = [[159,160],[161,162],[163,164],[165,166],[167,168],[169,170],[171,172],[173,174],[175,176],[177,178],[179,180],[181,182],[183,184],[185,186],[187,188],[189,190]]
+    d_channel_5 = [[191,192],[193,194],[195,196],[197,198],[199,200],[201,202],[203,204],[205,206],[207,208],[209,210],[211,212],[213,214],[215,216],[217,218],[219,220],[221,222]]
+    d_channel_6 = [[223,224],[225,226],[227,228],[229,230],[231,232],[233,234],[235,236],[237,238],[239,240],[241,242],[243,244],[245,246],[247,248],[249,250],[251,252],[253,254]]
+    d_channel_7 = [[257,258],[259,260],[261,262],[263,264],[265,266],[267,268],[269,270],[271,272],[273,274],[275,276],[277,278],[279,280],[281,282],[283,284],[285,286],[287,288]]
+    d_channel_8 = [[291,292],[293,294],[295,296],[297,298],[299,300],[301,302],[303,304],[305,306],[307,308],[309,310],[311,312],[313,314],[315,316],[317,318],[319,320],[321,322,323]]
+    d_channel_9 = [[324]]
     
     d_channel = []    
     chunk_list = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
@@ -55,7 +65,7 @@ class Receiver(object):
     #speed_info = [[0,0],[0,2],[1,3]]
     speed_info = [[0,0],[4,0],[7,0]]
     
-    def __init__(self, actived_channel = 8, speed = 'medium', sensitivity = 'medium'):
+    def __init__(self, actived_channel = 8, sensitivity = 'medium'):
         self.d_channel.append(self.d_channel_1)
         self.d_channel.append(self.d_channel_2)
         self.d_channel.append(self.d_channel_3)
@@ -89,6 +99,14 @@ class Receiver(object):
             self.TRACK_NUM = 1
             self.speed_info = [[0,0],[4,0],[7,0]]
         '''
+        if sensitivity == 'medium':
+            self.sensitivity = 2
+        elif sensitivity == 'low':
+            self.sensitivity = 1
+        elif sensitivity == 'high':
+            self.sensitivity = 3
+        else:
+            raise ParameterError(message = 'sensitivity could only be low, medium, or high')
             
         for i in range(self.SHARED_CHANNEL):
             self.pointers.append(0)
@@ -180,10 +198,11 @@ class Receiver(object):
         for i in range(self.SHARED_CHANNEL):
             candidate_freq = []
             for j in range(int(self.CHANNEL_NUMBER/self.SHARED_CHANNEL)):
-                freq_bin = np.abs(self.fft[self.d_channel[j*self.SHARED_CHANNEL+i][0][0]:self.d_channel[j*self.SHARED_CHANNEL+i+1][0][0]]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
+                freq_bin = np.abs(self.fft[ self.d_channel[j*self.SHARED_CHANNEL+i][0][0]  : self.d_channel[j*self.SHARED_CHANNEL+i][15][-1]+1 ]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
                 candidate_freq.append(freq_bin)
             freq_bins.append(candidate_freq)
-        
+            
+        #print(freq_bins)
         try:
             self.status = self.update_statue(freq_bins,self.status)
         except ActivationError as ae:
@@ -514,6 +533,11 @@ class Error(Exception):
     """Base class for exceptions in this module."""
 pass
 
+class ParameterError(Error):
+    
+    def __init__(self, message = 'speed could only be slow, medium or fast'):
+        self.message = message
+        super().__init__(self.message)
 
 class ActivationError(Error):
     
