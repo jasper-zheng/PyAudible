@@ -13,7 +13,7 @@ The transmitter and the receiver provide simplified Python interface that could 
 
 ## Modes
 
-The receiver module provides two receiving modes, in "blocking mode", the receiver blocks until all the requested frame have been recorded; in "callback mode", the receiver is called each frame to allows real-time analysis of recorded audio data from any audio backend.
+The receiver module provides two receiving modes, in "blocking mode", the receiver blocks until all the requested frame have been recorded; in "callback mode", the receiver is called each frame, allowing real-time analysis of recorded audio data from any audio backend.
 
 ## Requirements
 
