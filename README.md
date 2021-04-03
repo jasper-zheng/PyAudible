@@ -9,7 +9,7 @@ The transmitter and the receiver provide simplified Python interface that could 
  - Smart Home Appliances
  - Data Broadcasting
  - Device Pairing
- - Electronic Ticket
+ - Electronic Tickets
 
 ## Modes
 

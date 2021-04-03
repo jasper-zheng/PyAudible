@@ -158,14 +158,104 @@ class Receiver(object):
             #self.scheduled_bins.append([])
         '''
         while (time.time() - start_time < standby_time):
-            bit = self.read()
+            bit = self.read_frame()
             print(bit, end=(''))
             frame_count += 1
         
         return self.retrieved_data
     
+    def read_frame_audio(self, audio, log = False):
+        '''
+        Takes 2048 frames of audio data and perform analysis.
+
+        Parameters
+        ----------
+        audio : np array with a size of (2048,)
+            The array version of the audio buffer.
+        log : bool, optional
+            If true, it will add a status flag to the returns, accompany with the retrived result. 
+            The default is False.
+
+        Returns
+        -------
+        retrieved_data: String
+            The retrieved and demodulated data, empty if the receiver have not detected anything yet.
+        
+        status: int
+            0: Unactivated
+            1: Activating
+            2: Activated, preparing
+            3: Activation Failed, rollback to unactivated
+            4: Listening
+            5: Terminated, received auccessfully
+            6: Terminated, received failed
+
+        '''
+        try:
+            if (audio.shape[0]==2048):
+                self.fft = fft(audio)
+                #######################
+                
+                
+                freq_bins = []
+                for i in range(self.SHARED_CHANNEL):
+                    candidate_freq = []
+                    for j in range(int(self.CHANNEL_NUMBER/self.SHARED_CHANNEL)):
+                        freq_bin = np.abs(self.fft[ self.d_channel[j*self.SHARED_CHANNEL+i][0][0]  : self.d_channel[j*self.SHARED_CHANNEL+i][15][-1]+1 ]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
+                        candidate_freq.append(freq_bin)
+                    freq_bins.append(candidate_freq)
+                #print(freq_bins)
+                try:
+                    self.status = self.update_statue(freq_bins,self.status)
+                except ActivationError as ae:
+                    print(ae)
+                bit = ''
+                if self.status==4 and len(self.recieved_bins[0]) != self.scheduled_pointer:
+                    length = True
+                    for i in range(self.SHARED_CHANNEL-1):
+                        if len(self.recieved_bins[i])==len(self.recieved_bins[i+1]):
+                            continue
+                        else:
+                            length = False
+                            break
+                    if length:
+                        bit = self.convert_result([[item[-1]] for item in self.recieved_bins])
+                        self.scheduled_pointer = len(self.recieved_bins[0])
+                if log:
+                    if self.status == 3:
+                        self.status = 0
+                        return bit, 3
+                    elif self.status == 5:
+                        self.status = 0
+                        return self.retrieved_data[-1], 5
+                    elif self.status == 6:
+                        self.status = 0
+                        return bit, 6
+                    else:
+                        return bit, self.status
+                else:
+                    if self.status == 3:
+                        self.status = 0
+                        return ''
+                    elif self.status == 5:
+                        self.status = 0
+                        return self.retrieved_data[-1]
+                    elif self.status == 6:
+                        self.status = 0
+                        return ''
+                    else:
+                        return bit
+            else:
+                raise AttributeError
+                
+                
+                
+                #######################
+        except AttributeError:
+                print('The number of frames need to be 2048')
     
-    def read(self, log = False):
+    
+    def read_frame(self, log = False):
         '''
         Read the input audio (Callback Mode):
             Called each frame to listen to the audio.
@@ -194,6 +284,10 @@ class Receiver(object):
         data = self.stream.read(self.CHUNK, exception_on_overflow = False)
         data_int = np.frombuffer(data, dtype = np.int16)
         self.fft = fft(data_int)
+        
+        #######################
+        
+        
         freq_bins = []
         for i in range(self.SHARED_CHANNEL):
             candidate_freq = []
@@ -201,13 +295,11 @@ class Receiver(object):
                 freq_bin = np.abs(self.fft[ self.d_channel[j*self.SHARED_CHANNEL+i][0][0]  : self.d_channel[j*self.SHARED_CHANNEL+i][15][-1]+1 ]).argmax() + self.d_channel[j*self.SHARED_CHANNEL+i][0][0]
                 candidate_freq.append(freq_bin)
             freq_bins.append(candidate_freq)
-            
         #print(freq_bins)
         try:
             self.status = self.update_statue(freq_bins,self.status)
         except ActivationError as ae:
             print(ae)
-        
         bit = ''
         if self.status==4 and len(self.recieved_bins[0]) != self.scheduled_pointer:
             length = True
@@ -219,7 +311,6 @@ class Receiver(object):
                     break
             if length:
                 bit = self.convert_result([[item[-1]] for item in self.recieved_bins])
-                #[item[-1] for item in my_list]
                 self.scheduled_pointer = len(self.recieved_bins[0])
         if log:
             if self.status == 3:
@@ -245,6 +336,8 @@ class Receiver(object):
                 return ''
             else:
                 return bit
+            
+        #######################
         
     #def refresh_result(self):
         

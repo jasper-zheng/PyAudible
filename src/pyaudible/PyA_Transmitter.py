@@ -133,15 +133,7 @@ class Transmitter(object):
         for i in range(self.SHARED_CHANNEL):
             msg = np.zeros(int(len(message)/self.SHARED_CHANNEL))
             ch_msg.append(msg)
-        '''
-        #assign binary seqence to empty freqency channel
-        for i in range(int(len(message)/4)):
-            turn = (int(len(message)/4)-i) % self.SHARED_CHANNEL
-            print('turn:{}'.format(turn))
-            for n in range(4):
-                ch_msg[turn][ int((i-turn)/self.SHARED_CHANNEL*4) + n ] = message[i*4+n]
-        
-        '''
+
         for i in range(int(len(message)/4)):
             turn = i % self.SHARED_CHANNEL
             for n in range(4):

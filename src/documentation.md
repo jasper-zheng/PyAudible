@@ -1,6 +1,6 @@
-# PyAudiable 0.1.1 documentation
+# PyAudible 0.1.1 documentation
 
-PyAudiable is a Python library for sending and receiving data using audible sound. PyAudible includes a transmitter and a receiver module that could be implemented on multiple separate devices, enables the transmission of small amounts of data between devices in the vicinity.  
+PyAudible is a Python library for sending and receiving data using audible sound. PyAudible includes a transmitter and a receiver module that could be implemented on multiple separate devices, enables the transmission of small amounts of data between devices in the vicinity.  
 
  - The transmitter module ``PyA_Transmitter`` generates encoded audio waveforms.  
  - The receiver module ``PyA_Receiver`` listens and analyses the audio waveforms captured by microphones.  
@@ -30,24 +30,24 @@ It uses cyclic redundancy check (CRC) for error detection to improve robustness.
 ## Requirements and Installation
 
 #### Requirements
-PyAudiable depends on the following dependencies:  
+PyAudible depends on the following dependencies:  
 - **Python** 3.8+  
 - **PyAudio** 0.2.11+ (speaker access required for the transmitter, microphone access required for the receiver)  
 - **Numpy** 1.18.5+  
 
 #### Installation
-With required dependencies installed, use ``pip install pyaudiable`` to download and install PyAudiable.
+With required dependencies installed, use ``pip install pyaudible`` to download and install PyAudible.
 
 
-## Getting started with PyAudiable
+## Getting started with PyAudible
 #### Example: Modulate and Transmit Data
 ```python
-"""PyAudiable Example: Modulate and Transmit Data"""
+"""PyAudible Example: Modulate and Transmit Data"""
 
-import PyA_Transmitter as pyaudiable
+import PyA_Transmitter as pyaudible
 
 # instantiate the transmitter
-transmitter = pyaudiable.Transmitter(shared_channel = 2,
+transmitter = pyaudible.Transmitter(shared_channel = 2,
                                      volume = 1.0)
 
 # define the message to be transmitted

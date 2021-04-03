@@ -194,7 +194,7 @@ class Reciever(object):
                 #freq = freqs[freq_bins[0]]
                 freq_in_hertz = abs(freq_bin * RATE)
                 frame_count += 1
-                print(freq_bin)
+                print(data)
                 #status = update_statue(freq_bins,status)
 
             frame_start_time = time.time()

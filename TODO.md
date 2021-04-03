@@ -29,5 +29,11 @@ Create a demostration application with GUI
 ~~Fix the scope of fft in OnPreparing and OnReceiving phases~~
 
 ### 26.03.21
-Improve Interface
-Change from 2 channels at a time to 4/8 channels at a time
+Improve Interface  
+~~Change from 2 channels at a time to 4/8 channels at a time~~
+
+
+### 03.04.21  
+Test the customised audio backend input  
+At the end of the receiving, check the length  
+Spelling wrong (Audible, not audiable)
