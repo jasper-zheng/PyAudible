@@ -311,8 +311,14 @@ class Receiver(object):
                     length = False
                     break
             if length:
-                bit = self.convert_result([[item[-1]] for item in self.recieved_bins])
-                self.scheduled_pointer = len(self.recieved_bins[0])
+                try:
+                    bit = self.convert_result([[item[-1]] for item in self.recieved_bins])
+                    self.scheduled_pointer = len(self.recieved_bins[0])
+                except:
+                    print('transmission interrupted')
+                    self.status = 6
+                    self.clear_session()
+                
         if log:
             if self.status == 3:
                 self.status = 0
@@ -511,6 +517,7 @@ class Receiver(object):
                             
                             return 5
                         else:
+                            self.clear_session()
                             return 6
                     else:
                         #if not ended
