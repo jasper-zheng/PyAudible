@@ -188,8 +188,8 @@ class Receiver(object):
             2: Activated, preparing
             3: Activation Failed, rollback to unactivated
             4: Listening
-            5: Cycle Terminated, received auccessfully and back to Unactivated (status 0)
-            6: Cycle Terminated, received failed and back to Unactivated (status 0)
+            5: Terminated, received auccessfully
+            6: Terminated, received failed
 
         '''
         try:
@@ -389,7 +389,7 @@ class Receiver(object):
                 self.activation_info[2].append(freq_bins[3][0])
                 self.activation_info[3].append(self.get_bin_num(freq_bins[5][0],5))
                 self.activation_info[4].append(self.get_bin_num(freq_bins[6][0],6))
-                
+                    
         elif (status == 1):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] == self.active_freq_bin[0] and freq_bins[self.speed_info[1][0]][self.speed_info[1][1]] == self.active_freq_bin[1] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.active_freq_bin[2]):
                 self.pointers[0] += 1
@@ -400,7 +400,7 @@ class Receiver(object):
                 self.activation_info[3].append(self.get_bin_num(freq_bins[5][0],5))
                 self.activation_info[4].append(self.get_bin_num(freq_bins[6][0],6))
                 
-                if (self.pointers[0] == self.sensitivity):
+                if (self.pointers[0] == 2):
                     self.SHARED_CHANNEL = self.most_frequent(self.activation_info[3]+self.activation_info[4])
                     if self.SHARED_CHANNEL!=4 and self.SHARED_CHANNEL!=8 and self.SHARED_CHANNEL!=2:
                         raise ActivationError
@@ -421,8 +421,6 @@ class Receiver(object):
                     
             else:
                 status = 3
-                
-                
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] != self.active_freq_bin[0] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] != self.active_freq_bin[2]):
@@ -503,7 +501,7 @@ class Receiver(object):
                         
                         ##################
                         if(self.check_result(self.received_info[0], self.ending_mark[1], self.copy_recieved_bins) == 1):
-                            result = self.convert_result(self.copy_recieved_bins, self.trim)
+                            result = self.convert_result(self.copy_recieved_bins)
                             self.retrieved_data.append(result)
                             print(result)
                             
@@ -541,7 +539,6 @@ class Receiver(object):
         self.received_info = []
         self.SHARED_CHANNEL = 8
         self.scheduled_pointer = 0
-        self.trim = 0
         #self.TRACK_NUM = int(self.CHANNEL_NUMBER / self.SHARED_CHANNEL)
     
     def check_channels(self, freq_bins):
@@ -579,13 +576,7 @@ class Receiver(object):
             st += str(int(bin_data[i]))
         st = st[:1]+'b'+st[1:]
         n = int(st, 2)
-        text = ''
-        try:
-            text = n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
-        except UnicodeDecodeError:
-            print('fault:')
-            print(st)
-        return text
+        return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
     
     def check_result(self, a, e, received):
         
@@ -596,18 +587,14 @@ class Receiver(object):
         full_length_e = (int((e-1) / minimum_block_length) + 1)
         
         for i in range(self.SHARED_CHANNEL):
-            if len(received[i]) == full_length_a:
-                self.trim = a
-                continue
-            elif len(received[i]) == full_length_e:
-                self.trim = e
+            if len(received[i]) == full_length_a or len(received[i]) == full_length_e:
                 continue
             else:
                 print('recieve failed')
                 return 0
         
         return 1
-        ###########
+        ###########CHECK
         
     '''
         if (len(self.copy_recieved_bins[0]) != len(self.copy_recieved_bins[1])):
@@ -618,7 +605,7 @@ class Receiver(object):
         '''
         
         
-    def convert_result(self, received, trim = -1):
+    def convert_result(self, received):
         '''
         Convert received binaries from all channels to demodulated message
 
@@ -634,14 +621,10 @@ class Receiver(object):
 
         '''
         binary = ''
-        
         for i in range(len(received[0])):
             for j in range(self.SHARED_CHANNEL):
                 binary += self.chunk_list[received[j][i]]
-        if trim == -1:
-            trim = len(binary)
-        #print(binary)
-        return self.bin_to_ascii(binary[0:trim])
+        return self.bin_to_ascii(binary)
         
     def fft(self):
         return self.fft
