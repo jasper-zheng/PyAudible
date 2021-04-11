@@ -69,8 +69,13 @@ The reliability `R` was be represented as the probability that the receiver dete
     <thead>
         <tr>
             <th></th>
-            <th>Layer 2</th>
-            <th>Layer 3</th>
+            <th>Total Transmission</th>
+            <th>Succeed Activation</th>
+            <th>Invalid Aborting</th>
+            <th>Incorrect Transmission</th>
+            <th>Fault was Detected</th>
+            <th>Fault Detection</th>
+            <th>Reliability</th>
         </tr>
     </thead>
     <tbody>
