@@ -65,7 +65,7 @@ The reliability `R` was be represented as the probability that the receiver dete
 
 #### Experiment Results
 
-<table>
+<table style="font-size:7px">
     <thead>
         <tr>
             <th></th>
