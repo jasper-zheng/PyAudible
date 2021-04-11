@@ -94,13 +94,36 @@ The reliability `R` was be represented as the probability that the receiver dete
         </tr>
         <tr>
             <td>w/ Noise Resistance</td>
-            <td>129</td>
-            <td>50</td>
-            <td>12</td>
+            <td>125</td>
+            <td>116</td>
+            <td>N/A</td>
             <td>100</td>
-            <td>26</td>
-            <td>1</td>
-            <td>0.93</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>0.09</td>
+        </tr>
+        <tr>
+            <td colspan=8 align="center">Activation Sensitivity = 2 (Medium Sensitivity)</td>
+        </tr>
+        <tr>
+            <td>With Noise Resistance</td>
+            <td>139</td>
+            <td>85</td>
+            <td>10</td>
+            <td>100</td>
+            <td>50</td>
+            <td>2</td>
+            <td>0.94</td>
+        </tr>
+        <tr>
+            <td>w/ Noise Resistance</td>
+            <td>125</td>
+            <td>111</td>
+            <td>N/A</td>
+            <td>100</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>0.14</td>
         </tr>
     </tbody>
 </table>
