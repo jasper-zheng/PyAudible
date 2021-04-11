@@ -5,8 +5,8 @@
 The evaluations of the system were conducted along with the development.
 
  * [Phase I Evaluation: Noise Resistance Mechanism Reliability](#phase-i-evaluation-noise-resistance-mechanism-reliability)
-   * [Experiment Design](#)
-     * [Test 1.1: Flatter Continuous Noise](#)
+   * [Experiment Design](#experiment-design)
+     * [Test 1.1: Flatter Continuous Noise](#test-11-flatter-continuous-noise)
      * [Test 1.2: Sudden Disruptive Noise](#)
    * [Result and Analysis](#)  
  * [Phase II Evaluation: System Reliability vs. Speed and Noise Conditions](#)
@@ -25,5 +25,5 @@ To detect and recover from the noise, the receiver assess the sound marks to dec
 
 The test consists of two parts, aims at assess the noise resistance mechanism under two noise conditions: Flatter Continuous Noise and Sudden Disruptive Noise.  
 
-###### Test 1.1: Flatter Continuous Noise
+##### Test 1.1: Flatter Continuous Noise
 This is the situation where the noise remains constant and stable over the transmission periods, such as ambient noise in office, city traffic, or white noise in a plane. Continuous noise can affect the signal to noise ratio ![equation](https://latex.codecogs.com/svg.image?SNR) between the power of modulated signal ![equation](https://latex.codecogs.com/svg.image?P_{signal}) and the background noise ![equation](https://latex.codecogs.com/svg.image?P_{noise}).  
