@@ -80,7 +80,8 @@ The reliability `R` was be represented as the probability that the receiver dete
     </thead>
     <tbody>
         <tr>
-            <td colspan=8 style="text-align: center">Activation Sensitivity = 3 (Low Sensitivity)</td>
+            <td colspan=8 align="center">Activation Sensitivity = 3 (Low Sensitivity)</td>
         </tr>
+        <tr> </tr>
     </tbody>
 </table>
