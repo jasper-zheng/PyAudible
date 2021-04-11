@@ -9,10 +9,15 @@ The evaluations of the system were conducted along with the development.
      * [Test 1.1: Flatter Continuous Noise](#test-11-flatter-continuous-noise)
      * [Test 1.2: Sudden Disruptive Noise](#)
    * [Result and Analysis](#)  
+     * [Test 1.1 Results: Flatter Continuous Noise](#test-11-flatter-continuous-noise)
+     * [Test 1.2 Results: Sudden Disruptive Noise](#)  
+
+
  * [Phase II Evaluation: System Reliability vs. Speed and Noise Conditions](#)
    * [Experiment Design](#)
-     * [Test 1.2: System Reliability](#)
+     * [Test 2.1: System Reliability](#)
    * [Result and Analysis](#)  
+     * [Test 2.1 Results: System Reliability](#)
 
 ## Phase I Evaluation: Noise Resistance Mechanism Reliability  
 The goal of Phase I evaluation is to assess the reliability of the noise resistance mechanism, including Sound Mark Integrity Check and Error Detecting Code. As a part of the transmission protocol, noise resistance mechanism should be able to tolerant to unpredictable background noise.   
@@ -151,8 +156,199 @@ The reliability `R` was be represented as the probability that the receiver dete
     </tbody>
 </table>  
 
-**Table 1.1.1: Recorded data for test2.1**
+*Table 1.1.1: Recorded data for Test1.1*
 
 The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevant data was calculated. **Figure 1.1.1** shows significant increase in reliability with respect to the noise resistance mechanism, and a modest decrease when raised the activation sensitivity from medium to high. However in **Figure 1.1.2**, it is shown that when the activation sensitivity was low, 75% of failed transmission were prevented in respect of the SNR check, whereas when the activation sensitivity was high, a majority of failed transmission were prevented by the error detecting code.  
 
-<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.1.png?raw=true" width="400">
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.1.png?raw=true" width="400">*Figure 1.1.1 noise resistance mechanism Reliability*  
+
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.2.png?raw=true" width="400">*Figure 1.1.2 Number of failed transmission prevented by each technique*
+
+##### Test 1.2 Results: Sudden Disruptive Noise
+<table style="font-size:7px">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Total Transmission</th>
+            <th>Failed Transmission</th>
+            <th>Fault was Detected</th>
+            <th>Fault Detection</th>
+            <th>Reliability</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan=6 align="center">Transmission Rate = 20</td>
+        </tr>
+        <tr>
+            <td>With Noise Resistance</td>
+            <td>100</td>
+            <td>56</td>
+            <td>54</td>
+            <td>2</td>
+            <td>0.96</td>
+        </tr>
+        <tr>
+            <td>w/ Noise Resistance</td>
+            <td>100</td>
+            <td>70</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+        </tr>
+        <tr>
+            <td colspan=6 align="center">Transmission Rate = 10</td>
+        </tr>
+        <tr>
+            <td>With Noise Resistance</td>
+            <td>100</td>
+            <td>67</td>
+            <td>62</td>
+            <td>2</td>
+            <td>0.92</td>
+        </tr>
+        <tr>
+            <td>w/ Noise Resistance</td>
+            <td>100</td>
+            <td>60</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+        </tr>
+        <tr>
+            <td colspan=6 align="center">Transmission Rate = 5</td>
+        </tr>
+        <tr>
+            <td>With Noise Resistance</td>
+            <td>100</td>
+            <td>70</td>
+            <td>67</td>
+            <td>4</td>
+            <td>0.95</td>
+        </tr>
+        <tr>
+            <td>w/ Noise Resistance</td>
+            <td>100</td>
+            <td>67</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+        </tr>
+    </tbody>
+</table>   
+
+*Table 1.2.1: Recorded data for Test1.2*  
+
+Since the control group did not implement the error detecting code, once the transmission was failed, there was no way to recover from the fault. However, **Figure 1.2.1** shows that we could expect the system reliability to be above 0.9 over all the transmission rates. And the transmission rate did not have an evident affect on the reliability when confronting disruptive noise.  
+
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.2.1.png?raw=true" width="400">*Figure 1.2.1 noise resistance mechanism Reliability (Disruptive Noise)*  
+
+## Phase II Evaluation: System Reliability vs. Speed and Signal to Noise Ratio  
+
+Since the protocol only provide limited number of channels, the system is assumed that it could either sacrifice speed to improve accuracy, or improve speed and expect occasionally failed transmission or incorrect receipt that might decrease reliability. Therefore, the main purpose of Phase III Evaluation is to assess the transmission success rate and reliability of the system under different speed settings and noise conditions.
+
+#### Experiment Design  
+##### Test 2.1: System Reliability  
+The testing system includes a MacBook as receiver, and an iPhone as transmitter. Two devices were implemented in a silent room with acoustic control, distanced two meters. A separated speaker and a decibel noise meter were used to produce pre-recored noise and precisely control the signal to noise ratio in the system.   
+
+The test includes 12 rounds, in the first three rounds, the signal to noise ratio was maintained at 1.2, the speed was set to 5, 10, 20 bytes / sec respectively. In the second and the third round, the signal to noise ratio was maintained at 1.5, 2 and 2.5. In each round, 100 pieces random generated data with random length were transmitted through the system, following data was collected:  
+
+ * **Received Transmission:** Number of times that the transmission reached and accepted by the receiver, regardless the correctness.
+ * **Correct Transmission:** Number of times that the transmission reached and accepted by the receiver, and the receiving was correct.   
+
+The transmission success rate `S` is defined as the ratio between total number of correct received data and total number of transmission. The reliability `R` is defined as the ratio between total number of correct received data and total number of received data.  
+
+![equation](https://latex.codecogs.com/svg.image?S&space;=&space;\frac{CorrectTransmission}{TotalTransmission})  
+
+![equation](https://latex.codecogs.com/svg.image?R&space;=&space;\frac{CorrectTransmission}{ReceivedTransmission})  
+
+
+#### Experiment Results
+##### Test 2.1: System Reliability
+<table style="font-size:7px">
+    <thead>
+        <tr>
+            <th>Transmission Speed</th>
+            <th>Total Transmission</th>
+            <th>Received Transmission</th>
+            <th>Correct Transmission</th>
+            <th>Transmission Success Rate</th>
+            <th>Reliability</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan=6 align="center">SNR = 1.2</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>100</td>
+            <td>25</td>
+            <td>20</td>
+            <td>0.20</td>
+            <td>0.80</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>100</td>
+            <td>20</td>
+            <td>11</td>
+            <td>0.11</td>
+            <td>0.55</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>100</td>
+            <td>24</td>
+            <td>9</td>
+            <td>0.07</td>
+            <td>0.38</td>
+        </tr>
+        <tr>
+            <td colspan=6 align="center">SNR = 1.5</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>100</td>
+            <td>80</td>
+            <td>72</td>
+            <td>0.72</td>
+            <td>0.90</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>100</td>
+            <td>67</td>
+            <td>54</td>
+            <td>0.54</td>
+            <td>0.80</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>100</td>
+            <td>61</td>
+            <td>47</td>
+            <td>0.47</td>
+            <td>0.77</td>
+        </tr>
+        <tr>
+            <td colspan=6 align="center">Transmission Rate = 5</td>
+        </tr>
+        <tr>
+            <td>With Noise Resistance</td>
+            <td>100</td>
+            <td>70</td>
+            <td>67</td>
+            <td>4</td>
+            <td>0.95</td>
+        </tr>
+        <tr>
+            <td>w/ Noise Resistance</td>
+            <td>100</td>
+            <td>67</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+        </tr>
+    </tbody>
+</table>   
