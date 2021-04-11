@@ -432,7 +432,7 @@ class Receiver(object):
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] != self.active_freq_bin[0] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] != self.active_freq_bin[2]):
-                print(self.activation_info)
+                #print(self.activation_info)
                 self.received_info.append(100*self.get_bin_num(self.most_frequent(self.activation_info[0]),1) + 10*self.get_bin_num(self.most_frequent(self.activation_info[1]),2) + self.get_bin_num(self.most_frequent(self.activation_info[2]),3))
                 
                 
@@ -498,7 +498,7 @@ class Receiver(object):
                     if validated == 3:
                         #if validated ended
                         print('')
-                        print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
+                        #print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
                         
@@ -511,7 +511,7 @@ class Receiver(object):
                         if(self.check_result(self.received_info[0], self.ending_mark[1], self.copy_recieved_bins) == 1):
                             result = self.convert_result(self.copy_recieved_bins, self.trim)
                             self.retrieved_data.append(result)
-                            print(result)
+                            #print(result)
                             
                             self.clear_session()
                             

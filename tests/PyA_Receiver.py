@@ -14,24 +14,24 @@ from scipy.fftpack import fft
 
 class Receiver(object):
     
-    CHUNK = 1024 * 2
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 1
-    RATE = 44100
+    CHUNK               = 1024 * 2
+    FORMAT              = pyaudio.paInt16
+    CHANNELS            = 1
+    RATE                = 44100
     
-    FRAMES_PER_FFT = 16 # FFT takes average across how many frames
-    SAMPLES_PER_FFT = CHUNK * FRAMES_PER_FFT
-    FREQ_STEP = float(RATE)/SAMPLES_PER_FFT
+    FRAMES_PER_FFT      = 16 # FFT takes average across how many frames
+    SAMPLES_PER_FFT     = CHUNK * FRAMES_PER_FFT
+    FREQ_STEP           = float(RATE)/SAMPLES_PER_FFT
     
-    CHANNEL_NUMBER = 8
-    SHARED_CHANNEL = 8
-    TRACK_NUM = 1
+    CHANNEL_NUMBER      = 8
+    SHARED_CHANNEL      = 8
+    TRACK_NUM           = 1
     
-    FRAME_TIME = 0.2
+    FRAME_TIME          = 0.2
     
-    active_freq_bin = [55,193,323]
-    ending_freq_bin = [56,196,323]
-    ending_channel_num = [0,4,7]
+    active_freq_bin     = [55,193,323]
+    ending_freq_bin     = [56,196,323]
+    ending_channel_num  = [0,4,7]
     '''
     d_channel_1 = [[53,57,58],[59,60],[61,62],[63,64],[65,66],[67,68],[69,70],[71,72],[73,74],[75,76],[77,78],[79,80],[81,82],[83,84],[85,86],[87,88]]
     d_channel_2 = [[89,90],[91,92],[93,94],[95,96],[97,98],[99,100],[101,102],[103,104],[105,106],[107,108],[109,110],[111,112],[113,114],[115,116],[117,118],[119,120]]
@@ -58,9 +58,9 @@ class Receiver(object):
     
 
     activation_info = [[],[],[],[],[]]
-    received_info = [] #i0: Estimated length
-    ending_info = [[],[],[],[],[],[],[],[]]
-    ending_mark = [0,0] #i0: ending pointer, i1: Estimated length
+    received_info   = [] #i0: Estimated length
+    ending_info     = [[],[],[],[],[],[],[],[]]
+    ending_mark     = [0,0] #i0: ending pointer, i1: Estimated length
     
     status = 0
     #speed_info = [[0,0],[0,2],[1,3]]
@@ -103,9 +103,9 @@ class Receiver(object):
         if sensitivity == 'medium':
             self.sensitivity = 2
         elif sensitivity == 'low':
-            self.sensitivity = 1
-        elif sensitivity == 'high':
             self.sensitivity = 3
+        elif sensitivity == 'high':
+            self.sensitivity = 1
         else:
             raise ParameterError(message = 'sensitivity could only be low, medium, or high')
             
@@ -115,7 +115,18 @@ class Receiver(object):
             self.recieved_bins.append([])
         
         #print(self.stream)
-    
+    def refresh_audio(self):
+        self.p = pyaudio.PyAudio()
+
+        self.stream = self.p.open(
+            format = self.FORMAT,
+            channels = self.CHANNELS,
+            rate = self.RATE,
+            input = True,
+            output = True,
+            frames_per_buffer = self.CHUNK
+            )
+        
     def update_speed_info(self):
         if (self.SHARED_CHANNEL == 8):
             self.speed_info = [[0,0],[4,0],[7,0]]
@@ -188,8 +199,8 @@ class Receiver(object):
             2: Activated, preparing
             3: Activation Failed, rollback to unactivated
             4: Listening
-            5: Terminated, received auccessfully
-            6: Terminated, received failed
+            5: Cycle Terminated, received auccessfully and back to Unactivated (status 0)
+            6: Cycle Terminated, received failed and back to Unactivated (status 0)
 
         '''
         try:
@@ -311,8 +322,14 @@ class Receiver(object):
                     length = False
                     break
             if length:
-                bit = self.convert_result([[item[-1]] for item in self.recieved_bins])
-                self.scheduled_pointer = len(self.recieved_bins[0])
+                try:
+                    bit = self.convert_result([[item[-1]] for item in self.recieved_bins])
+                    self.scheduled_pointer = len(self.recieved_bins[0])
+                except:
+                    print('transmission interrupted')
+                    self.status = 6
+                    self.clear_session()
+                
         if log:
             if self.status == 3:
                 self.status = 0
@@ -389,7 +406,7 @@ class Receiver(object):
                 self.activation_info[2].append(freq_bins[3][0])
                 self.activation_info[3].append(self.get_bin_num(freq_bins[5][0],5))
                 self.activation_info[4].append(self.get_bin_num(freq_bins[6][0],6))
-                    
+                
         elif (status == 1):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] == self.active_freq_bin[0] and freq_bins[self.speed_info[1][0]][self.speed_info[1][1]] == self.active_freq_bin[1] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.active_freq_bin[2]):
                 self.pointers[0] += 1
@@ -400,9 +417,11 @@ class Receiver(object):
                 self.activation_info[3].append(self.get_bin_num(freq_bins[5][0],5))
                 self.activation_info[4].append(self.get_bin_num(freq_bins[6][0],6))
                 
-                if (self.pointers[0] == 2):
+                if (self.pointers[0] == self.sensitivity):
                     self.SHARED_CHANNEL = self.most_frequent(self.activation_info[3]+self.activation_info[4])
                     if self.SHARED_CHANNEL!=4 and self.SHARED_CHANNEL!=8 and self.SHARED_CHANNEL!=2:
+                        self.clear_session()
+                        status = 3
                         raise ActivationError
                         
                     self.TRACK_NUM = int(self.CHANNEL_NUMBER / self.SHARED_CHANNEL)
@@ -420,11 +439,14 @@ class Receiver(object):
                     
                     
             else:
+                self.clear_session()
                 status = 3
+                
+                
                 print('activation failed')
         elif (status == 2):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] != self.active_freq_bin[0] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] != self.active_freq_bin[2]):
-                print(self.activation_info)
+                #print(self.activation_info)
                 self.received_info.append(100*self.get_bin_num(self.most_frequent(self.activation_info[0]),1) + 10*self.get_bin_num(self.most_frequent(self.activation_info[1]),2) + self.get_bin_num(self.most_frequent(self.activation_info[2]),3))
                 
                 
@@ -476,7 +498,7 @@ class Receiver(object):
                     self.ending_info[4].append(freq_bins[0][1])
                     self.ending_info[7].append(freq_bins[3][1])
                 
-                if self.ending_mark[0] == 5:
+                if self.ending_mark[0] >= 5:
                     
                     validated = 0
                     for i in range(3):
@@ -490,7 +512,7 @@ class Receiver(object):
                     if validated == 3:
                         #if validated ended
                         print('')
-                        print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
+                        #print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
                         
@@ -501,14 +523,19 @@ class Receiver(object):
                         
                         ##################
                         if(self.check_result(self.received_info[0], self.ending_mark[1], self.copy_recieved_bins) == 1):
-                            result = self.convert_result(self.copy_recieved_bins)
+                            try: 
+                                result = self.convert_result(self.copy_recieved_bins, self.trim)
+                            except UnicodeDecodeError:
+                                self.clear_session()
+                                return 6
                             self.retrieved_data.append(result)
-                            print(result)
+                            #print(result)
                             
                             self.clear_session()
                             
                             return 5
                         else:
+                            self.clear_session()
                             return 6
                     else:
                         #if not ended
@@ -539,6 +566,11 @@ class Receiver(object):
         self.received_info = []
         self.SHARED_CHANNEL = 8
         self.scheduled_pointer = 0
+        self.trim = 0
+        self.update_speed_info()
+        self.d_channel[0][0] = [53,57,58]
+        self.ending_mark[0] = 0
+        self.refresh_audio()
         #self.TRACK_NUM = int(self.CHANNEL_NUMBER / self.SHARED_CHANNEL)
     
     def check_channels(self, freq_bins):
@@ -587,14 +619,18 @@ class Receiver(object):
         full_length_e = (int((e-1) / minimum_block_length) + 1)
         
         for i in range(self.SHARED_CHANNEL):
-            if len(received[i]) == full_length_a or len(received[i]) == full_length_e:
+            if len(received[i]) == full_length_a:
+                self.trim = a
+                continue
+            elif len(received[i]) == full_length_e:
+                self.trim = e
                 continue
             else:
                 print('recieve failed')
                 return 0
         
         return 1
-        ###########CHECK
+        ###########
         
     '''
         if (len(self.copy_recieved_bins[0]) != len(self.copy_recieved_bins[1])):
@@ -605,7 +641,7 @@ class Receiver(object):
         '''
         
         
-    def convert_result(self, received):
+    def convert_result(self, received, trim = -1):
         '''
         Convert received binaries from all channels to demodulated message
 
@@ -621,10 +657,14 @@ class Receiver(object):
 
         '''
         binary = ''
+        
         for i in range(len(received[0])):
             for j in range(self.SHARED_CHANNEL):
                 binary += self.chunk_list[received[j][i]]
-        return self.bin_to_ascii(binary)
+        if trim == -1:
+            trim = len(binary)
+        #print(binary)
+        return self.bin_to_ascii(binary[0:trim])
         
     def fft(self):
         return self.fft
@@ -677,4 +717,8 @@ class ActivationError(Error):
     
     def __init__(self, message = 'Activation failed, increase volume'):
         self.message = message
+        super().__init__(self.message)
+        
+class ASCIIError(Error):
+    def __init___(self, message = 'Invalid data received'):
         super().__init__(self.message)
