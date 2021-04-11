@@ -64,7 +64,7 @@ The reliability `R` was be represented as the probability that the receiver dete
 
 
 #### Experiment Results
-
+##### Test 1.1 Results: Flatter Continuous Noise
 <table style="font-size:7px">
     <thead>
         <tr>
@@ -149,4 +149,8 @@ The reliability `R` was be represented as the probability that the receiver dete
             <td>0.19</td>
         </tr>
     </tbody>
-</table>
+</table>  
+
+**Table 1.1.1: Recorded data for test2.1**
+
+The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevant data was calculated. **Figure 1.1.1** shows significant increase in reliability with respect to the noise resistance mechanism, and a modest decrease when raised the activation sensitivity from medium to high. However in **Figure 1.1.2**, it is shown that when the activation sensitivity was low, 75% of failed transmission were prevented in respect of the SNR check, whereas when the activation sensitivity was high, a majority of failed transmission were prevented by the error detecting code.  
