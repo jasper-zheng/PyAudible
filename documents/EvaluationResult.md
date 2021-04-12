@@ -160,9 +160,13 @@ The reliability `R` was be represented as the probability that the receiver dete
 
 The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevant data was calculated. **Figure 1.1.1** shows significant increase in reliability with respect to the noise resistance mechanism, and a modest decrease when raised the activation sensitivity from medium to high. However in **Figure 1.1.2**, it is shown that when the activation sensitivity was low, 75% of failed transmission were prevented in respect of the SNR check, whereas when the activation sensitivity was high, a majority of failed transmission were prevented by the error detecting code.  
 
-<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.1.png?raw=true" width="400">*Figure 1.1.1 noise resistance mechanism Reliability*  
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.1.png?raw=true" width="400">
 
-<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.2.png?raw=true" width="400">*Figure 1.1.2 Number of failed transmission prevented by each technique*
+*Figure 1.1.1 noise resistance mechanism Reliability*  
+
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.2.png?raw=true" width="400">
+
+*Figure 1.1.2 Number of failed transmission prevented by each technique*
 
 ##### Test 1.2 Results: Sudden Disruptive Noise
 <table style="font-size:7px">
@@ -241,7 +245,9 @@ The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevan
 
 Since the control group did not implement the error detecting code, once the transmission was failed, there was no way to recover from the fault. However, **Figure 1.2.1** shows that we could expect the system reliability to be above 0.9 over all the transmission rates. And the transmission rate did not have an evident affect on the reliability when confronting disruptive noise.  
 
-<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.2.1.png?raw=true" width="400">*Figure 1.2.1 noise resistance mechanism Reliability (Disruptive Noise)*  
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.2.1.png?raw=true" width="400">
+
+*Figure 1.2.1 noise resistance mechanism Reliability (Disruptive Noise)*  
 
 ## Phase II Evaluation: System Reliability vs. Speed and Signal to Noise Ratio  
 
@@ -394,6 +400,10 @@ After 100 pieces of data were transmitted, the transmission success rate `S` was
 
 The reliability `R` was defined as the ratio between total number of correct received data and total number of received data. **Figure 2.1.2** illustrates how the reliability was affected by the transmission rate and the signal to noise ratio. Since the reliability represents the correctness of the transmission, it was expected to have a higher value than transmission success rate. The figure shows that to achieve at least 0.9 reliability, `SNR` should be maintain above 1.5 for the slow transmission setting, and above 2 for the medium and fast transmission settings.  
 
-<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_2.1.1.png?raw=true" width="400">*Figure 2.1.1: Transmission Success Rate vs. Speed and Signal to Noise Ratio*  
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_2.1.1.png?raw=true" width="400">
 
-<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_2.1.2.png?raw=true" width="400">*Figure 2.1.2: System Reliability vs. Speed and Signal to Noise Ratio*  
+*Figure 2.1.1: Transmission Success Rate vs. Speed and Signal to Noise Ratio*  
+
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_2.1.2.png?raw=true" width="400">
+
+*Figure 2.1.2: System Reliability vs. Speed and Signal to Noise Ratio*  
