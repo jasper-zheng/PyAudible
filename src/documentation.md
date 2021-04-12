@@ -146,36 +146,33 @@ The volume is specified by a float number ranged from 0 to 1, where 0 represents
 
 #### Details  
 
-`__init__(speed, volume)`  
-###### Parameter
-* speed - Specifies the speed of the transmission, type: string
-	* ‘slow’
-	* ‘medium’
-	* ‘fast’  
-  Defaults to ‘slow’
-* volume - Specifies the loudness of the transmission, type: float ranged form 0 to 1. Defaults to 1.0  
-
-###### Raise
-* ParameterError: if the parameter `speed` if invalid.
+`__init__(speed, volume)`    
+**Parameter**  
+speed - Specifies the speed of the transmission, type: string  
+*‘slow’, ‘medium’, ‘fast’*  
+*Defaults to ‘slow’*  
+volume - Specifies the loudness of the transmission, type: float ranged form 0 to 1.  
+*Defaults to 1.0*  
+**Raise**  
+ParameterError - if the parameter `speed` if invalid.
 
 `text_to_bin(text)`  
-Convert ASCII text to binary signal.
-###### Parameter
-* text - The input text data, type: string
+Convert ASCII text to binary signal.  
+**Parameter**  
+text - The input text data, type: string
 
 `modulate()`  
-Convert text message to a modulated audio waveform.
-###### Parameter
-* message - The input text data, type: string
-
-###### Return
-* waveform - Modulated waveform in array form
+Convert text message to a modulated audio waveform.  
+**Parameter**  
+message - The input text data, type: string  
+**Return**  
+waveform - Modulated waveform in array form
 
 `modulate_to_file()`  
-Convert text message to a modulated audio waveform and save it as .wav format file.
-###### Parameter
-* message - The input text data, type: string
-* filename - Name of the output wav file, type: string
+Convert text message to a modulated audio waveform and save it as .wav format file.  
+**Parameter**  
+message - The input text data, type: string  
+filename - Name of the output wav file, type: string  
 
 
 ## Class Receiver
