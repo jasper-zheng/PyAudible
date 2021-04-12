@@ -332,23 +332,68 @@ The transmission success rate `S` is defined as the ratio between total number o
             <td>0.77</td>
         </tr>
         <tr>
-            <td colspan=6 align="center">Transmission Rate = 5</td>
+            <td colspan=6 align="center">SNR = 2</td>
         </tr>
         <tr>
-            <td>With Noise Resistance</td>
+            <td>5</td>
             <td>100</td>
-            <td>70</td>
-            <td>67</td>
-            <td>4</td>
+            <td>99</td>
+            <td>99</td>
+            <td>0.99</td>
+            <td>1.00</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>100</td>
+            <td>75</td>
+            <td>73</td>
+            <td>0.73</td>
+            <td>0.97</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>100</td>
+            <td>73</td>
+            <td>66</td>
+            <td>0.66</td>
+            <td>0.90</td>
+        </tr>
+        <tr>
+            <td colspan=6 align="center">SNR = 2.5</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>100</td>
+            <td>99</td>
+            <td>99</td>
+            <td>0.99</td>
+            <td>1.00</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>100</td>
+            <td>95</td>
+            <td>95</td>
             <td>0.95</td>
+            <td>1.00</td>
         </tr>
         <tr>
-            <td>w/ Noise Resistance</td>
+            <td>20</td>
             <td>100</td>
-            <td>67</td>
-            <td>N/A</td>
-            <td>N/A</td>
-            <td>N/A</td>
+            <td>93</td>
+            <td>90</td>
+            <td>0.90</td>
+            <td>0.97</td>
         </tr>
     </tbody>
 </table>   
+
+*Table 2.1: Recorded data for test2.1*  
+
+After 100 pieces of data were transmitted, the transmission success rate `S` was calculated as the ratio between total number of correct received data and total number of transmission. **Figure 2.1.1** shows an exponential increase in the success rate with respect to signal to noise ratio. When SNR is greater than 2, the success rate for the slow transmission setting almost reach 1, and when increase SNR to 2.5, we could approximately expect a success rate over 0.9.  
+
+The reliability `R` was defined as the ratio between total number of correct received data and total number of received data. **Figure 2.1.2** illustrates how the reliability was affected by the transmission rate and the signal to noise ratio. Since the reliability represents the correctness of the transmission, it was expected to have a higher value than transmission success rate. The figure shows that to achieve at least 0.9 reliability, `SNR` should be maintain above 1.5 for the slow transmission setting, and above 2 for the medium and fast transmission settings.  
+
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_2.1.1.png?raw=true" width="400">*Figure 2.1.1: Transmission Success Rate vs. Speed and Signal to Noise Ratio*  
+
+<img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_2.1.2.png?raw=true" width="400">*Figure 2.1.2: System Reliability vs. Speed and Signal to Noise Ratio*  
