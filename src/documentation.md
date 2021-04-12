@@ -2,8 +2,8 @@
 
 PyAudible is a Python library for sending and receiving data using audible sound. PyAudible includes a transmitter and a receiver module that could be implemented on multiple separate devices, enables the transmission of small amounts of data between devices in the vicinity.  
 
- - The transmitter module ``PyA_Transmitter`` generates encoded audio waveforms.  
- - The receiver module ``PyA_Receiver`` listens and analyses the audio waveforms captured by microphones.  
+ * The transmitter module `Transmitter` generates encoded audio waveforms.  
+ * The receiver module `Receiver` listens and analyses the audio waveforms captured by microphones.  
 
 It allows a configurable transmitting speed between 5 - 20 bytes/sec.  
 It uses cyclic redundancy check (CRC) for error detection to improve robustness.
@@ -25,18 +25,16 @@ It uses cyclic redundancy check (CRC) for error detection to improve robustness.
   * [Retrieved Data](#)
   * [System Logs and FFT Logs](#)
 
-
-
 ## Requirements and Installation
 
 #### Requirements
 PyAudible depends on the following dependencies:  
-- **Python** 3.8+  
-- **PyAudio** 0.2.11+ (speaker access required for the transmitter, microphone access required for the receiver)  
-- **Numpy** 1.18.5+  
+* **Python** 3.8+  
+* **PyAudio** 0.2.11+ (speaker access required for the transmitter, microphone access required for the receiver)  
+* **Numpy** 1.18.5+  
 
 #### Installation
-With required dependencies installed, use ``pip install pyaudible`` to download and install PyAudible.
+With required dependencies installed, use `pip install pyaudible` to download and install PyAudible.
 
 
 ## Getting started with PyAudible
@@ -78,10 +76,11 @@ receiver = pyaudiable.Receiver(actived_channel = 8,
 retrieved_data = receiver.read_block(30)
 
 ```
+To detect and demodulate data, first instantiate a receiver on the desired device by `pyaudiable.Receiver()` with desired parameters (see [Class Receiver](#)). It will initialise a reusable receiver for analysing and demodulating data.
 
+Open the receiver by calling `pyaudible.Receiver.read_block()`, the receiver will stand-by and continuously detecting audio input. The results will be return in a Python list.
 
-
-
+Note that the Blocking Mode will block the thread until all the required time have been recorded, therefore not recommend for frame based application. Alternatively, use Callback Mode to process inputs by frames (see next section).
 
 #### Example: Receive and Demodulate Data (Callback Mode)
 ```python
@@ -115,9 +114,10 @@ while (time.time() - start_time < 30):
 message_list = receiver.received_data()
 ```
 
+In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `pyaudible.Receiver.read()`.
+Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the status, to help interacting with the receiver (see [Class Receiver: Callback Mode](#).  
 
 ## Class Transmitter
-
 
 ``class pyaudiable.Transmitter``  
 
@@ -125,3 +125,64 @@ Python interface to modulate and transmit data. Provides methods to:
   * Convert text to modulated audio waveform
   * Write a modulated waveform as a uncompressed WAV file
   * Open PyAudio to stream the modulated audio
+
+
+#### Transmission Speed
+The speed of the transmission should be defined when instantiating the transmitter by `speed` parameter in the instantiation function (see [__ init__()](#)).
+
+Three levels of the speed are specified by ‘slow’, ‘medium’ and ‘fast’. In fast mode, eight channels will be utilised simultaneously for the transmission, and it will provide a speed of 20 bytes per second. Whereas in slow mode, two channels will be utilised for the transmission, and the signal will be copied to the other six channels to improve accuracy.
+
+The following table listed the testing results of the correlation between the transmission speed and the accuracy.
+
+
+
+#### Transmission Volume
+The volume of the transmission should be defined when instantiating the transmitter by `volume` parameter in the instantiation function (see [__ init__()](#)).
+
+The volume is specified by a float number ranged from 0 to 1, where 0 represents quiet and 1 represent full amplitude of the waveform.
+
+#### Overview
+`text_to_bin(), modulate(), modulate_to_file(), modulate_and_play()`
+
+#### Details  
+
+`__init__(speed, volume)`
+###### Parameter
+* speed - Specifies the speed of the transmission, type: string
+	* ‘slow’
+	* ‘medium’
+	* ‘fast’  
+  Defaults to ‘slow’
+* volume - Specifies the loudness of the transmission, type: float ranged form 0 to 1. Defaults to 1.0  
+
+###### Raise
+* ParameterError: if the parameter `speed` if invalid.
+
+`text_to_bin(text)`
+Convert ASCII text to binary signal.
+###### Parameter
+* text - The input text data, type: string
+
+`modulate()`
+Convert text message to a modulated audio waveform.
+###### Parameter
+* message - The input text data, type: string
+
+###### Return
+* waveform - Modulated waveform in array form
+
+`modulate_to_file()`
+Convert text message to a modulated audio waveform and save it as .wav format file.
+###### Parameter
+* message - The input text data, type: string
+* filename - Name of the output wav file, type: string
+
+
+## Class Receiver
+`class pyaudiable.Receiver`
+
+Python interface to detect and demodulate broadcasted audio and convert them into text data.
+
+
+
+The receiver should be called only once and it will block until all the required time is recorded. Whereas in the callback mode, the
