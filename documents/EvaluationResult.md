@@ -2,43 +2,130 @@
 
 ### Key Takeaway  
 
-The evaluations of the system were conducted along with the development.
+The evaluations of the system were conducted along with the development. Phase I Evaluation assessed the reliability of the noise resistance mechanism in different noise condition, and verified that the system can achieve at least 90% reliability with a transmission rate at 5 bytes/sec. Phase II Evaluation gave a statistical analysis on the reliability with respect to the transmission speed and the signal to noise ratio. The results of Phase II Evaluation could help users to decide configurable settings based on situations:
+
+<table style="font-size:7px">
+    <thead>
+        <tr>
+            <th>Transmission Speed</th>
+            <th>Transmission Success Rate</th>
+            <th>Reliability</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan=3 align="center">Signal to Noise Ratio = 1.2</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>0.20</td>
+            <td>0.80</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>0.11</td>
+            <td>0.55</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>0.07</td>
+            <td>0.38</td>
+        </tr>
+        <tr>
+            <td colspan=3 align="center">Signal to Noise Ratio = 1.5</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>0.72</td>
+            <td>0.90</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>0.54</td>
+            <td>0.80</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>0.47</td>
+            <td>0.77</td>
+        </tr>
+        <tr>
+            <td colspan=3 align="center">Signal to Noise Ratio = 2</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>0.99</td>
+            <td>1.00</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>0.73</td>
+            <td>0.97</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>0.66</td>
+            <td>0.90</td>
+        </tr>
+        <tr>
+            <td colspan=3 align="center">Signal to Noise Ratio = 2.5</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>0.99</td>
+            <td>1.00</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>0.95</td>
+            <td>1.00</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>0.90</td>
+            <td>0.97</td>
+        </tr>
+    </tbody>
+</table>   
+
+
+### Contents  
 
  * [Phase I Evaluation: Noise Resistance Mechanism Reliability](#phase-i-evaluation-noise-resistance-mechanism-reliability)
    * [Experiment Design](#experiment-design)
      * [Test 1.1: Flatter Continuous Noise](#test-11-flatter-continuous-noise)
-     * [Test 1.2: Sudden Disruptive Noise](#)
-   * [Result and Analysis](#)  
-     * [Test 1.1 Results: Flatter Continuous Noise](#test-11-flatter-continuous-noise)
-     * [Test 1.2 Results: Sudden Disruptive Noise](#)  
+     * [Test 1.2: Sudden Disruptive Noise](#test-12-sudden-disruptive-noise)
+   * [Result and Analysis](#experiment-results)  
+     * [Test 1.1 Results: Flatter Continuous Noise](#test-11-results-flatter-continuous-noise)
+     * [Test 1.2 Results: Sudden Disruptive Noise](#test-12-results-sudden-disruptive-noise)  
 
 
- * [Phase II Evaluation: System Reliability vs. Speed and Noise Conditions](#)
-   * [Experiment Design](#)
-     * [Test 2.1: System Reliability](#)
-   * [Result and Analysis](#)  
-     * [Test 2.1 Results: System Reliability](#)
+ * [Phase II Evaluation: System Reliability vs. Speed and Noise Conditions](#phase-ii-evaluation-system-reliability-vs-speed-and-signal-to-noise-ratio)
+   * [Experiment Design](#experiment-design-1)
+     * [Test 2.1: System Reliability](#test-21-system-reliability)
+   * [Result and Analysis](#experiment-results-1)  
+     * [Test 2.1 Results: System Reliability](#test-21-system-reliability-1)
 
 ## Phase I Evaluation: Noise Resistance Mechanism Reliability  
-The goal of Phase I evaluation is to assess the reliability of the noise resistance mechanism, including Sound Mark Integrity Check and Error Detecting Code. As a part of the transmission protocol, noise resistance mechanism should be able to tolerant to unpredictable background noise.   
+The goal of Phase I evaluation is to assess the reliability of the noise resistance mechanism, including Sound Mark Integrity Check and Error Detecting Code. As a part of the transmission protocol, the noise resistance mechanism should be able to tolerate unpredictable background noise.   
 
-To detect and recover from the noise, the receiver assess the sound marks to decide whether the current noise condition is competent for a successful transmission, and then use error detecting codes to verify transmission integrity. Therefore, to assess the reliability of this mechanism, the following criteria were included:  
+To detect and recover from the noise, the receiver assesses the sound marks to decide whether the current noise condition is competent for successful transmission, and then use error detecting codes to verify transmission integrity. Therefore, to assess the reliability of this mechanism, the following criteria were included:  
  * The probability that the receiver staying inactive when the power of the background noise is strong enough to disturb the transmission.  
  * The probability that the receiver successfully detect the fault caused by the noise and abort the transmission.  
 
 #### Experiment Design
 
-The test consists of two parts, aims at assess the noise resistance mechanism under two noise conditions: Flatter Continuous Noise and Sudden Disruptive Noise.  
+The test consists of two parts, aims at assessing the noise resistance mechanism under two noise conditions: Flatter Continuous Noise and Sudden Disruptive Noise.  
 
 ##### Test 1.1: Flatter Continuous Noise  
 
-This is the situation where the noise remains constant and stable over the transmission periods, such as ambient noise in office, city traffic, or white noise in a plane. Continuous noise can affect the signal to noise ratio ![equation](https://latex.codecogs.com/svg.image?SNR) between the power of modulated signal ![equation](https://latex.codecogs.com/svg.image?P_{signal}) and the background noise ![equation](https://latex.codecogs.com/svg.image?P_{noise}) .  
+This is the situation where the noise remains constant and stable over the transmission periods, such as ambient noise in the office, city traffic, or white noise in a plane. Continuous noise can affect the signal to noise ratio ![equation](https://latex.codecogs.com/svg.image?SNR) between the power of modulated signal ![equation](https://latex.codecogs.com/svg.image?P_{signal}) and the background noise ![equation](https://latex.codecogs.com/svg.image?P_{noise}) .  
 
 The test was conducted in a transmission system between a MacBook and an iPhone, where the MacBook acted as the receiver and the iPhone acted as the transmitter, with a distance of 2 meters. To control the noise in the environment, the system was implemented in a silent room with acoustic control, a separated speaker was used to produce recorded ambient noise at desired levels.  
 
-The test include three rounds, where the activation sensitivity was set to different levels. In each round, data were transmitted in the same system in turns, but with different settings (with and without noise resistance mechanism implemented).  
+The test includes three rounds, where the activation sensitivity was set to different levels. In each round, data were transmitted in the same system in turns, but with different settings (with and without noise resistance mechanism implemented).  
 
-In addition, a special handling in the test is that whether the receiver decide to stay inactive or be activated, the system will active the receiver anyway, to verify whether the receiver is making the correct decision on staying inactive.  
+Besides, a special handling in the test is that whether the receiver decides to stay inactive or be activated, the system will activate the receiver anyway, to verify whether the receiver is making the correct decision on staying inactive.  
 
 Following data were recorded:  
   * **Total Transmission:** Count the total number of transmission.  
@@ -53,7 +140,7 @@ To improve the generality of the test, each round of test will repeat until 100 
 ![equation](https://latex.codecogs.com/svg.image?R&space;=&space;P((A&space;\cup&space;D)|F)=\frac{P(A\cup&space;D&space;\cap&space;F)}{P(F)})   
 
 ##### Test 1.2: Sudden Disruptive Noise  
-In this situation, the noise refers to sudden bursts of sounds happens after the transmission started, such as a cough or sneeze, sudden talks and hand claps, or a falling object hits the floor. Disruptive noise may have destructive affect on the transmission, since the amplitude and frequency of noise may fully cover the transmission channels. Therefore, the error detecting code should be able to identified the fragmentary in the received data.   
+In this situation, the noise refers to sudden bursts of sounds that happen after the transmission started, such as a cough or sneeze, sudden talks and handclaps, or a falling object hits the floor. Disruptive noise may have a destructive effect on the transmission, since the amplitude and frequency of noise may fully cover the transmission channels. Therefore, the error detecting code should be able to identify the fragmentary in the received data.   
 
 The basic set up of the test was the same as **Test 1.1**, however, in addition to the continuous background noise, another sudden bursting noise was triggered after the receiver was activated, the type of bursting noise include random played hand claps, shouts, laughter and clanks.  
 
@@ -158,7 +245,7 @@ The reliability `R` was be represented as the probability that the receiver dete
 
 *Table 1.1.1: Recorded data for Test1.1*
 
-The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevant data was calculated. **Figure 1.1.1** shows significant increase in reliability with respect to the noise resistance mechanism, and a modest decrease when raised the activation sensitivity from medium to high. However in **Figure 1.1.2**, it is shown that when the activation sensitivity was low, 75% of failed transmission were prevented in respect of the SNR check, whereas when the activation sensitivity was high, a majority of failed transmission were prevented by the error detecting code.  
+The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevant data was calculated. **Figure 1.1.1** shows significant increase in reliability with respect to the noise resistance mechanism, and a modest decrease when raised the activation sensitivity from medium to high. However in **Figure 1.1.2**, it is shown that when the activation sensitivity was low, 75% of failed transmission were prevented in respect of the SNR check, whereas when the activation sensitivity was high, a majority of failed transmission were prevented by the error detecting code. Overall, the system can achieve approximately 90% reliability in a continuous disruptive noise condition.
 
 <img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.1.1.png?raw=true" width="400">
 
