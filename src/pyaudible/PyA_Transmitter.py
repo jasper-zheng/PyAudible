@@ -233,6 +233,8 @@ class Transmitter(object):
     def modulate_and_play(self, message):
         i = 0
     
+    def get_shared_channel_num(self):
+        return self.SHARED_CHANNEL
     
 #%% 
 

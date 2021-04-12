@@ -18,12 +18,14 @@ It uses cyclic redundancy check (CRC) for error detection to improve robustness.
 * [Class Transmitter](#)
   * [Volume](#)
   * [Transmission Speed](#)
+  * [Details](#)
 * [Class Receiver](#)
+  * [Activation Sensitivity](#)
+  * [Transmission Speed](#)
   * [Listening Modes](#)
     * [Blocking Mode](#)
     * [Callback Mode](#)
-  * [Retrieved Data](#)
-  * [System Logs and FFT Logs](#)
+  * [System Logs and Status Flags](#)
 
 ## Requirements and Installation
 
@@ -115,7 +117,7 @@ message_list = receiver.received_data()
 ```
 
 In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `pyaudible.Receiver.read()`.
-Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the status, to help interacting with the receiver (see [Class Receiver: Callback Mode](#).  
+Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the status, to help interacting with the receiver (see [Class Receiver: Callback Mode](#)).  
 
 ## Class Transmitter
 
@@ -176,10 +178,35 @@ filename - Name of the output wav file, type: string
 
 
 ## Class Receiver
-`class pyaudiable.Receiver`
+`class pyaudiable.Receiver`  
 
 Python interface to detect and demodulate broadcasted audio and convert them into text data.
 
+#### Activation Sensitivity
+The volume of the transmission should be defined when instantiating the transmitter by `sensitivity` parameter in the instantiation function (see [__ init__()](#)). The options includs ``'low'``, ``'medium'`` and ``'high'``.  
+
+In the activating process, the receiver perform SNR Check to decide whether the current noise condition is competent to perform successful transmission. Activation Sensitivity defines the threshold that activate the receiver. With a higher sensitivity, the receiver will tend to pass the SNR Check and be activated for transmission.  
+
+#### Transmission Speed  
 
 
-The receiver should be called only once and it will block until all the required time is recorded. Whereas in the callback mode, the
+
+#### Listening Modes
+The mode of the receiver will be determined by different methods called after the receiver was instantiated.   
+###### Blocking Mode   
+Call `read_block()` to use blocking mode. The receiver should be called only once and it will block until all the required time is recorded. After the desired time, call `get_received_data()` to retrieve all the received data (see [Example: Receive and Demodulate Data (Blocking Mode)](#) for sample code).   
+
+###### Callback Mode  
+Call `read_frame()` to use callback mode. The receiver will only analyse audio in the frames that it is called. Therefore, it should be called in the main loop in a frame-based application.   
+
+`read_frame()` will return decoded text once new data is available. If the parameter `log` is `True`, it will also return a integer flag signifying the status to help the system interacting with the receiver (see next section [System Logs and Status Flags](#)).   
+
+#### System Logs and Status Flags 
+
+
+
+
+
+
+
+ Whereas in the callback mode, the
