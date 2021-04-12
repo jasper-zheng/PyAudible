@@ -2,7 +2,7 @@
 
 ### Key Takeaway  
 
-The evaluations of the system were conducted along with the development. Phase I Evaluation assessed the reliability of the noise resistance mechanism in different noise condition, and verified that the system can achieve at least 90% reliability with a transmission rate at 5 bytes/sec. Phase II Evaluation gave a statistical analysis on the reliability with respect to the transmission speed and the signal to noise ratio. The results of Phase II Evaluation could help users to decide configurable settings based on situations:
+The evaluations of the system were conducted along with the development. [Phase I Evaluation](#phase-i-evaluation-noise-resistance-mechanism-reliability) assessed the reliability of the noise resistance mechanism in different noise condition, and verified that the system can achieve at least 90% reliability with a transmission rate at 5 bytes/sec. [Phase II Evaluation](#phase-ii-evaluation-system-reliability-vs-speed-and-signal-to-noise-ratio) gave a statistical analysis on the reliability with respect to the transmission speed and the signal to noise ratio. The simplified [results of Phase II Evaluation](#test-21-system-reliability-1) could help users to decide configurable settings based on situations:
 
 <table style="font-size:7px">
     <thead>
