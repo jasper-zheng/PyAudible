@@ -146,7 +146,7 @@ The volume is specified by a float number ranged from 0 to 1, where 0 represents
 
 #### Details  
 
-`__init__(speed, volume)`
+`__init__(speed, volume)`  
 ###### Parameter
 * speed - Specifies the speed of the transmission, type: string
 	* ‘slow’
@@ -158,12 +158,12 @@ The volume is specified by a float number ranged from 0 to 1, where 0 represents
 ###### Raise
 * ParameterError: if the parameter `speed` if invalid.
 
-`text_to_bin(text)`
+`text_to_bin(text)`  
 Convert ASCII text to binary signal.
 ###### Parameter
 * text - The input text data, type: string
 
-`modulate()`
+`modulate()`  
 Convert text message to a modulated audio waveform.
 ###### Parameter
 * message - The input text data, type: string
@@ -171,7 +171,7 @@ Convert text message to a modulated audio waveform.
 ###### Return
 * waveform - Modulated waveform in array form
 
-`modulate_to_file()`
+`modulate_to_file()`  
 Convert text message to a modulated audio waveform and save it as .wav format file.
 ###### Parameter
 * message - The input text data, type: string
