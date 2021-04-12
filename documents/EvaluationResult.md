@@ -17,17 +17,17 @@ The evaluations of the system were conducted along with the development. Phase I
             <td colspan=3 align="center">Signal to Noise Ratio = 1.2</td>
         </tr>
         <tr>
-            <td>5</td>
+            <td>5 bytes/sec (slow)</td>
             <td>0.20</td>
             <td>0.80</td>
         </tr>
         <tr>
-            <td>10</td>
+            <td>10 bytes/sec (medium)</td>
             <td>0.11</td>
             <td>0.55</td>
         </tr>
         <tr>
-            <td>20</td>
+            <td>20 bytes/sec (fast)</td>
             <td>0.07</td>
             <td>0.38</td>
         </tr>
@@ -35,17 +35,17 @@ The evaluations of the system were conducted along with the development. Phase I
             <td colspan=3 align="center">Signal to Noise Ratio = 1.5</td>
         </tr>
         <tr>
-            <td>5</td>
+            <td>5 bytes/sec (slow)</td>
             <td>0.72</td>
             <td>0.90</td>
         </tr>
         <tr>
-            <td>10</td>
+            <td>10 bytes/sec (medium)</td>
             <td>0.54</td>
             <td>0.80</td>
         </tr>
         <tr>
-            <td>20</td>
+            <td>20 bytes/sec (fast)</td>
             <td>0.47</td>
             <td>0.77</td>
         </tr>
@@ -53,17 +53,17 @@ The evaluations of the system were conducted along with the development. Phase I
             <td colspan=3 align="center">Signal to Noise Ratio = 2</td>
         </tr>
         <tr>
-            <td>5</td>
+            <td>5 bytes/sec (slow)</td>
             <td>0.99</td>
             <td>1.00</td>
         </tr>
         <tr>
-            <td>10</td>
+            <td>10 bytes/sec (medium)</td>
             <td>0.73</td>
             <td>0.97</td>
         </tr>
         <tr>
-            <td>20</td>
+            <td>20 bytes/sec (fast)</td>
             <td>0.66</td>
             <td>0.90</td>
         </tr>
@@ -71,17 +71,17 @@ The evaluations of the system were conducted along with the development. Phase I
             <td colspan=3 align="center">Signal to Noise Ratio = 2.5</td>
         </tr>
         <tr>
-            <td>5</td>
+            <td>5 bytes/sec (slow)</td>
             <td>0.99</td>
             <td>1.00</td>
         </tr>
         <tr>
-            <td>10</td>
+            <td>10 bytes/sec (medium)</td>
             <td>0.95</td>
             <td>1.00</td>
         </tr>
         <tr>
-            <td>20</td>
+            <td>20 bytes/sec (fast)</td>
             <td>0.90</td>
             <td>0.97</td>
         </tr>
