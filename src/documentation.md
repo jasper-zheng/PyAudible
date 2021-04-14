@@ -25,7 +25,10 @@ It uses cyclic redundancy check (CRC) for error detection to improve robustness.
   * [Listening Modes](#)
     * [Blocking Mode](#)
     * [Callback Mode](#)
-  * [System Logs and Status Flags](#)
+  * [System Logs](#)
+    * [FFT Logs](#)
+    * [Status Flags](#)
+    * [Received Data](#)
 
 ## Requirements and Installation
 
@@ -183,7 +186,7 @@ filename - Name of the output wav file, type: string
 Python interface to detect and demodulate broadcasted audio and convert them into text data.
 
 #### Activation Sensitivity
-The volume of the transmission should be defined when instantiating the transmitter by `sensitivity` parameter in the instantiation function (see [__ init__()](#)). The options includs ``'low'``, ``'medium'`` and ``'high'``.  
+The volume of the transmission should be defined when instantiating the transmitter by `sensitivity` parameter in the instantiation function (see [pyaudible.Receiver.__ init__()](#)). The options includs ``'low'``, ``'medium'`` and ``'high'``.  
 
 In the activating process, the receiver perform SNR Check to decide whether the current noise condition is competent to perform successful transmission. Activation Sensitivity defines the threshold that activate the receiver. With a higher sensitivity, the receiver will tend to pass the SNR Check and be activated for transmission.  
 
@@ -192,21 +195,23 @@ In the activating process, the receiver perform SNR Check to decide whether the 
 
 
 #### Listening Modes
-The mode of the receiver will be determined by different methods called after the receiver was instantiated.   
+The mode of the receiver will be determined by different methods called after the receiver was instantiated. Includes [Blocking Mode](#) and [Callback Mode](#).
 ###### Blocking Mode   
-Call `read_block()` to use blocking mode. The receiver should be called only once and it will block until all the required time is recorded. After the desired time, call `get_received_data()` to retrieve all the received data (see [Example: Receive and Demodulate Data (Blocking Mode)](#) for sample code).   
+Call `pyaudible.Receiver.read_block()` to use blocking mode. The receiver should be called only once and it will block until all the required time is recorded. After the desired time, call `pyaudible.Receiver.get_received_data()` to retrieve all the received data (see [Example: Receive and Demodulate Data (Blocking Mode)](#) for sample code).   
 
 ###### Callback Mode  
-Call `read_frame()` to use callback mode. The receiver will only analyse audio in the frames that it is called. Therefore, it should be called in the main loop in a frame-based application.   
+Call `pyaudible.Receiver.read_frame()` to use callback mode. The receiver will only analyse audio in the frames that it is called. Therefore, it should be called in the main loop in a frame-based application (see [Example: Receive and Demodulate Data (Callback Mode)](#) for sample code).   
 
-`read_frame()` will return decoded text once new data is available. If the parameter `log` is `True`, it will also return a integer flag signifying the status to help the system interacting with the receiver (see next section [System Logs and Status Flags](#)).   
+`pyaudible.Receiver.read_frame()` will return decoded text once new data is available. If the parameter `log` is `True`, it will also return a integer flag signifying the status to help the system interacting with the receiver (see next section [System Logs and Status Flags](#)).   
 
-#### System Logs and Status Flags 
+#### System Logs
+The receiver will maintain essential data for interaction, includes [FFT Logs](#), [Status Flags](#) and [Received Data](#).  
 
+###### FFT Logs  
+FFT Logs maintains the discrete Fourier transform of the current audio input, which are ready to map into a spectrum form. Use `pyaudible.Receiver.get_fft()` to get FFT Logs.
 
-
-
-
-
-
- Whereas in the callback mode, the
+###### Status Flags  
+Status Flag maintains the current status of the receiver:  
+**0: Unactivated** - state that no transmission is happening.  
+**1: Activating** - state that the receiver detects activation soundmark, but haven't validate the activation.  
+**2: Preparing** - state that the activation is been validated, the receiver is working on preparing the transmission.
