@@ -46,8 +46,8 @@ ax.set_xticks(np.arange(0, dt*len(data[0]), 1))
 
 ax.semilogy(t,data[0],color='sandybrown',lw=0.75)
 
-ax.set_yticks([1000,1100,1200,1300,1400,1500,1600,1700,1800])
-ax.set_yticklabels(("1k","1.1k","1.2k","1.3k","1.4k","1.5k","1.6k","1.7k","1.8k"))
+ax.set_yticks([1100,1200,1300,1400,1500,1600,1700,1800])
+ax.set_yticklabels(("1.1k","1.2k","1.3k","1.4k","1.5k","1.6k","1.7k","1.8k"))
 
 ax.grid(True,lw='0.4')
 ax.set_xticks(np.arange(0, dt*len(data[0]), 1))
