@@ -212,6 +212,10 @@ FFT Logs maintains the discrete Fourier transform of the current audio input, wh
 
 ###### Status Flags  
 Status Flag maintains the current status of the receiver:  
-**0: Unactivated** - state that no transmission is happening.  
-**1: Activating** - state that the receiver detects activation soundmark, but haven't validate the activation.  
-**2: Preparing** - state that the activation is been validated, the receiver is working on preparing the transmission.
+**0 - Unactivated:** No established connection. The receiver continuously captures audio, looks for the activating signals.  
+**1 - Activating:** The receiver detected the start of an activation sound mark, but haven't validated the activation.  
+**2 - Preparing:** The activation was validated, and the current condition passed the [SNR Check](#signal-to-noise-ratio-check). The receiver is waiting for the first bit of the transmission signal.  
+**3 - Activation Failed:** The activation is invalid due to the failure in [SNR Check](#signal-to-noise-ratio-check), or it was being detected as an accidental start. The receiver will roll back to **Status 0** in the next frame.  
+**4 - Listening:** The connection was established, data is being transmitted.  
+**5 - Terminated, transmission succeeded:** The connection was terminated, the received contents passed the [Error Detecting Code Check](#error-detecting-code), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
+**6 - Terminated, transmission failed:** The connection was terminated, the received contents failed the [Error Detecting Code Check](#error-detecting-code), the transmission was failed. The receiver will go back to **Status 0** in the next frame.  
