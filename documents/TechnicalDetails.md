@@ -99,5 +99,4 @@ The 6th, 7th channels are the flow control descriptor, signifying the upcoming t
 The noise resistance mechanism provides error control methods to achieve reliable data transmission over an environment with inconvenient noise. The methods include Signal to Noise Check (SNR Check) and Error Detecting Code.
 
 ###### Signal to Noise Ratio Check
-
-s
+The main purpose of the Signal to Noise Ratio (SNR) Check is to assess whether the current noise condition is competent to perform successful transmission. During the activating of the transmission, the receiver estimates the integrity `K` of the activating sound mark. If `K` exceeds the defined threshold θ, the noise condition will be decided as competent, and the receiver will establish the connection.
