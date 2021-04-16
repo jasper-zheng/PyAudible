@@ -108,3 +108,30 @@ The setting of the threshold might differ between different noise condition. The
 
 ###### Error Detecting Code  
 The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](#). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
+
+## Protocol Handling (Receiver Side)
+To create interactive and controllable responses, the protocol includes the handling behaviours of the receiver. The receiver maintains a Status Flags to signifying the status of the current connection.   
+
+![Receiver Status Design](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-02.png?raw=true)
+*Figure 4: Receiver Status*  
+
+**Status 0** - Unactivated  
+No established connection. The receiver continuously captures audio, looks for the activating signals.  
+
+**Status 1** - Activating  
+The receiver detected the start of an activation sound mark, but haven't validated the activation.  
+
+**Status 2** - Preparing  
+The activation was validated, and the current condition passed the SNR Check. The receiver is waiting for the first bit of the transmission signal.  
+
+**Status 3** - Activation Failed  
+The activation is invalid due to the failure in [SNR Check](#), or it was being detected as an accidental start. The receiver will roll back to **Status 0** in the next frame.  
+
+**Status 4** - Listening  
+The connection was established, data is being transmitted.  
+
+**Status 5** - Terminated, transmission succeeded  
+The connection was terminated, the received contents passed the [Error Detecting Code Check](#), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
+
+**Status 6** - Terminated, transmission failed  
+The connection was terminated, the received contents failed the [Error Detecting Code Check](#), the transmission was failed. The receiver will go back to **Status 0** in the next frame.  
