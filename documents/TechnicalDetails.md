@@ -99,12 +99,12 @@ The 6th, 7th channels are the flow control descriptor, signifying the upcoming t
 #### Noise Resistance Mechanism  
 The noise resistance mechanism provides error control methods to achieve reliable data transmission over an environment with inconvenient noise. The methods include Signal to Noise Check (SNR Check) and Error Detecting Code.  
 
-Both measures aim at improving the reliability of the transmission, in other words, reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml).    
+Both measures aim at improving the reliability of the transmission, in other words, reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml). The effectiveness of the mechanisms was evaluated after the development, and the results were included in the [evaluation document](#).  
 
 ###### Signal to Noise Ratio Check
 The main purpose of the Signal to Noise Ratio (SNR) Check is to assess whether the current noise condition is competent to perform successful transmission. During the activating of the transmission, the receiver estimates the integrity `K` of the activating sound mark. If `K` exceeds the defined threshold `θ`, the noise condition will be decided as competent, and the receiver will establish the connection. The threshold `θ` is defined as the `sensitivity` of the receiver (Details written in the [PyAudible documentation](#)).  
 
-The setting of the threshold might differ between different noise condition. The rise of the threshold will reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml), however, it might introduce the increase in [False Positives](#).   
+The setting of the threshold might differ between different noise condition. The rise of the threshold will reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml), however, it might introduce the increase in [False Positives](https://methods.sagepub.com/Reference//the-sage-encyclopedia-of-communication-research-methods/i5517.xml).   
 
 ###### Error Detecting Code  
 The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](#). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
