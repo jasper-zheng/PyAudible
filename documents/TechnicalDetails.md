@@ -12,7 +12,7 @@ The protocol utilises a [Frequency-Shift Keying (FSK)](https://en.wikipedia.org/
     <thead>
         <tr>
             <th>Chunk ID</th>
-            <th>Binary Representation</th>
+            <th width="100">Binary Representation</th>
             <th>Frequency</th>
             <th>...</th>
             <th>Chunk ID</th>
