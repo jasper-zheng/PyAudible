@@ -98,6 +98,6 @@ The 6th, 7th channels are the flow control descriptor, signifying the upcoming t
 #### Noise Resistance Mechanism  
 The noise resistance mechanism provides error control methods to achieve reliable data transmission over an environment with inconvenient noise. The methods include Signal to Noise Check (SNR Check) and Error Detecting Code.
 
-##### Signal to Noise Ratio Check
+###### Signal to Noise Ratio Check
 
 s
