@@ -2,6 +2,15 @@
 # Transmission Protocol Design
 This document gives an overview of the technical details in the transmission protocol. It refers the protocol design to a stripped OSI (Open Systems Interconnection) model and analyses the physical and data link layers.  
 
+#### Contents
+ * [Physical Layer: Multi-channel Carrier Modulation](#)
+ * [Data Link Layer: Sound Marks](#)
+   * [Activating and Terminating Sound Mark](#)
+   * [Noise Resistance Mechanism](#)
+     * [Signal to Noise Ratio Check](#)
+     * [Error Detecting Code](#)
+ * [Protocol Handling (Receiver Status)](#)
+
 ## Physical Layer: Multi-channel Carrier Modulation
 
 <img src="https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/multi-channel_carrier.png?raw=true" width="400">  
@@ -109,7 +118,7 @@ The setting of the threshold might differ between different noise condition. The
 ###### Error Detecting Code  
 The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](#). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
 
-## Protocol Handling (Receiver Side)
+## Protocol Handling (Receiver Status)
 To create interactive and controllable responses, the protocol includes the handling behaviours of the receiver. The receiver maintains a Status Flags to signifying the status of the current connection.   
 
 ![Receiver Status Design](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-02.png?raw=true)
