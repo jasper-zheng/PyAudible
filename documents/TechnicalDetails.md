@@ -79,4 +79,25 @@ However, a portion of the communication channels could be used as repeat request
 ![image](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-01.png?raw=true)   
 *Figure 2: Receiver Data Process Flow*  
 
-For example, in *Figure 2*, the transmission speed set to "slow", therefore, the original binary data will be divided into two splits, the first split will be transmitted through channel 01, 03, 05 and 07, the second split will be transmitted through channel 02, 04, 06 and 08. After demodulating the signal, the receiver will analyse each split of data respectively. Then perform error correction based on the repeated signals. And finally, the receiver will recover the binary data and convert it into text format.  
+For example, in **Figure 2**, the transmission speed set to `slow`, therefore, the original binary data will be divided into two splits, the first split will be transmitted through channel 01, 03, 05 and 07, the second split will be transmitted through channel 02, 04, 06 and 08. After demodulating the signal, the receiver will analyse each split of data respectively. Then perform error correction based on the repeated signals. And finally, the receiver will recover the binary data and convert it into text format.    
+
+## Data Link Layer: Sound Marks  
+The data link layer specifies the link between the transmitter and the receiver, includes the protocol to establish and terminate the connection, flow control and noise resistance mechanism.   
+#### Activating and Terminating Sound Mark
+The beginning and ending bits of the transmission sequences are the Activating and Terminating Sound Mark. Each part of the sound mark contains essential session descriptors to establish the connection.  
+
+![Sound Mark Frequency Usage](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-03.png?raw=true)  
+*Figure 3: Sound Mark Frequency Usage*  
+
+The current approach utilised the 1st, 5th and 8th channels as the activating and terminating descriptor. The transmitter broadcasts the marker contains the activating descriptor to activate the transmission. Three channels are taken to prevent the ambient noise from accidentally produce an activating mark.   
+
+Meanwhile, the 2nd, 3rd, 4th channels are error-detecting codes, and technical details will be discussed in the next section.  
+
+The 6th, 7th channels are the flow control descriptor, signifying the upcoming transmission rate. Since the transmission system only establishes an asynchronous link between the Tx and the Rx, the transmission rate must be defined ahead of the establishment to ensure the receiver knows the coming of a new byte. The receiver will configure the clock according to the flow control signal.  
+
+#### Noise Resistance Mechanism  
+The noise resistance mechanism provides error control methods to achieve reliable data transmission over an environment with inconvenient noise. The methods include Signal to Noise Check (SNR Check) and Error Detecting Code.
+
+###### Signal to Noise Ratio Check
+
+s
