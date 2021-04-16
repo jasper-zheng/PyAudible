@@ -3,13 +3,14 @@
 This document gives an overview of the technical details in the transmission protocol. It refers the protocol design to a stripped OSI (Open Systems Interconnection) model and analyses the physical and data link layers.  
 
 #### Contents
- * [Physical Layer: Multi-channel Carrier Modulation](#)
- * [Data Link Layer: Sound Marks](#)
-   * [Activating and Terminating Sound Mark](#)
-   * [Noise Resistance Mechanism](#)
-     * [Signal to Noise Ratio Check](#)
-     * [Error Detecting Code](#)
- * [Protocol Handling (Receiver Status)](#)
+ * [Physical Layer: Multi-channel Carrier Modulation](#physical-layer-multi-channel-carrier-modulation)
+ * [Data Link Layer: Sound Marks](#data-link-layer-sound-marks)
+   * [Activating and Terminating Sound Mark](#activating-and-terminating-sound-mark)
+   * [Noise Resistance Mechanism](#noise-resistance-mechanism)
+     * [Signal to Noise Ratio Check](#signal-to-noise-ratio-check)
+     * [Error Detecting Code](#error-detecting-code)
+ * [Protocol Handling (Receiver Status)](#protocol-handling-receiver-status)  
+
 
 ## Physical Layer: Multi-channel Carrier Modulation
 
@@ -100,7 +101,7 @@ The beginning and ending bits of the transmission sequences are the Activating a
 
 The current approach utilised the 1st, 5th and 8th channels as the activating and terminating descriptor. The transmitter broadcasts the marker contains the activating descriptor to activate the transmission. Three channels are taken to prevent the ambient noise from accidentally produce an activating mark.   
 
-Meanwhile, the 2nd, 3rd, 4th channels are error-detecting descriptor, and technical details will be discussed in the next section ([Error Detecting Code](#)).  
+Meanwhile, the 2nd, 3rd, 4th channels are error-detecting descriptor, and technical details will be discussed in the next section ([Error Detecting Code](#error-detecting-code)).  
 
 
 The 6th, 7th channels are the flow control descriptor, signifying the upcoming transmission rate. Since the transmission system only establishes an asynchronous link between the Tx and the Rx, the transmission rate must be defined ahead of the establishment to ensure the receiver knows the coming of a new byte. The receiver will configure the clock according to the flow control signal.  
@@ -111,12 +112,12 @@ The noise resistance mechanism provides error control methods to achieve reliabl
 Both measures aim at improving the reliability of the transmission, in other words, reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml). The effectiveness of the mechanisms was evaluated after the development, and the results were included in the [evaluation document](#).  
 
 ###### Signal to Noise Ratio Check
-The main purpose of the Signal to Noise Ratio (SNR) Check is to assess whether the current noise condition is competent to perform successful transmission. During the activating of the transmission, the receiver estimates the integrity `K` of the activating sound mark. If `K` exceeds the defined threshold `θ`, the noise condition will be decided as competent, and the receiver will establish the connection. The threshold `θ` is defined as the `sensitivity` of the receiver (Details written in the [PyAudible documentation](#)).  
+The main purpose of the [Signal to Noise Ratio (SNR)](https://en.wikipedia.org/wiki/Signal-to-noise_ratio) Check is to assess whether the current noise condition is competent to perform successful transmission. During the activating of the transmission, the receiver estimates the integrity `K` of the activating sound mark. If `K` exceeds the defined threshold `θ`, the noise condition will be decided as competent, and the receiver will establish the connection. The threshold `θ` is defined as the `sensitivity` of the receiver (Details written in the [PyAudible documentation](#)).  
 
 The setting of the threshold might differ between different noise condition. The rise of the threshold will reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml), however, it might introduce the increase in [False Positives](https://methods.sagepub.com/Reference//the-sage-encyclopedia-of-communication-research-methods/i5517.xml).   
 
 ###### Error Detecting Code  
-The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](#). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
+The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](https://en.wikipedia.org/wiki/Cyclic_redundancy_check). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
 
 ## Protocol Handling (Receiver Status)
 To create interactive and controllable responses, the protocol includes the handling behaviours of the receiver. The receiver maintains a Status Flags to signifying the status of the current connection.   
@@ -131,16 +132,16 @@ No established connection. The receiver continuously captures audio, looks for t
 The receiver detected the start of an activation sound mark, but haven't validated the activation.  
 
 **Status 2** - Preparing  
-The activation was validated, and the current condition passed the SNR Check. The receiver is waiting for the first bit of the transmission signal.  
+The activation was validated, and the current condition passed the [SNR Check](#signal-to-noise-ratio-check). The receiver is waiting for the first bit of the transmission signal.  
 
 **Status 3** - Activation Failed  
-The activation is invalid due to the failure in [SNR Check](#), or it was being detected as an accidental start. The receiver will roll back to **Status 0** in the next frame.  
+The activation is invalid due to the failure in [SNR Check](#signal-to-noise-ratio-check), or it was being detected as an accidental start. The receiver will roll back to **Status 0** in the next frame.  
 
 **Status 4** - Listening  
 The connection was established, data is being transmitted.  
 
 **Status 5** - Terminated, transmission succeeded  
-The connection was terminated, the received contents passed the [Error Detecting Code Check](#), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
+The connection was terminated, the received contents passed the [Error Detecting Code Check](#error-detecting-code), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
 
 **Status 6** - Terminated, transmission failed  
-The connection was terminated, the received contents failed the [Error Detecting Code Check](#), the transmission was failed. The receiver will go back to **Status 0** in the next frame.  
+The connection was terminated, the received contents failed the [Error Detecting Code Check](#error-detecting-code), the transmission was failed. The receiver will go back to **Status 0** in the next frame.  
