@@ -91,12 +91,20 @@ The beginning and ending bits of the transmission sequences are the Activating a
 
 The current approach utilised the 1st, 5th and 8th channels as the activating and terminating descriptor. The transmitter broadcasts the marker contains the activating descriptor to activate the transmission. Three channels are taken to prevent the ambient noise from accidentally produce an activating mark.   
 
-Meanwhile, the 2nd, 3rd, 4th channels are error-detecting codes, and technical details will be discussed in the next section.  
+Meanwhile, the 2nd, 3rd, 4th channels are error-detecting descriptor, and technical details will be discussed in the next section ([Error Detecting Code](#)).  
+
 
 The 6th, 7th channels are the flow control descriptor, signifying the upcoming transmission rate. Since the transmission system only establishes an asynchronous link between the Tx and the Rx, the transmission rate must be defined ahead of the establishment to ensure the receiver knows the coming of a new byte. The receiver will configure the clock according to the flow control signal.  
 
 #### Noise Resistance Mechanism  
-The noise resistance mechanism provides error control methods to achieve reliable data transmission over an environment with inconvenient noise. The methods include Signal to Noise Check (SNR Check) and Error Detecting Code.
+The noise resistance mechanism provides error control methods to achieve reliable data transmission over an environment with inconvenient noise. The methods include Signal to Noise Check (SNR Check) and Error Detecting Code.  
+
+Both measures aim at improving the reliability of the transmission, in other words, reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml).    
 
 ###### Signal to Noise Ratio Check
-The main purpose of the Signal to Noise Ratio (SNR) Check is to assess whether the current noise condition is competent to perform successful transmission. During the activating of the transmission, the receiver estimates the integrity `K` of the activating sound mark. If `K` exceeds the defined threshold `θ`, the noise condition will be decided as competent, and the receiver will establish the connection.
+The main purpose of the Signal to Noise Ratio (SNR) Check is to assess whether the current noise condition is competent to perform successful transmission. During the activating of the transmission, the receiver estimates the integrity `K` of the activating sound mark. If `K` exceeds the defined threshold `θ`, the noise condition will be decided as competent, and the receiver will establish the connection. The threshold `θ` is defined as the `sensitivity` of the receiver (Details written in the [PyAudible documentation](#)).  
+
+The setting of the threshold might differ between different noise condition. The rise of the threshold will reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml), however, it might introduce the increase in [False Positives](#).   
+
+###### Error Detecting Code  
+The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](#). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
