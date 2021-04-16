@@ -1,4 +1,5 @@
-# PyAudible 0.1.1 documentation
+###### PyAudible 1.1.0
+# Documentation
 
 PyAudible is a Python library for sending and receiving data using audible sound. PyAudible includes a transmitter and a receiver module that could be implemented on multiple separate devices, enables the transmission of small amounts of data between devices in the vicinity.  
 
@@ -10,25 +11,25 @@ It uses cyclic redundancy check (CRC) for error detection to improve robustness.
 
 ## User Guide
 
-* [Requirements and Installation](#Requirements-and-Installation)
-* [Getting started with PyAudible](#)
-  * [Example: Modulate and Transmit Data](#)
-  * [Example: Receive and Demodulate Data (Blocking Mode)](#)
-  * [Example: Receive and Demodulate Data (Callback Mode)](#)
-* [Class Transmitter](#)
-  * [Volume](#)
-  * [Transmission Speed](#)
-  * [Details](#)
-* [Class Receiver](#)
-  * [Activation Sensitivity](#)
-  * [Transmission Speed](#)
-  * [Listening Modes](#)
-    * [Blocking Mode](#)
-    * [Callback Mode](#)
-  * [System Logs](#)
-    * [FFT Logs](#)
-    * [Status Flags](#)
-    * [Received Data](#)
+* [Requirements and Installation](#requirements-and-installation)
+* [Getting started with PyAudible](#getting-started-with-pyaudible)
+  * [Example: Modulate and Transmit Data](#example-modulate-and-transmit-data)
+  * [Example: Receive and Demodulate Data (Blocking Mode)](#example-receive-and-demodulate-data-blocking-mode)
+  * [Example: Receive and Demodulate Data (Callback Mode)](#example-receive-and-demodulate-data-callback-mode)
+* [Class Transmitter](#class-transmitter)
+  * [Transmission Speed](#transmission-speed)
+  * [Transmission Volume](#transmission-volume)
+  * [Class Details](#details)
+* [Class Receiver](#class-receiver)
+  * [Activation Sensitivity](#activation-sensitivity)
+  * [Transmission Speed](#transmission-speed-1)
+  * [Listening Modes](#listening-modes)
+    * [Blocking Mode](#blocking-mode)
+    * [Callback Mode](#callback-mode)
+  * [System Logs](#system-logs)
+    * [FFT Logs](#fft-logs)
+    * [Status Flags](#status-flags)
+    * [Received Data](#received-data)
 
 ## Requirements and Installation
 
@@ -60,11 +61,11 @@ message = 'Hello World!'
 # then store the modulated signal to an audio file
 transmitter.modulate_to_file(message, 'transmitter_sample.wav')
 ```
-To convert a message to electrical signals and generate the modulated audio file, first instantiate PyAudible by ``pyaudible.Transmitter()`` with desired parameters (see [Class Transmitter](#)). It will initialise a transmitter for modulating data.   
+To convert a message to electrical signals and generate the modulated audio file, first instantiate PyAudible by ``pyaudible.Transmitter()`` with desired parameters (see [Class Transmitter](#class-transmitter)). It will initialise a transmitter for modulating data.   
 
 Modulate a message by calling ``pyaudible.Transmitter.modulate_to_file()`` with input data and the file name, it will modulate the data to audio waveforms and save it to a playable file.
 
-To modulate a message without save it to file, or play the audio right after the modulation, call ``pyaudiable.Transmitter.modulate()`` or ``pyaudiable.Transmitter.modulate_and_play()`` (see [Class Transmitter](#)).
+To modulate a message without save it to file, or play the audio right after the modulation, call ``pyaudiable.Transmitter.modulate()`` or ``pyaudiable.Transmitter.modulate_and_play()`` (see [Class Transmitter](#class-transmitter)).
 
 #### Example: Receive and Demodulate Data (Blocking Mode)
 ```python
@@ -81,7 +82,7 @@ receiver = pyaudiable.Receiver(actived_channel = 8,
 retrieved_data = receiver.read_block(30)
 
 ```
-To detect and demodulate data, first instantiate a receiver on the desired device by `pyaudiable.Receiver()` with desired parameters (see [Class Receiver](#)). It will initialise a reusable receiver for analysing and demodulating data.
+To detect and demodulate data, first instantiate a receiver on the desired device by `pyaudiable.Receiver()` with desired parameters (see [Class Receiver](#class-receiver)). It will initialise a reusable receiver for analysing and demodulating data.
 
 Open the receiver by calling `pyaudible.Receiver.read_block()`, the receiver will stand-by and continuously detecting audio input. The results will be return in a Python list.
 
@@ -120,7 +121,7 @@ message_list = receiver.received_data()
 ```
 
 In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `pyaudible.Receiver.read()`.
-Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the status, to help interacting with the receiver (see [Class Receiver: Callback Mode](#)).  
+Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the status, to help interacting with the receiver (see [Class Receiver: Callback Mode](#callback-mode)).  
 
 ## Class Transmitter
 
@@ -133,7 +134,7 @@ Python interface to modulate and transmit data. Provides methods to:
 
 
 #### Transmission Speed
-The speed of the transmission should be defined when instantiating the transmitter by `speed` parameter in the instantiation function (see [__ init__()](#)).
+The speed of the transmission should be defined when instantiating the transmitter by `speed` parameter in the instantiation function (see [__ init__()](#details)).
 
 Three levels of the speed are specified by ‘slow’, ‘medium’ and ‘fast’. In fast mode, eight channels will be utilised simultaneously for the transmission, and it will provide a speed of 20 bytes per second. Whereas in slow mode, two channels will be utilised for the transmission, and the signal will be copied to the other six channels to improve accuracy.
 
@@ -142,7 +143,7 @@ The following table listed the testing results of the correlation between the tr
 
 
 #### Transmission Volume
-The volume of the transmission should be defined when instantiating the transmitter by `volume` parameter in the instantiation function (see [__ init__()](#)).
+The volume of the transmission should be defined when instantiating the transmitter by `volume` parameter in the instantiation function (see [__ init__()](#details)).
 
 The volume is specified by a float number ranged from 0 to 1, where 0 represents quiet and 1 represent full amplitude of the waveform.
 
@@ -195,17 +196,17 @@ In the activating process, the receiver perform SNR Check to decide whether the 
 
 
 #### Listening Modes
-The mode of the receiver will be determined by different methods called after the receiver was instantiated. Includes [Blocking Mode](#) and [Callback Mode](#).
+The mode of the receiver will be determined by different methods called after the receiver was instantiated. Includes [Blocking Mode](#blocking-mode) and [Callback Mode](#callback-mode).
 ###### Blocking Mode   
-Call `pyaudible.Receiver.read_block()` to use blocking mode. The receiver should be called only once and it will block until all the required time is recorded. After the desired time, call `pyaudible.Receiver.get_received_data()` to retrieve all the received data (see [Example: Receive and Demodulate Data (Blocking Mode)](#) for sample code).   
+Call `pyaudible.Receiver.read_block()` to use blocking mode. The receiver should be called only once and it will block until all the required time is recorded. After the desired time, call `pyaudible.Receiver.get_received_data()` to retrieve all the received data (see [Example: Receive and Demodulate Data (Blocking Mode)](#example-receive-and-demodulate-data-blocking-mode) for sample code).   
 
 ###### Callback Mode  
-Call `pyaudible.Receiver.read_frame()` to use callback mode. The receiver will only analyse audio in the frames that it is called. Therefore, it should be called in the main loop in a frame-based application (see [Example: Receive and Demodulate Data (Callback Mode)](#) for sample code).   
+Call `pyaudible.Receiver.read_frame()` to use callback mode. The receiver will only analyse audio in the frames that it is called. Therefore, it should be called in the main loop in a frame-based application (see [Example: Receive and Demodulate Data (Callback Mode)](#example-receive-and-demodulate-data-callback-mode) for sample code).   
 
-`pyaudible.Receiver.read_frame()` will return decoded text once new data is available. If the parameter `log` is `True`, it will also return a integer flag signifying the status to help the system interacting with the receiver (see next section [System Logs and Status Flags](#)).   
+`pyaudible.Receiver.read_frame()` will return decoded text once new data is available. If the parameter `log` is `True`, it will also return a integer flag signifying the status to help the system interacting with the receiver (see next section [System Logs and Status Flags](#system-logs)).   
 
 #### System Logs
-The receiver will maintain essential data for interaction, includes [FFT Logs](#), [Status Flags](#) and [Received Data](#).  
+The receiver will maintain essential data for interaction, includes [FFT Logs](#fft-logs), [Status Flags](#status-flags) and [Received Data](#received-data).  
 
 ###### FFT Logs  
 FFT Logs maintains the discrete Fourier transform of the current audio input, which are ready to map into a spectrum form. Use `pyaudible.Receiver.get_fft()` to get FFT Logs.
@@ -214,8 +215,8 @@ FFT Logs maintains the discrete Fourier transform of the current audio input, wh
 Status Flag maintains the current status of the receiver:  
 **0 - Unactivated:** No established connection. The receiver continuously captures audio, looks for the activating signals.  
 **1 - Activating:** The receiver detected the start of an activation sound mark, but haven't validated the activation.  
-**2 - Preparing:** The activation was validated, and the current condition passed the [SNR Check](#signal-to-noise-ratio-check). The receiver is waiting for the first bit of the transmission signal.  
-**3 - Activation Failed:** The activation is invalid due to the failure in [SNR Check](#signal-to-noise-ratio-check), or it was being detected as an accidental start. The receiver will roll back to **Status 0** in the next frame.  
+**2 - Preparing:** The activation was validated, and the current condition passed the [SNR Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#signal-to-noise-ratio-check). The receiver is waiting for the first bit of the transmission signal.  
+**3 - Activation Failed:** The activation is invalid due to the failure in [SNR Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#signal-to-noise-ratio-check), or it was being detected as an accidental start. The receiver will roll back to **Status 0** in the next frame.  
 **4 - Listening:** The connection was established, data is being transmitted.  
-**5 - Terminated, transmission succeeded:** The connection was terminated, the received contents passed the [Error Detecting Code Check](#error-detecting-code), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
-**6 - Terminated, transmission failed:** The connection was terminated, the received contents failed the [Error Detecting Code Check](#error-detecting-code), the transmission was failed. The receiver will go back to **Status 0** in the next frame.  
+**5 - Terminated, transmission succeeded:** The connection was terminated, the received contents passed the [Error Detecting Code Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#error-detecting-code), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
+**6 - Terminated, transmission failed:** The connection was terminated, the received contents failed the [Error Detecting Code Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#error-detecting-codee), the transmission was failed. The receiver will go back to **Status 0** in the next frame.  
