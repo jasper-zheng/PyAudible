@@ -84,7 +84,7 @@ For example, in **Figure 2**, the transmission speed set to `slow`, therefore, t
 ## Data Link Layer: Sound Marks  
 The data link layer specifies the link between the transmitter and the receiver, includes the protocol to establish and terminate the connection, flow control and noise resistance mechanism.   
 #### Activating and Terminating Sound Mark
-The beginning and ending bits of the transmission sequences are the Activating and Terminating Sound Mark. Each part of the sound mark contains essential session descriptors to establish the connection.  
+The beginning and ending bits of the transmission sequences are the Activating and Terminating Sound Mark. Each part of the sound mark contains essential session descriptors to establish and terminate the connection.  
 
 ![Sound Mark Frequency Usage](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-03.png?raw=true)  
 *Figure 3: Sound Mark Frequency Usage*  
