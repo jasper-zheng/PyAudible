@@ -68,4 +68,15 @@ The protocol utilises a [Frequency-Shift Keying (FSK)](https://en.wikipedia.org/
             <td>6277 + 15 * 43 Hz</td>
         </tr>
     </tbody>
-</table>  
+</table>    
+
+*Table 1: Chunk - Binary - Frequency*  
+
+If each channel transmits different data simultaneously, it allows a maximum transmission speed of 32 bits per unit. And if the unit time is 0.2 second, the transmission speed can be up to 20 bytes per sec.   
+
+However, a portion of the communication channels could be used as repeat requests for error control to improve robustness. Depending on the setting, the system utilises 0, 4 or 6 carriers to repeat the transmission signal. Error correction is based on the original signal and the repeated signal.   
+
+![image](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-01.png?raw=true)   
+*Figure 2: Receiver Data Process Flow*  
+
+For example, in *Figure 2*, the transmission speed set to "slow", therefore, the original binary data will be divided into two splits, the first split will be transmitted through channel 01, 03, 05 and 07, the second split will be transmitted through channel 02, 04, 06 and 08. After demodulating the signal, the receiver will analyse each split of data respectively. Then perform error correction based on the repeated signals. And finally, the receiver will recover the binary data and convert it into text format.  
