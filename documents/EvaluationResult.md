@@ -112,7 +112,7 @@ The evaluations of the system were conducted along with the development. [Phase 
 ## Phase I Evaluation: Noise Resistance Mechanism Reliability  
 The goal of Phase I evaluation is to assess the reliability of the noise resistance mechanism, including Sound Mark Integrity Check and Error Detecting Code. As a part of the transmission protocol, the noise resistance mechanism should be able to tolerate unpredictable background noise.   
 
-To detect and recover from the noise, the receiver assesses the sound marks to decide whether the current noise condition is competent for successful transmission, and then use error detecting codes to verify transmission integrity. Therefore, to assess the reliability of this mechanism, the following criteria were included:  
+To detect and recover from the noise, the receiver assesses the sound marks to decide whether the current noise condition is competent for successful transmission, and then use error detecting codes to perform Cyclic Redundancy Check (CRC), and therefore verify transmission integrity. Therefore, to assess the reliability of this mechanism, the following criteria were included:    
  * The probability that the receiver staying inactive when the power of the background noise is strong enough to disturb the transmission.  
  * The probability that the receiver successfully detect the fault caused by the noise and abort the transmission.  
 
@@ -183,9 +183,9 @@ The reliability `R` was be represented as the probability that the receiver dete
             <td>50</td>
             <td>12</td>
             <td>100</td>
-            <td>26</td>
+            <td>31</td>
             <td>1</td>
-            <td>0.93</td>
+            <td>0.98</td>
         </tr>
         <tr>
             <td>w/ Noise Resistance</td>
@@ -206,9 +206,9 @@ The reliability `R` was be represented as the probability that the receiver dete
             <td>85</td>
             <td>10</td>
             <td>100</td>
-            <td>50</td>
+            <td>51</td>
             <td>2</td>
-            <td>0.94</td>
+            <td>0.95</td>
         </tr>
         <tr>
             <td>w/ Noise Resistance</td>
@@ -229,9 +229,9 @@ The reliability `R` was be represented as the probability that the receiver dete
             <td>99</td>
             <td>5</td>
             <td>100</td>
-            <td>62</td>
+            <td>71</td>
             <td>1</td>
-            <td>0.81</td>
+            <td>0.90</td>
         </tr>
         <tr>
             <td>w/ Noise Resistance</td>
@@ -297,9 +297,9 @@ The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevan
             <td>With Noise Resistance</td>
             <td>100</td>
             <td>67</td>
-            <td>62</td>
+            <td>63</td>
             <td>2</td>
-            <td>0.92</td>
+            <td>0.94</td>
         </tr>
         <tr>
             <td>w/ Noise Resistance</td>
@@ -334,6 +334,8 @@ The testing results were recored in **Table 1.1.1** and **Table 1.2.1**, relevan
 *Table 1.2.1: Recorded data for Test1.2*  
 
 Since the control group did not implement the error detecting code, once the transmission was failed, there was no way to recover from the fault. However, **Figure 1.2.1** shows that we could expect the system reliability to be above 0.9 over all the transmission rates. And the transmission rate did not have an evident affect on the reliability when confronting disruptive noise.  
+
+Although CRC can promise a high-efficiency error detection, a few errors still occurred during the test. By locating the incorrect transmissions, it turned out that the checksum codes in these transmissions were broken due to the noise. In the error detecting process design, if a checksum code is broken, the system will skip the CRC to reduce the number of False Positives. Therefore, those errors were escaped from the error detection. However, these errors could be prevented if changing the design of the error detecting process from skipping the broken checksum codes to request a honest CRC strictly.  
 
 <img src="https://github.com/jasper-zheng/PyAudible/blob/main/tests/Figures/F_1.2.1.png?raw=true" width="400">
 
@@ -379,26 +381,26 @@ The transmission success rate `S` is defined as the ratio between total number o
         <tr>
             <td>5</td>
             <td>100</td>
-            <td>25</td>
+            <td>23</td>
             <td>20</td>
             <td>0.20</td>
-            <td>0.80</td>
+            <td>0.86</td>
         </tr>
         <tr>
             <td>10</td>
             <td>100</td>
-            <td>20</td>
+            <td>15</td>
             <td>11</td>
             <td>0.11</td>
-            <td>0.55</td>
+            <td>0.73</td>
         </tr>
         <tr>
             <td>20</td>
             <td>100</td>
-            <td>24</td>
+            <td>16</td>
             <td>9</td>
             <td>0.07</td>
-            <td>0.38</td>
+            <td>0.56</td>
         </tr>
         <tr>
             <td colspan=6 align="center">SNR = 1.5</td>
@@ -406,26 +408,26 @@ The transmission success rate `S` is defined as the ratio between total number o
         <tr>
             <td>5</td>
             <td>100</td>
-            <td>80</td>
+            <td>78</td>
             <td>72</td>
             <td>0.72</td>
-            <td>0.90</td>
+            <td>0.92</td>
         </tr>
         <tr>
             <td>10</td>
             <td>100</td>
-            <td>67</td>
+            <td>64</td>
             <td>54</td>
             <td>0.54</td>
-            <td>0.80</td>
+            <td>0.84</td>
         </tr>
         <tr>
             <td>20</td>
             <td>100</td>
-            <td>61</td>
+            <td>58</td>
             <td>47</td>
             <td>0.47</td>
-            <td>0.77</td>
+            <td>0.81</td>
         </tr>
         <tr>
             <td colspan=6 align="center">SNR = 2</td>
@@ -449,10 +451,10 @@ The transmission success rate `S` is defined as the ratio between total number o
         <tr>
             <td>20</td>
             <td>100</td>
-            <td>73</td>
+            <td>79</td>
             <td>66</td>
             <td>0.66</td>
-            <td>0.90</td>
+            <td>0.96</td>
         </tr>
         <tr>
             <td colspan=6 align="center">SNR = 2.5</td>
@@ -476,10 +478,10 @@ The transmission success rate `S` is defined as the ratio between total number o
         <tr>
             <td>20</td>
             <td>100</td>
-            <td>93</td>
+            <td>91</td>
             <td>90</td>
             <td>0.90</td>
-            <td>0.97</td>
+            <td>0.99</td>
         </tr>
     </tbody>
 </table>   

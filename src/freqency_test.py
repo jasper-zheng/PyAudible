@@ -178,7 +178,7 @@ class Reciever(object):
             current_bins.append([0,0,0,0,0,0,0])
             recieved_bins.append([])
             
-        while (time.time()-start_time < 30):
+        while (time.time()-start_time < 60):
             while (time.time() - frame_start_time < 0.2):
                 frame_num += 1
                 data = self.stream.read(self.CHUNK, exception_on_overflow = False)
@@ -194,7 +194,7 @@ class Reciever(object):
                 #freq = freqs[freq_bins[0]]
                 freq_in_hertz = abs(freq_bin * RATE)
                 frame_count += 1
-                print(data)
+                print(freq_bin)
                 #status = update_statue(freq_bins,status)
 
             frame_start_time = time.time()
