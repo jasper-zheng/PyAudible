@@ -68,7 +68,7 @@ class Receiver(object):
     #speed_info = [[0,0],[0,2],[1,3]]
     speed_info = [[0,0],[4,0],[7,0]]
     
-    def __init__(self, actived_channel = 8, sensitivity = 'medium'):
+    def __init__(self, actived_channel = 8, sensitivity = 'medium', speed = 'auto'):
         self.d_channel.append(self.d_channel_1)
         self.d_channel.append(self.d_channel_2)
         self.d_channel.append(self.d_channel_3)

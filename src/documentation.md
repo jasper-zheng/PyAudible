@@ -121,7 +121,7 @@ message_list = receiver.received_data()
 ```
 
 In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `pyaudible.Receiver.read()`.
-Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the status, to help interacting with the receiver (see [Class Receiver: Callback Mode](#callback-mode)).  
+Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the current status of the connection, to help interacting with the receiver (see [Class Receiver: Callback Mode](#callback-mode)).  
 
 ## Class Transmitter
 
@@ -187,13 +187,12 @@ filename - Name of the output wav file, type: string
 Python interface to detect and demodulate broadcasted audio and convert them into text data.
 
 #### Activation Sensitivity
-The volume of the transmission should be defined when instantiating the transmitter by `sensitivity` parameter in the instantiation function (see [pyaudible.Receiver.__ init__()](#)). The options includs ``'low'``, ``'medium'`` and ``'high'``.  
+The sensitivity of the receiver should be defined when instantiating the transmitter by `sensitivity` parameter in the instantiation function (see [pyaudible.Receiver.__ init__()](#)). The options includs ``'low'``, ``'medium'`` and ``'high'``.  
 
-In the activating process, the receiver perform SNR Check to decide whether the current noise condition is competent to perform successful transmission. Activation Sensitivity defines the threshold that activate the receiver. With a higher sensitivity, the receiver will tend to pass the SNR Check and be activated for transmission.  
+In the activating process, the receiver perform SNR Check to decide whether the current noise condition is competent to perform successful transmission. Activation Sensitivity defines the threshold that activate the receiver. With a higher sensitivity, the receiver will tend to pass the SNR Check easily and be activated for transmission.  
 
 #### Transmission Speed  
-
-
+By default, the transmission speed of the receiver will be automatically determined by the Flow Control Descriptor defined in the Sound Mark. However, there is still an option to use a fixed receving speed, and the receiver will ignore the transmissions that don't match this defined spee. Set a fixed receiving speed by defining the `speed` parameter of the receiver to ``'low'``, ``'medium'`` or ``'high'`` when instantiating. By default, `speed` parameter is set to `auto`.
 
 #### Listening Modes
 The mode of the receiver will be determined by different methods called after the receiver was instantiated. Includes [Blocking Mode](#blocking-mode) and [Callback Mode](#callback-mode).
@@ -212,11 +211,93 @@ The receiver will maintain essential data for interaction, includes [FFT Logs](#
 FFT Logs maintains the discrete Fourier transform of the current audio input, which are ready to map into a spectrum form. Use `pyaudible.Receiver.get_fft()` to get FFT Logs.
 
 ###### Status Flags  
-Status Flag maintains the current status of the receiver:  
+Status Flag maintains the current status of the connection:  
 **0 - Unactivated:** No established connection. The receiver continuously captures audio, looks for the activating signals.  
 **1 - Activating:** The receiver detected the start of an activation sound mark, but haven't validated the activation.  
 **2 - Preparing:** The activation was validated, and the current condition passed the [SNR Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#signal-to-noise-ratio-check). The receiver is waiting for the first bit of the transmission signal.  
 **3 - Activation Failed:** The activation is invalid due to the failure in [SNR Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#signal-to-noise-ratio-check), or it was being detected as an accidental start. The receiver will roll back to **Status 0** in the next frame.  
 **4 - Listening:** The connection was established, data is being transmitted.  
 **5 - Terminated, transmission succeeded:** The connection was terminated, the received contents passed the [Error Detecting Code Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#error-detecting-code), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
-**6 - Terminated, transmission failed:** The connection was terminated, the received contents failed the [Error Detecting Code Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#error-detecting-codee), the transmission was failed. The receiver will go back to **Status 0** in the next frame.  
+**6 - Terminated, transmission failed:** The connection was terminated, the received contents failed the [Error Detecting Code Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#error-detecting-codee), the transmission was failed. The receiver will go back to **Status 0** in the next frame.   
+
+If the `log` parameter in `pyaudible.Receiver.read_frame()` is `True`, the status will be returned a integer. Or use `pyaudible.Receiver.get_status()` to get the current status.
+
+###### Received Data  
+Use `pyaudible.Receiver.get_received_data()` to get all the received transmission stored in a list.
+
+#### Overview
+`text_to_bin(), modulate(), modulate_to_file(), modulate_and_play()`
+
+#### Details  
+
+`__init__(actived_channel, sensitivity, speed)`    
+**Parameter**  
+actived_channel - Specifies the number of channels used, type: integer ranged from 1 to 8, *Defaults to 8*    
+sensitivity - Specifies the sensitivity of the receiver, type: string  
+*‘low’, ‘medium’, ‘high’*  
+*Defaults to ‘medium’*  
+speed - Specifies the speed of the receiver, type: string  
+*‘auto’, ‘slow’, ‘medium’, ‘fast’*  
+*Defaults to ‘auto’*  
+
+`refresh_audio()`  
+Reload PyAudio module.  
+
+`read_block(standby_time)`  
+Read the input audio in Blocking Mode, standby and listen until all the equested frames have been recorded.  
+**Parameter**  
+standby_time - The requested time (in second), type: int  
+**Returns**  
+retrieved_data - Every retrieved data during the standby time, type: 1d-List of string
+
+`read_frame_audio(audio, log)`  
+Takes 2048 frames of audio data and perform analysis.  
+**Parameter**  
+audio - The array version of the audio buffer. Type: np array with a size of (2048,)  
+log - If true, it will add a status flag to the returns, accompany with the retrived result. Type: bool  
+**Returns**   
+retrieved_data - Every retrieved data during the standby time, type: 1d-List of string  
+
+`read_frame(log)`  
+Read the input audio in Callback Mode, called each frame to listen to the audio.  
+**Parameter**  
+log - If true, it will add a status flag to the returns, accompany with the retrived result. Type: bool  
+**Returns**   
+retrieved_data - Every retrieved data during the standby time, type: 1d-List of string  
+status - an integer flag signifying the current status of the connection. Type: int  
+
+`clear_session()`  
+Refresh the receiver, abort the current connection and rollback to status 0.  
+
+`bin_to_text(binary)`  
+Convert binary signal to ASCII text.  
+**Parameter**   
+binary - The input binary data, type: string   
+
+`convert_result(received)`   
+Convert received binaries from all channels to demodulated text.  
+**Parameter**   
+received - a list of binary data  
+trim - set the trimming point, leave None if do not trim.  
+crc - Cyclic Redundancy Check (CRC) checksum code, leave None if skip CRC. type: 3-character string, defaults to None.   
+**Raise**  
+ASCIIError - If the binary data does not map to ASCII table.  
+CRCError - If Cyclic Redundancy Check failed.
+
+`get_fft()`  
+Get the discrete Fourier transform result of current audio input.  
+**Returns**  
+np array with a size of (2048,)  
+
+`get_status()`  
+Get the current status of connection.  
+**Returns**  
+a integer signifying the current status.
+
+`get_received_data()`  
+Return all received data  
+**Returns**  
+1-d list of strings  
+
+`clear()`  
+Clear the retrieved data.    

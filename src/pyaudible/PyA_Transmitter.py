@@ -11,31 +11,32 @@ from math import pi
 from scipy.io import wavfile
 
 
-Fs = 44100 #Sampling Rate
+Fs              = 44100 #Sampling Rate
 
-BASE_FREQ = 1238 #Hz
-SPACED_FREQ = 21.5 * 2 #Hz
+BASE_FREQ       = 1238 #Hz
+SPACED_FREQ     = 21.5 * 2 #Hz
 
-BASE_CH2 = 1971
-BASE_CH3 = 2703
-BASE_CH4 = 3435
-BASE_CH5 = 4124
-BASE_CH6 = 4813
-BASE_CH7 = 5545
-BASE_CH8 = 6277
+BASE_CH2        = 1971
+BASE_CH3        = 2703
+BASE_CH4        = 3435
+BASE_CH5        = 4124
+BASE_CH6        = 4813
+BASE_CH7        = 5545
+BASE_CH8        = 6277
 
 #BASE_CH_FREQ = [1238,1928,2616,3306,3994,4683,5372,6062]
-BASE_CH_FREQ = [1238,1971,2703,3435,4124,4813,5545,6277]
+BASE_CH_FREQ    = [1238,1971,2703,3435,4124,4813,5545,6277]
 
-CHANNEL_NUM = 8
+CHANNEL_NUM     = 8
 
 #ACTIVE_FREQ = [1185,3984,6740]
-ACTIVE_FREQ = [1185,4156,6957]
+ACTIVE_FREQ     = [1185,4156,6957]
 
 #ENDING_FREQ = [1206,4048,6740]
-ENDING_FREQ = [1206,4222,6957]
-TRANS_SPEED = 0.2 #sec
-SAMPLE_RATE = 44100
+ENDING_FREQ     = [1206,4222,6957]
+CRC_FREQ        = [[4210,4339],[4899,5028],[5631,5760]]
+TRANS_SPEED     = 0.2 #sec
+SAMPLE_RATE     = 44100
 
 chunk = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111',
          '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
@@ -117,6 +118,21 @@ class Transmitter(object):
         full_length = (int((len(message)-1) / minimum_block_length) + 1) * minimum_block_length
         return np.concatenate((message, np.zeros(full_length - len(message))), axis=None)
     
+    def crc_remainder(self, input_bitstring, polynomial_bitstring = '1011', initial_filler = '0'):
+        """Calculate the CRC remainder of a string of bits using a chosen polynomial.
+        initial_filler should be '1' or '0'.
+        """
+        polynomial_bitstring = polynomial_bitstring.lstrip('0')
+        len_input = len(input_bitstring)
+        initial_padding = (len(polynomial_bitstring) - 1) * initial_filler
+        input_padded_array = list(input_bitstring + initial_padding)
+        while '1' in input_padded_array[:len_input]:
+            cur_shift = input_padded_array.index('1')
+            for i in range(len(polynomial_bitstring)):
+                input_padded_array[cur_shift + i] \
+                = str(int(polynomial_bitstring[i] != input_padded_array[cur_shift + i]))
+        return ''.join(input_padded_array)[len_input:]
+    
     def modulate(self, message):
         '''
         Generate a modulated audio waveform in ndarray format.
@@ -134,8 +150,10 @@ class Transmitter(object):
         '''
         sym_num = len(self.text_to_bin(message))
         message = self.fill_empty_bits(self.text_to_bin(message))
-        
-        
+        #print(np.array2string(message.astype(int),max_line_width=np.inf,separator='')[1:-1])
+        #print(message)
+        crc = self.crc_remainder(np.array2string(message.astype(int),max_line_width=np.inf,separator='')[1:-1])
+        print(crc)
         
         freq_seqs = []
         ch_msg = [] #2d array with [1,0,0,1,0....,0,1]
@@ -186,11 +204,14 @@ class Transmitter(object):
                 signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = self.ch_freqs[3][activation_info[2]]
             elif i==4:
                 signal[0 : sym_length] = ACTIVE_FREQ[1]
-                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[1]
+                #signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[1]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = CRC_FREQ[0][int(crc[0])]
             elif i==5:
                 signal[0 : sym_length] = self.ch_freqs[i][self.SHARED_CHANNEL]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = CRC_FREQ[1][int(crc[1])]
             elif i==6:
                 signal[0 : sym_length] = self.ch_freqs[i][self.SHARED_CHANNEL]
+                signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = CRC_FREQ[2][int(crc[2])]
             elif i==7:
                 signal[0 : sym_length] = ACTIVE_FREQ[2]
                 signal[(len(freq_seqs[0])+1)*sym_length : (len(freq_seqs[0])+2)*sym_length] = ENDING_FREQ[2]

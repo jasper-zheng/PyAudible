@@ -30,8 +30,10 @@ class Receiver(object):
     FRAME_TIME          = 0.2
     
     active_freq_bin     = [55,193,323]
-    ending_freq_bin     = [56,196,323]
-    ending_channel_num  = [0,4,7]
+    #ending_freq_bin     = [56,196,323]
+    #ending_channel_num  = [0,4,7]
+    ending_freq_bin     = [56,323]
+    ending_channel_num  = [0,7]
     '''
     d_channel_1 = [[53,57,58],[59,60],[61,62],[63,64],[65,66],[67,68],[69,70],[71,72],[73,74],[75,76],[77,78],[79,80],[81,82],[83,84],[85,86],[87,88]]
     d_channel_2 = [[89,90],[91,92],[93,94],[95,96],[97,98],[99,100],[101,102],[103,104],[105,106],[107,108],[109,110],[111,112],[113,114],[115,116],[117,118],[119,120]]
@@ -60,13 +62,13 @@ class Receiver(object):
     activation_info = [[],[],[],[],[]]
     received_info   = [] #i0: Estimated length
     ending_info     = [[],[],[],[],[],[],[],[]]
-    ending_mark     = [0,0] #i0: ending pointer, i1: Estimated length
+    ending_mark     = [0,0,0,0,0] #i0: ending pointer, i1: Estimated length, i2-4: crc
     
     status = 0
     #speed_info = [[0,0],[0,2],[1,3]]
     speed_info = [[0,0],[4,0],[7,0]]
     
-    def __init__(self, actived_channel = 8, sensitivity = 'medium'):
+    def __init__(self, actived_channel = 8, sensitivity = 'medium', speed = 'auto'):
         self.d_channel.append(self.d_channel_1)
         self.d_channel.append(self.d_channel_2)
         self.d_channel.append(self.d_channel_3)
@@ -482,6 +484,8 @@ class Receiver(object):
                     self.ending_info[2].append(freq_bins[2][0])
                     self.ending_info[3].append(freq_bins[3][0])
                     self.ending_info[4].append(freq_bins[4][0])
+                    self.ending_info[5].append(freq_bins[5][0])
+                    self.ending_info[6].append(freq_bins[6][0])
                     self.ending_info[7].append(freq_bins[7][0])
                 elif self.SHARED_CHANNEL == 2:
                     self.ending_info[0].append(freq_bins[0][0])
@@ -489,6 +493,8 @@ class Receiver(object):
                     self.ending_info[2].append(freq_bins[0][1])
                     self.ending_info[3].append(freq_bins[1][1])
                     self.ending_info[4].append(freq_bins[0][2])
+                    self.ending_info[5].append(freq_bins[1][2])
+                    self.ending_info[6].append(freq_bins[0][3])
                     self.ending_info[7].append(freq_bins[1][3])
                 else:
                     self.ending_info[0].append(freq_bins[0][0])
@@ -496,12 +502,14 @@ class Receiver(object):
                     self.ending_info[2].append(freq_bins[2][0])
                     self.ending_info[3].append(freq_bins[3][0])
                     self.ending_info[4].append(freq_bins[0][1])
+                    self.ending_info[5].append(freq_bins[1][1])
+                    self.ending_info[6].append(freq_bins[2][1])
                     self.ending_info[7].append(freq_bins[3][1])
                 
                 if self.ending_mark[0] >= 5:
                     
                     validated = 0
-                    for i in range(3):
+                    for i in range(2):
                         count = 0
                         for info in self.ending_info[self.ending_channel_num[i]]:
                             if info == self.ending_freq_bin[i]:
@@ -509,7 +517,7 @@ class Receiver(object):
                                 if count == 2:
                                     validated += 1
                                     break
-                    if validated == 3:
+                    if validated == 2:
                         #if validated ended
                         print('')
                         #print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
@@ -520,12 +528,34 @@ class Receiver(object):
                         self.ending_mark[1]=100*self.get_bin_num(self.most_frequent(self.ending_info[1]),1) + 10*self.get_bin_num(self.most_frequent(self.ending_info[2]),2) + self.get_bin_num(self.most_frequent(self.ending_info[3]),3)
                         print('Ending marks estimated length: {}'.format(self.ending_mark[1]))
                         
+                        crc_bin = [0,0,0]
+                        crc_bin[0] = self.get_bin_num(self.most_frequent(self.ending_info[4]),4)
+                        crc_bin[1] = self.get_bin_num(self.most_frequent(self.ending_info[5]),5)
+                        crc_bin[2] = self.get_bin_num(self.most_frequent(self.ending_info[6]),6)
+                        crc = ''
+                        print(crc_bin)
+                        for i in range(3):
+                            if ( crc_bin[i] == 2):
+                                crc += '0'
+                            elif ( crc_bin[i] == 5):
+                                crc += '1'
+                            else:
+                                crc = None
+                                print('escaped from crc test')
+                                break
+                                
+                        
                         
                         ##################
                         if(self.check_result(self.received_info[0], self.ending_mark[1], self.copy_recieved_bins) == 1):
                             try: 
-                                result = self.convert_result(self.copy_recieved_bins, self.trim)
+                                result = self.convert_result(self.copy_recieved_bins, self.trim, crc)
                             except UnicodeDecodeError:
+                                print('UnicodeDecodeError')
+                                self.clear_session()
+                                return 6
+                            except CRCError:
+                                print('CRCError')
                                 self.clear_session()
                                 return 6
                             self.retrieved_data.append(result)
@@ -542,7 +572,7 @@ class Receiver(object):
                         self.d_channel[0][0] = [57,58]
                         self.ending_mark[0] = 0
                 
-            elif (freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.ending_freq_bin[2]):
+            elif (freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.ending_freq_bin[1]):
                 
                 #print('detecting ending...')
                 #if one of the ending bit appears, expande the fft scope, start monitoring for 5 frames
@@ -569,7 +599,7 @@ class Receiver(object):
         self.trim = 0
         self.update_speed_info()
         self.d_channel[0][0] = [53,57,58]
-        self.ending_mark[0] = 0
+        self.ending_mark = [0,0,0,0,0]
         self.refresh_audio()
         #self.TRACK_NUM = int(self.CHANNEL_NUMBER / self.SHARED_CHANNEL)
     
@@ -602,7 +632,7 @@ class Receiver(object):
         
         return 4
         
-    def bin_to_ascii(self,bin_data):
+    def bin_to_text(self,bin_data):
         st = ''
         for i in range(len(bin_data)):
             st += str(int(bin_data[i]))
@@ -641,14 +671,17 @@ class Receiver(object):
         '''
         
         
-    def convert_result(self, received, trim = -1):
+    def convert_result(self, received, trim = -1, crc = None):
         '''
-        Convert received binaries from all channels to demodulated message
+        Convert received binaries from all channels to demodulated text
 
         Parameters
         ----------
         received : ndarray (binaries)
             received binaries from all channels.
+        trim : int (optional)
+            set the trimming point.
+        crc : 
 
         Returns
         -------
@@ -661,15 +694,53 @@ class Receiver(object):
         for i in range(len(received[0])):
             for j in range(self.SHARED_CHANNEL):
                 binary += self.chunk_list[received[j][i]]
+                
+        if crc:
+            if self.crc_check(binary,'1011',crc):
+                i = 0
+                print('crc {} passed'.format(crc))
+            else:    
+                raise CRCError 
         if trim == -1:
             trim = len(binary)
         #print(binary)
-        return self.bin_to_ascii(binary[0:trim])
-        
+        return self.bin_to_text(binary[0:trim])
+    
+    def crc_check(self, input_bitstring, polynomial_bitstring = '1011', check_value = '000'):
+        """Calculate the CRC check of a string of bits using a chosen polynomial."""
+        polynomial_bitstring = polynomial_bitstring.lstrip('0')
+        len_input = len(input_bitstring)
+        initial_padding = check_value
+        input_padded_array = list(input_bitstring + initial_padding)
+        while '1' in input_padded_array[:len_input]:
+            cur_shift = input_padded_array.index('1')
+            for i in range(len(polynomial_bitstring)):
+                input_padded_array[cur_shift + i] \
+                = str(int(polynomial_bitstring[i] != input_padded_array[cur_shift + i]))
+        return ('1' not in ''.join(input_padded_array)[len_input:])
+
     def get_fft(self):
+        '''
+        Get the discrete Fourier transform result of current audio input
+
+        Returns
+        -------
+        np array with a size of (2048,)
+            FFT result.
+
+        '''
         return self.fft
         
     def get_status(self):
+        '''
+        Get the current status of connection.
+
+        Returns
+        -------
+        int
+            a integer signifying the current status.
+
+        '''
         return self.status
         
     def clear(self):
@@ -724,4 +795,8 @@ class ActivationError(Error):
         
 class ASCIIError(Error):
     def __init___(self, message = 'Invalid data received'):
+        super().__init__(self.message)
+        
+class CRCError(Error):
+    def __init___(self, message = 'crc test failed'):
         super().__init__(self.message)
