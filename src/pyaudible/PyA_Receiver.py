@@ -5,12 +5,16 @@ Created on Sun Jan 10 13:41:44 2021
 
 @author: winter_camp
 """
+__version__ = "1.1.0"
+
 import pyaudio
 import numpy as np
 #import matplotlib.pyplot as plt
 import time
 
 from scipy.fftpack import fft
+
+#%%
 
 class Receiver(object):
     
@@ -800,3 +804,18 @@ class ASCIIError(Error):
 class CRCError(Error):
     def __init___(self, message = 'crc test failed'):
         super().__init__(self.message)
+
+#%%
+
+def get_version():
+    return [__version__, pyaudio.__version__, pyaudio.get_portaudio_version()]
+    
+def print_version():
+    print('PyAudible version {} \nPyAudio version {} \nPortAudio verision {} '.format(__version__,pyaudio.__version__,pyaudio.get_portaudio_version()))
+    
+    
+    
+    
+    
+    
+    

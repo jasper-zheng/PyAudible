@@ -1,7 +1,7 @@
 ###### PyAudible 1.1.0
 # Documentation
 
-PyAudible is a Python library for sending and receiving data using audible sound. PyAudible includes a transmitter and a receiver module that could be implemented on multiple separate devices, enables the transmission of small amounts of data between devices in the vicinity.  
+PyAudible is a Python library for sending and receiving data using audible sound. PyAudible includes a transmitter and a receiver module that could be implemented on multiple separated devices, enables the transmission of small amounts of data between devices in the vicinity.  
 
  * The transmitter module `Transmitter` generates encoded audio waveforms.  
  * The receiver module `Receiver` listens and analyses the audio waveforms captured by microphones.  
