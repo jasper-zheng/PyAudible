@@ -10,21 +10,14 @@ import tkinter as tk
 import tkinter.scrolledtext as st
 
 import pyaudio
+import wave
+import sys
 #import matplotlib
-import matplotlib.pyplot as plt
+
 from scipy.fftpack import fft, fftfreq
 import time
 
-import numpy as np
-
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
-# Implement the default Matplotlib key bindings.
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
-import matplotlib.animation as animation
-
-import PyA_Receiver as pyaudible
+import PyA_Transmitter as pyaudible
 
 #matplotlib.use("TkAgg")
 
@@ -46,6 +39,9 @@ SHARED_CHANNEL = 2
 FRAME_TIME = 0.2
 
 
+
+
+
 class App(object):
     
     
@@ -54,44 +50,129 @@ class App(object):
     notification = ''
     notification_framecount = 0
     received = []
-
     
+    speed = 2
+    volume = 80
+    
+    is_transmitting = False
+
+    wf = 0
+    
+    
+    def callback(self,in_data, frame_count, time_info, status):
+        data = self.wf.readframes(frame_count)
+        return (data, pyaudio.paContinue)
+
     def activate(self):
-        if self.status==-1:
+        
+        
+        if self.is_transmitting==False:
+            self.p = pyaudio.PyAudio()
             self.btn_activate.config(text="Stop",fg='red')
-            self.status = 0
+            
+            self.tx = pyaudible.Transmitter(speed = self.get_speed(), volume = self.volume/100)
+
+            self.tx.modulate_to_file(self.text_area.get('1.0', tk.END)[0:-1],'t.wav')
+    
+            self.wf = wave.open('t.wav', 'rb')
+            print(self.wf)
+            print(self.slider.get())
+            
+            self.stream = self.p.open(format=self.p.get_format_from_width(self.wf.getsampwidth()),
+                    channels=self.wf.getnchannels(),
+                    rate=self.wf.getframerate(),
+                    output=True,
+                    stream_callback=self.callback)
+            
+            self.stream.start_stream()
+            
+            self.is_transmitting = True
         else:
-            self.btn_activate.config(text="Activate",fg='black')
-            self.status = -1
-            self.lbl_display['text'] = ''
-            self.display = ''
+            self.close_audio()
         print('activate')
         return 0
+    
+    def close_audio(self):
+        self.btn_activate.config(text="Activate",fg='black')
+        self.stream.stop_stream()
+        self.stream.close()
+        self.wf.close()
+        self.p.terminate()
+        self.is_transmitting = False
+    
+    def get_speed(self):
+        if self.speed == 0:
+            return 'slow'
+        elif self.speed == 1:
+            return 'medium'
+        elif self.speed == 2:
+            return 'fast'
+        
+        
+    def speed_l(self):
+        self.speed = 0
+        self.refresh_speed_btn()
+        return 0
+    def speed_m(self):
+        self.speed = 1
+        self.refresh_speed_btn()
+        return 0
+    def speed_f(self):
+        self.speed = 2
+        self.refresh_speed_btn()
+    
+    def refresh_speed_btn(self):
+        if self.speed == 0:
+            self.btn_l_speed.configure(state='active')
+            self.btn_m_speed.configure(state='normal')
+            self.btn_f_speed.configure(state='normal')
+        elif self.speed == 1:
+            self.btn_l_speed.configure(state='normal')
+            self.btn_m_speed.configure(state='active')
+            self.btn_f_speed.configure(state='normal')
+        elif self.speed == 2:
+            self.btn_l_speed.configure(state='normal')
+            self.btn_m_speed.configure(state='normal')
+            self.btn_f_speed.configure(state='active')
     
     def __init__(self):
         self.status=-1
         self.root = tk.Tk()
-        self.root.wm_title("Receiver GUI Demo")
+        self.root.wm_title("Transmitter GUI Demo")
         #self.frame1 = tk.Frame(master=self.root, height=300, bg='white')
         #self.frame1.pack(fill=tk.X)
         
         self.text_area = st.ScrolledText(self.root,
-                                         width = 5,
-                                         height = 20)
-        self.text_area.pack(fill=tk.X)
+                                         width = 38,
+                                         height = 5)
+        self.text_area.grid(row=0,column=0,columnspan=3)
         
+        self.lbl_speed = tk.Label(master=self.root, text="Transmission Speed")
+        self.lbl_speed.grid(row=3,column=0,columnspan=3)
+        self.btn_l_speed = tk.Button(master=self.root, text="Slow", command=self.speed_l)
+        self.btn_l_speed.grid(row=4,column=0,sticky = tk.E)
+          
+        self.btn_m_speed = tk.Button(master=self.root, text="Medium", command=self.speed_m)
+        self.btn_m_speed.grid(row=4,column=1)  
         
-        self.text_area.configure(state ='disabled')
-        
-        self.btn_activate = tk.Button(master=self.root, text="Activate", command=self.activate)
-        self.btn_activate.pack(fill=tk.X)
-        
+        self.btn_f_speed = tk.Button(master=self.root, text="Fast", command=self.speed_f)
+        self.btn_f_speed.grid(row=4,column=2,sticky = tk.W)                   
+                             
+        self.lbl_vol = tk.Label(master=self.root, text="Transmission Volume")
+        self.lbl_vol.grid(row=5,column=0,columnspan=3)
+        self.slider = tk.Scale(master=self.root, from_=0, to=100,length=200,resolution=10,showvalue=0,orient=tk.HORIZONTAL)
+        self.slider.grid(row=6,column=0,columnspan=3)
+        self.slider.set(80)
+        #self.text_area.configure(state ='disabled')
         self.lbl_status = tk.Label(master=self.root, text="Click the button to start receiver")
-        self.lbl_status.pack(fill=tk.X)
-        self.lbl_display = tk.Label(master=self.root, text="", fg="grey")
-        self.lbl_display.pack(fill=tk.X)
+        self.lbl_status.grid(row=7,column=0,columnspan=3)
+        self.btn_activate = tk.Button(master=self.root, text="Transmit", command=self.activate)
+        self.btn_activate.grid(row=8,column=0,columnspan=3)
         
-    
+        
+        self.refresh_speed_btn()
+        
+        '''
         self.fig, self.ax2 = plt.subplots(figsize=(4,1.5))
         x = np.arange(0, 2 * CHUNK, 2)
         x_fft = np.linspace(0, RATE, CHUNK)
@@ -104,7 +185,7 @@ class App(object):
         canvas = FigureCanvasTkAgg(self.fig, master=self.root)
         self.fig.canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
+'''
     def handle_status(self, data,received_data):
         if self.status == 0:
             self.lbl_status['text'] = 'Waiting for a transmission...'
@@ -159,7 +240,9 @@ class App(object):
         
         return 0
     
-
+    def refresh_audio_state(self):
+        if self.is_transmitting and not self.stream.is_active():
+            self.close_audio()
 
 
 frame_count = 0
@@ -181,7 +264,7 @@ canvas.mpl_connect("key_press_event", key_press_handler)
 frame_time = time.time()
 
 
-rx = pyaudible.Receiver()
+
 
 app = App()
 
@@ -195,20 +278,12 @@ while (True):
     if app.status !=-1:
         
         
-        data, app.status = rx.read_frame(log = True)
-        y_fft = rx.get_fft()
+        
         #y_fft = fft(data_int)
         #y_fft[0:20] = 0
     
         while (time.time()-frame_time >= 0.1):
-            app.line_fft.set_ydata(np.abs(y_fft[0:CHUNK]) * 2 / (256 * CHUNK) )
-        
-            app.ax2.draw_artist(app.ax2.patch)
-            app.ax2.draw_artist(app.line_fft)
             
-            app.fig.canvas.blit()
-    
-            app.fig.canvas.flush_events()
             frame_time = time.time()
             
             
@@ -217,8 +292,9 @@ while (True):
         
     app.root.update_idletasks()
     app.root.update()
-    app.handle_status(data,rx.get_received_data())
+    #app.handle_status(data,rx.get_received_data())
     #app.update_text(rx.get_received_data())
+    app.refresh_audio_state()
     
 
 print(frame_count/60)

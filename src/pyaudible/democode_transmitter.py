@@ -3,7 +3,7 @@
 import PyA_Transmitter as pyaudiable
 
 # instantiate the transmitter
-transmitter = pyaudiable.Transmitter(shared_channel = 2, volume = 1.0)
+transmitter = pyaudiable.Transmitter(speed = 'fast', volume = 1.0)
 
 # define the message to be transmitted
 message = 'Hello World!'

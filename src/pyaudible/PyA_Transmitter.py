@@ -11,6 +11,8 @@ from math import pi
 from scipy.io import wavfile
 
 
+
+
 Fs              = 44100 #Sampling Rate
 
 BASE_FREQ       = 1238 #Hz
@@ -50,7 +52,7 @@ class Transmitter(object):
     
     ch_freqs = []
     
-    def __init__(self, speed = 'slow', volume = 1.0):
+    def __init__(self, speed = 'fast', volume = 1.0):
         if speed == 'slow':
             self.SHARED_CHANNEL = 2
         elif speed == 'medium':
@@ -249,8 +251,17 @@ class Transmitter(object):
 
         '''
         fsk = self.modulate(message)
-        wavfile.write(filename, Fs, fsk)
+
+        wavfile.write(filename, Fs, self.float2pcm(fsk))
         
+    def float2pcm(self,sig):
+        sig = np.asarray(sig) 
+        dtype = np.dtype('int16')
+        i = np.iinfo(dtype)
+        abs_max = 2 ** (i.bits - 1)
+        offset = i.min + abs_max
+        return (sig * abs_max + offset).clip(i.min, i.max).astype(dtype)
+    
     def modulate_and_play(self, message):
         i = 0
     

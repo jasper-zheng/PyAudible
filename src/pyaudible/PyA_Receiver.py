@@ -205,7 +205,7 @@ class Receiver(object):
             2: Activated, preparing
             3: Activation Failed, rollback to unactivated
             4: Listening
-            5: Cycle Terminated, received auccessfully and back to Unactivated (status 0)
+            5: Cycle Terminated, received successfully and back to Unactivated (status 0)
             6: Cycle Terminated, received failed and back to Unactivated (status 0)
 
         '''
