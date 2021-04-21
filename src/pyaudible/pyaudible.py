@@ -1,4 +1,27 @@
+# PyAudible : Sending and Receiving Data using Audible Sound
+
+#
+
+'''
+A Python library for sending and receiving data using audible sound. 
+PyAudible includes a transmitter and a receiver module that could be 
+implemented on multiple devices, enables the transmission of small 
+amounts of data between separated systems in the vicinity.
+
+The library implements a Multi-channel Carrier Modulation protocol, allows 
+a configurable transmitting speed between 5 - 20 bytes/sec. It uses Cyclic 
+Redundancy Check (CRC) to ensure reliable delivery of data.
+
+Overview
+--------
+
+**Classes**
+  :py:class:`Transmitter`, :py:class:`Receiver`
+  
+
+'''
 __version__ = "1.1.0"
+__author__ = "Jasper Zheng (Shuoyang)"
 
 import pyaudio
 
@@ -36,10 +59,10 @@ ENDING_FREQ     = [1206,4222,6957]
 CRC_FREQ        = [[4210,4339],[4899,5028],[5631,5760]]
 TRANS_SPEED     = 0.2 #sec
 SAMPLE_RATE     = 44100
-'''
-chunk = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111',
-         '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
-'''
+
+#chunk = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111',
+#         '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
+
 chunk_list = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
 
 d_channel_1 = [[53,57,58],[59,60],[61,62],[63,64],[65,66],[67,68],[69,70],[71,72],[73,74],[75,76],[77,78],[79,80],[81,82],[83,84],[85,86],[87,88]]

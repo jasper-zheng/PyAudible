@@ -4,23 +4,25 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="example-pkg-YOUR-USERNAME-HERE", # Replace with your own username
-    version="0.0.1",
-    author="Example Author",
-    author_email="author@example.com",
-    description="A small example package",
+    name="pyaudible", # Replace with your own username
+    version="1.1.0",
+    author="Jasper Zheng (Shuoyang)",
+    author_email="s.zheng14@student.liverpool.ac.uk",
+    description="A Python library for sending and receiving data using audible sound.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/jasper-zheng/PyAudible",
     project_urls={
-        "Bug Tracker": "https://github.com/pypa/sampleproject/issues",
+        "Bug Tracker": "https://github.com/jasper-zheng/PyAudible/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    packages=["pyaudible"],
     python_requires=">=3.6",
+    include_package_data=True,
+    install_requires=["numpy", "scipy", "pyaudio"],
 )
