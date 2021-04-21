@@ -24,7 +24,7 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 import matplotlib.animation as animation
 
-import PyA_Receiver as pyaudible
+from pyaudible import receiver
 
 #matplotlib.use("TkAgg")
 
@@ -86,7 +86,6 @@ class App(object):
         self.lbl_display = tk.Label(master=self.root, text="", fg="grey")
         self.lbl_display.pack(fill=tk.X)
         
-    
         self.fig, self.ax2 = plt.subplots(figsize=(4,1.5))
         x = np.arange(0, 2 * CHUNK, 2)
         x_fft = np.linspace(0, RATE, CHUNK)
@@ -155,7 +154,7 @@ frame_start_time = time.time()
 
 frame_time = time.time()
 
-rx = pyaudible.Receiver()
+rx = receiver.Receiver()
 
 app = App()
 

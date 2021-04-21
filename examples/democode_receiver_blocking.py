@@ -1,9 +1,9 @@
 """PyAudible Example: Receive and Demodulate Data (Blocking Mode)"""
 
-import pyaudible
+from pyaudible import receiver
 
 # instantiate the receiver
-rx = pyaudible.Receiver(sensitivity = 'medium', 
+rx = receiver.Receiver(sensitivity = 'medium', 
                         speed = 'auto')
 
 # active the receiver for 30 seconds

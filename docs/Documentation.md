@@ -48,10 +48,10 @@ With required dependencies installed, use `pip install pyaudible` to download an
 ```python
 """PyAudible Example: Modulate and Transmit Data"""
 
-import pyaudible
+from pyaudible import transmitter
 
 # instantiate the transmitter
-tx = pyaudible.Transmitter(speed = 'fast', volume = 1.0)
+tx = transmitter.Transmitter(speed = 'fast', volume = 1.0)
 
 # define the message to be transmitted
 message = 'Hello World!'
@@ -61,7 +61,6 @@ filename = 'transmitter_sample.wav'
 
 # modulate the message and store the modulated signal to an audio file
 tx.modulate_to_file(message, filename)
-
 ```
 To convert a message to electrical signals and generate the modulated audio file, first instantiate PyAudible by ``pyaudible.Transmitter()`` with desired parameters (see [Class Transmitter](#class-transmitter)). It will initialise a transmitter for modulating data.   
 
@@ -73,10 +72,10 @@ To modulate a message without save it to file, or play the audio right after the
 ```python
 """PyAudible Example: Receive and Demodulate Data (Blocking Mode)"""
 
-import pyaudible
+from pyaudible import receiver
 
 # instantiate the receiver
-rx = pyaudible.Receiver(sensitivity = 'medium',
+rx = receiver.Receiver(sensitivity = 'medium',
                         speed = 'auto')
 
 # active the receiver for 30 seconds
@@ -92,11 +91,11 @@ Note that the Blocking Mode will block the thread until all the required time ha
 ```python
 """PyAudible Example: Receive and Demodulate Data (Callback Mode)"""
 
-import pyaudible
+from pyaudible import receiver
 import time
 
 # instantiate the receiver
-rx = pyaudible.Receiver(sensitivity = 'medium',
+rx = receiver.Receiver(sensitivity = 'medium',
                         speed = 'auto')
 
 # create a empty variable to store the received data

@@ -1,10 +1,10 @@
 """PyAudible Example: Receive and Demodulate Data (Callback Mode)"""
 
-import pyaudible
+from pyaudible import receiver
 import time
 
 # instantiate the receiver
-rx = pyaudible.Receiver(sensitivity = 'medium',
+rx = receiver.Receiver(sensitivity = 'medium',
                         speed = 'auto')
 
 # create a empty variable to store the received data

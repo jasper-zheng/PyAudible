@@ -17,7 +17,8 @@ import sys
 from scipy.fftpack import fft, fftfreq
 import time
 
-import PyA_Transmitter as pyaudible
+#import PyA_Transmitter as pyaudible
+from pyaudible import transmitter
 
 #matplotlib.use("TkAgg")
 
@@ -66,7 +67,7 @@ class App(object):
             self.p = pyaudio.PyAudio()
             self.btn_activate.config(text="Stop",fg='red')
             
-            self.tx = pyaudible.Transmitter(speed = self.get_speed(), volume = self.volume/100)
+            self.tx = transmitter.Transmitter(speed = self.get_speed(), volume = self.volume/100)
 
             self.tx.modulate_to_file(self.text_area.get('1.0', tk.END)[0:-1],'t.wav')
     
