@@ -48,8 +48,6 @@ FRAME_TIME = 0.2
 
 class App(object):
     
-    
-    
     display = ''
     notification = ''
     notification_framecount = 0
@@ -72,14 +70,11 @@ class App(object):
         self.status=-1
         self.root = tk.Tk()
         self.root.wm_title("Receiver GUI Demo")
-        #self.frame1 = tk.Frame(master=self.root, height=300, bg='white')
-        #self.frame1.pack(fill=tk.X)
         
         self.text_area = st.ScrolledText(self.root,
                                          width = 5,
                                          height = 20)
         self.text_area.pack(fill=tk.X)
-        
         
         self.text_area.configure(state ='disabled')
         
@@ -134,7 +129,6 @@ class App(object):
             self.notification = 'Transmission failed, try again'
             self.notification_framecount = 1
             
-            
         if self.notification_framecount>0 and self.notification_framecount<60:
             self.lbl_status['text'] = self.notification
             self.notification_framecount += 1
@@ -143,43 +137,23 @@ class App(object):
             self.lbl_display['text'] = ''
             self.display = ''
         
-        
         return 0
     
     def update_text(self):
         texts = ''
         texts += self.received[-1][1] + '\n' + self.received[-1][0] + '\n\n'
         
-        
         self.text_area.configure(state ='normal')
         self.text_area.insert(tk.INSERT,texts)
         self.text_area.configure(state ='disabled')
-        
-        
-        
         return 0
-    
-
-
 
 frame_count = 0
 frame_num = 0
 start_time = time.time()
 frame_start_time = time.time()
 
-
-'''
-canvas.mpl_connect(
-    "key_press_event", lambda event: print(f"you pressed {event.key}"))
-canvas.mpl_connect("key_press_event", key_press_handler)
-
-'''
-#button = tk.Button(master=root, text="Quit", command=root.quit)
-#button.pack(side=tk.BOTTOM)
-
-
 frame_time = time.time()
-
 
 rx = pyaudible.Receiver()
 
@@ -187,19 +161,12 @@ app = App()
 
 while (True):
 #while (time.time()-start_time < 60):
-    '''
-    data = stream.read(CHUNK, exception_on_overflow = False)
-    data_int = np.frombuffer(data, dtype = np.int16)
-    '''
+
     data = ''
     if app.status !=-1:
-        
-        
         data, app.status = rx.read_frame(log = True)
         y_fft = rx.get_fft()
-        #y_fft = fft(data_int)
-        #y_fft[0:20] = 0
-    
+
         while (time.time()-frame_time >= 0.1):
             app.line_fft.set_ydata(np.abs(y_fft[0:CHUNK]) * 2 / (256 * CHUNK) )
         
@@ -210,16 +177,13 @@ while (True):
     
             app.fig.canvas.flush_events()
             frame_time = time.time()
-            
-            
-        
+
         frame_count += 1
         
     app.root.update_idletasks()
     app.root.update()
     app.handle_status(data,rx.get_received_data())
     #app.update_text(rx.get_received_data())
-    
 
 print(frame_count/60)
 

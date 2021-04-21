@@ -48,41 +48,41 @@ With required dependencies installed, use `pip install pyaudible` to download an
 ```python
 """PyAudible Example: Modulate and Transmit Data"""
 
-import PyA_Transmitter as pyaudible
+import pyaudible
 
 # instantiate the transmitter
-transmitter = pyaudible.Transmitter(shared_channel = 2,
-                                     volume = 1.0)
+tx = pyaudible.Transmitter(speed = 'fast', volume = 1.0)
 
 # define the message to be transmitted
 message = 'Hello World!'
 
-# modulate the message
-# then store the modulated signal to an audio file
-transmitter.modulate_to_file(message, 'transmitter_sample.wav')
+# define the filename
+filename = 'transmitter_sample.wav'
+
+# modulate the message and store the modulated signal to an audio file
+tx.modulate_to_file(message, filename)
+
 ```
 To convert a message to electrical signals and generate the modulated audio file, first instantiate PyAudible by ``pyaudible.Transmitter()`` with desired parameters (see [Class Transmitter](#class-transmitter)). It will initialise a transmitter for modulating data.   
 
 Modulate a message by calling ``pyaudible.Transmitter.modulate_to_file()`` with input data and the file name, it will modulate the data to audio waveforms and save it to a playable file.
 
-To modulate a message without save it to file, or play the audio right after the modulation, call ``pyaudiable.Transmitter.modulate()`` or ``pyaudiable.Transmitter.modulate_and_play()`` (see [Class Transmitter](#class-transmitter)).
+To modulate a message without save it to file, or play the audio right after the modulation, call ``pyaudible.Transmitter.modulate()`` or ``pyaudible.Transmitter.modulate_and_play()`` (see [Class Transmitter](#class-transmitter)).
 
 #### Example: Receive and Demodulate Data (Blocking Mode)
 ```python
-"""PyAudiable Example: Receive and Demodulate Data (Blocking Mode)"""
+"""PyAudible Example: Receive and Demodulate Data (Blocking Mode)"""
 
-import PyA_Receiver as pyaudiable
+import pyaudible
 
 # instantiate the receiver
-receiver = pyaudiable.Receiver(actived_channel = 8,
-                               speed = 'medium',
-                               sensitivity = 'medium')
+rx = pyaudible.Receiver(sensitivity = 'medium',
+                        speed = 'auto')
 
 # active the receiver for 30 seconds
-retrieved_data = receiver.read_block(30)
-
+retrieved_data = rx.read_block(30)
 ```
-To detect and demodulate data, first instantiate a receiver on the desired device by `pyaudiable.Receiver()` with desired parameters (see [Class Receiver](#class-receiver)). It will initialise a reusable receiver for analysing and demodulating data.
+To detect and demodulate data, first instantiate a receiver on the desired device by `pyaudible.Receiver()` with desired parameters (see [Class Receiver](#class-receiver)). It will initialise a reusable receiver for analysing and demodulating data.
 
 Open the receiver by calling `pyaudible.Receiver.read_block()`, the receiver will stand-by and continuously detecting audio input. The results will be return in a Python list.
 
@@ -90,17 +90,16 @@ Note that the Blocking Mode will block the thread until all the required time ha
 
 #### Example: Receive and Demodulate Data (Callback Mode)
 ```python
-"""PyAudiable Example: Receive and Demodulate Data (Callback Mode)"""
+"""PyAudible Example: Receive and Demodulate Data (Callback Mode)"""
 
-import PyA_Receiver as pyaudiable
+import pyaudible
 import time
 
 # instantiate the receiver
-receiver = pyaudiable.Receiver(actived_channel = 8,
-                               speed = 'medium',
-                               sensitivity = 'medium')
+rx = pyaudible.Receiver(sensitivity = 'medium',
+                        speed = 'auto')
 
-# create a empty variable to store the retrieced data
+# create a empty variable to store the received data
 retrieved_data = ''
 
 # create a while loop for 30 seconds
@@ -109,15 +108,15 @@ while (time.time() - start_time < 30):
 
     # call the receiver on each frames
     # the receiver will return received data on the fly
-    data, _ = receiver.read(log = True)
+    data = rx.read_frame(log = False)
 
-    # if retrieced data is not empty, add then to the predefined variable
+    # if received data is not empty, add then to the predefined variable
     if data:
         retrieved_data += data
 
 # Received data will also be stored in a list,
 # it contains messages demodulated from each singal during the standby time
-message_list = receiver.received_data()
+message_list = rx.received_data()
 ```
 
 In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `pyaudible.Receiver.read()`.
@@ -125,7 +124,7 @@ Whenever new data is ready, the receiver will return the converted data as strin
 
 ## Class Transmitter
 
-``class pyaudiable.Transmitter``  
+``class pyaudible.Transmitter``  
 
 Python interface to modulate and transmit data. Provides methods to:  
   * Convert text to modulated audio waveform
@@ -182,7 +181,7 @@ filename - Name of the output wav file, type: string
 
 
 ## Class Receiver
-`class pyaudiable.Receiver`  
+`class pyaudible.Receiver`  
 
 Python interface to detect and demodulate broadcasted audio and convert them into text data.
 

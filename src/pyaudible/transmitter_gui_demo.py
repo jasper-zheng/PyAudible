@@ -39,11 +39,7 @@ SHARED_CHANNEL = 2
 FRAME_TIME = 0.2
 
 
-
-
-
 class App(object):
-    
     
     
     display = ''
@@ -172,20 +168,7 @@ class App(object):
         
         self.refresh_speed_btn()
         
-        '''
-        self.fig, self.ax2 = plt.subplots(figsize=(4,1.5))
-        x = np.arange(0, 2 * CHUNK, 2)
-        x_fft = np.linspace(0, RATE, CHUNK)
-        self.line_fft, = self.ax2.semilogx(x_fft, np.zeros(CHUNK), '-', lw = 0.5,color="black")
-        self.ax2.set_xlim(20, RATE/2)
-        self.ax2.set_ylim(0, 5)
-        self.ax2.set_facecolor((0.925,0.925,0.925))
-        self.fig.patch.set_facecolor((0.925,0.925,0.925))
-        plt.axis('off')
-        canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        self.fig.canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-'''
+
     def handle_status(self, data,received_data):
         if self.status == 0:
             self.lbl_status['text'] = 'Waiting for a transmission...'
@@ -251,16 +234,6 @@ start_time = time.time()
 frame_start_time = time.time()
 
 
-'''
-canvas.mpl_connect(
-    "key_press_event", lambda event: print(f"you pressed {event.key}"))
-canvas.mpl_connect("key_press_event", key_press_handler)
-
-'''
-#button = tk.Button(master=root, text="Quit", command=root.quit)
-#button.pack(side=tk.BOTTOM)
-
-
 frame_time = time.time()
 
 
@@ -270,30 +243,17 @@ app = App()
 
 while (True):
 #while (time.time()-start_time < 60):
-    '''
-    data = stream.read(CHUNK, exception_on_overflow = False)
-    data_int = np.frombuffer(data, dtype = np.int16)
-    '''
+
+    
     data = ''
     if app.status !=-1:
-        
-        
-        
-        #y_fft = fft(data_int)
-        #y_fft[0:20] = 0
-    
-        while (time.time()-frame_time >= 0.1):
-            
+        while (time.time()-frame_time >= 0.1):       
             frame_time = time.time()
-            
-            
-        
+
         frame_count += 1
         
     app.root.update_idletasks()
     app.root.update()
-    #app.handle_status(data,rx.get_received_data())
-    #app.update_text(rx.get_received_data())
     app.refresh_audio_state()
     
 

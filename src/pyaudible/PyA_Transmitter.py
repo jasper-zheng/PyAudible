@@ -10,9 +10,6 @@ import numpy as np
 from math import pi
 from scipy.io import wavfile
 
-
-
-
 Fs              = 44100 #Sampling Rate
 
 BASE_FREQ       = 1238 #Hz
@@ -43,6 +40,11 @@ SAMPLE_RATE     = 44100
 chunk = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111',
          '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111']
 
+
+
+
+
+
 #%%
 
 class Transmitter(object):
@@ -71,7 +73,7 @@ class Transmitter(object):
             self.ch_freqs.append(channel_freq)
         
     def __str__(self):
-        return ' - PyAudiable Transmitter - \nShared Channel: {}\nTransmitting Volume: {}'.format(self.SHARED_CHANNEL, self.VOLUME)
+        return ' - PyAudiable Transmitter - \nSpeed: {}\nTransmitting Volume: {}'.format(self.SHARED_CHANNEL, self.VOLUME)
     
     
     
@@ -82,9 +84,7 @@ class Transmitter(object):
                 adjusted_message = np.append(adjusted_message, [0])
         #print('original shape: %d' % (binary_message.shape)) 
         #print('adjusted shape: %d' % (adjusted_message.shape)) 
-        
         freq_seq = []
-        
         #print('adjusted_message: ')
         #print(np.array2string(adjusted_message.astype(int),max_line_width=np.inf,separator=''))
         for i in range(int(len(adjusted_message)/4)):
@@ -106,13 +106,7 @@ class Transmitter(object):
         m = np.zeros(len(res))
         for i in range(len(res)):
             m[i] = int(res[i])
-        '''
-        res = bin(int.from_bytes(text.encode(), 'big')).replace('b', '')
-        
-        m = np.zeros(len(res))
-        for i in range(len(res)):
-            m[i] = int(res[i])
-            '''
+            
         return m
     
     def fill_empty_bits(self, message):
@@ -152,8 +146,6 @@ class Transmitter(object):
         '''
         sym_num = len(self.text_to_bin(message))
         message = self.fill_empty_bits(self.text_to_bin(message))
-        #print(np.array2string(message.astype(int),max_line_width=np.inf,separator='')[1:-1])
-        #print(message)
         crc = self.crc_remainder(np.array2string(message.astype(int),max_line_width=np.inf,separator='')[1:-1])
         print(crc)
         
@@ -230,9 +222,9 @@ class Transmitter(object):
         
         for i in range(len(signals)-1):
             fsk += a * np.sin(signals[i+1])/CHANNEL_NUM
-            a = a * 0.9
+            a = a * 0.9 * self.VOLUME
         
-        return fsk
+        return fsk, T
     
     def modulate_to_file(self, message, filename):
         '''
@@ -250,9 +242,10 @@ class Transmitter(object):
         None.
 
         '''
-        fsk = self.modulate(message)
+        fsk, T = self.modulate(message)
 
         wavfile.write(filename, Fs, self.float2pcm(fsk))
+        return T
         
     def float2pcm(self,sig):
         sig = np.asarray(sig) 
@@ -262,8 +255,8 @@ class Transmitter(object):
         offset = i.min + abs_max
         return (sig * abs_max + offset).clip(i.min, i.max).astype(dtype)
     
-    def modulate_and_play(self, message):
-        i = 0
+    #def modulate_and_play(self, message):
+        #return 0
     
     def get_shared_channel_num(self):
         return self.SHARED_CHANNEL

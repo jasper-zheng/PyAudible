@@ -1,14 +1,13 @@
-"""PyAudiable Example: Receive and Demodulate Data (Callback Mode)"""
+"""PyAudible Example: Receive and Demodulate Data (Callback Mode)"""
 
-import PyA_Receiver as pyaudible
+import pyaudible
 import time
 
 # instantiate the receiver
-receiver = pyaudible.Receiver(actived_channel = 8, 
-                               speed = 'medium', 
-                               sensitivity = 'medium')
+rx = pyaudible.Receiver(sensitivity = 'medium',
+                        speed = 'auto')
 
-# create a empty variable to store the retrieced data
+# create a empty variable to store the received data
 retrieved_data = ''
 
 # create a while loop for 30 seconds
@@ -17,12 +16,12 @@ while (time.time() - start_time < 30):
     
     # call the receiver on each frames
     # the receiver will return received data on the fly
-    data, _ = receiver.read_frame(log = True)
+    data = rx.read_frame(log = False)
     
-    # if retrieced data is not empty, add then to the predefined variable
+    # if received data is not empty, add then to the predefined variable
     if data:
         retrieved_data += data
 
 # Received data will also be stored in a list, 
 # it contains messages demodulated from each singal during the standby time
-message_list = receiver.received_data()
+message_list = rx.received_data()
