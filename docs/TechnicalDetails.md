@@ -120,7 +120,7 @@ The setting of the threshold might differ between different noise condition. The
 The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](https://en.wikipedia.org/wiki/Cyclic_redundancy_check). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
 
 ## Protocol Handling (Receiver Status)
-To create interactive and controllable responses, the protocol includes the handling behaviours of the receiver. The receiver maintains a Status Flags to signifying the status of the current connection.   
+To create interactive and controllable responses, the protocol includes the handling behaviours of the receiver. The receiver maintains seven Status Flags to signifying the status of the current connection.   
 
 ![Receiver Status Design](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-02.png?raw=true)
 *Figure 4: Receiver Status*  

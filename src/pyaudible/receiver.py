@@ -22,6 +22,10 @@ from scipy.fftpack import fft
 #%%
 
 class Receiver(object):
+    '''
+    PyAudio Receiver. Use `receiver.Receiver()` to create an instantiation.
+    
+    '''
     
     CHUNK               = 1024 * 2
     FORMAT              = pyaudio.paInt16
@@ -68,6 +72,36 @@ class Receiver(object):
     speed_info = [[0,0],[4,0],[7,0]]
     
     def __init__(self, actived_channel = 8, sensitivity = 'medium', speed = 'auto'):
+        '''
+        Initialise a PyAudible Receiver.
+
+        Parameters
+        ----------
+        actived_channel : int, optional
+            Number of actived channel. The default is 8.
+        sensitivity : string, 'low', 'medium' or 'high', optional
+            sensitivity defines the threshold that 
+            activate the receiver. With a higher sensitivity, the 
+            receiver will tend to pass the SNR Check easily and be 
+            activated for transmission. The default is 'medium'.
+        speed : string, 'slow', 'medium' or 'fast' , optional
+            By default, the transmission speed of the receiver will
+            be automatically determined by the Flow Control 
+            Descriptor defined in the Sound Mark. However, there is 
+            still an option to use a fixed receiving speed, and the 
+            receiver will ignore the transmissions that don't match 
+            this defined speed. The default is 'auto'.
+
+        Raises
+        ------
+        ParameterError
+            if the parameter `speed` or `sensitivity` is invalid.
+
+        Returns
+        -------
+        None.
+
+        '''
         self.d_channel.append(self.d_channel_1)
         self.d_channel.append(self.d_channel_2)
         self.d_channel.append(self.d_channel_3)
@@ -95,12 +129,6 @@ class Receiver(object):
         self.fft = []
         self.scheduled_pointer = 0
         self.retrieved_data = []
-        '''
-        if speed == 'fast':
-            self.SHARED_CHANNEL = 8
-            self.TRACK_NUM = 1
-            self.speed_info = [[0,0],[4,0],[7,0]]
-        '''
         if sensitivity == 'medium':
             self.sensitivity = 2
         elif sensitivity == 'low':
@@ -115,7 +143,6 @@ class Receiver(object):
             self.current_bins.append([0,0,0,0,0,0,0])
             self.recieved_bins.append([])
         
-        #print(self.stream)
     def refresh_audio(self):
         self.p = pyaudio.PyAudio()
 
@@ -159,17 +186,7 @@ class Receiver(object):
         frame_count = 0
         start_time = time.time()
         
-        #self.current_bins = []
-        #self.pointers = []
-        #self.recieved_bins = []
         self.scheduled_pointer = 0
-        '''
-        for i in range(self.SHARED_CHANNEL):
-            self.pointers.append(0)
-            self.current_bins.append([0,0,0,0,0,0,0])
-            self.recieved_bins.append([])
-            #self.scheduled_bins.append([])
-        '''
         while (time.time() - start_time < standby_time):
             bit = self.read_frame()
             print(bit, end=(''))
@@ -186,13 +203,15 @@ class Receiver(object):
         audio : np array with a size of (2048,)
             The array version of the audio buffer.
         log : bool, optional
-            If true, it will add a status flag to the returns, accompany with the retrived result. 
+            If true, it will add a status flag to the returns, 
+            accompany with the retrived result. 
             The default is False.
 
         Returns
         -------
         retrieved_data: String
-            The retrieved and demodulated data, empty if the receiver have not detected anything yet.
+            The retrieved and demodulated data, empty if the 
+            receiver have not detected anything yet.
         
         status: int
             0: Unactivated
@@ -200,8 +219,8 @@ class Receiver(object):
             2: Activated, preparing
             3: Activation Failed, rollback to unactivated
             4: Listening
-            5: Cycle Terminated, received successfully and back to Unactivated (status 0)
-            6: Cycle Terminated, received failed and back to Unactivated (status 0)
+            5: Terminated, received auccessfully
+            6: Terminated, received failed
 
         '''
         try:
@@ -276,13 +295,15 @@ class Receiver(object):
         Parameters
         ----------
         log : bool, optional
-            If true, it will add a status flag to the returns, accompany with the retrived result. 
+            If true, it will add a status flag to the returns, 
+            accompany with the retrived result. 
             The default is False.
 
         Returns
         -------
         retrieved_data: String
-            The retrieved and demodulated data, empty if the receiver have not detected anything yet.
+            The retrieved and demodulated data, empty if the 
+            receiver have not detected anything yet.
         
         status: int
             0: Unactivated
@@ -357,9 +378,6 @@ class Receiver(object):
                 return bit
             
         #######################
-        
-    #def refresh_result(self):
-        
 
     def most_frequent(self, List): 
         counter = 0
@@ -378,21 +396,19 @@ class Receiver(object):
         return 99
     
     
-    
-    
-    
-    '''
-    Status:
-        0: Unactivated
-        1: Activating
-        2: Activated, Preparing
-        3: Activation Failed, rollback to unactivated
-        4: Listening
-            4.5 (Hide): Terminating
-        5: Terminated, Received Successfully
-        6: Terminated, Received Failed
-    '''
+
     def update_statue(self, freq_bins,status):
+        '''
+        Status:
+            0: Unactivated
+            1: Activating
+            2: Activated, Preparing
+            3: Activation Failed, rollback to unactivated
+            4: Listening
+                4.5 (Hide): Terminating
+            5: Terminated, Received Successfully
+            6: Terminated, Received Failed
+        '''
          # if the activation frequency is been detected three times, 
         if (status == 0):
             if (freq_bins[self.speed_info[0][0]][self.speed_info[0][1]] == self.active_freq_bin[0] and freq_bins[self.speed_info[1][0]][self.speed_info[1][1]] == self.active_freq_bin[1] and freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.active_freq_bin[2]):
@@ -519,11 +535,8 @@ class Receiver(object):
                     if validated == 2:
                         #if validated ended
                         print('')
-                        #print('Recieved: {}, length: {}, {}'.format(self.copy_recieved_bins,len(self.copy_recieved_bins[0]),len(self.copy_recieved_bins[1])))
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
-                        
-                        ##################CHECK
                         self.ending_mark[1]=100*self.get_bin_num(self.most_frequent(self.ending_info[1]),1) + 10*self.get_bin_num(self.most_frequent(self.ending_info[2]),2) + self.get_bin_num(self.most_frequent(self.ending_info[3]),3)
                         print('Ending marks estimated length: {}'.format(self.ending_mark[1]))
                         
@@ -542,10 +555,7 @@ class Receiver(object):
                                 crc = None
                                 print('escaped from crc test')
                                 break
-                                
                         
-                        
-                        ##################
                         if(self.check_result(self.received_info[0], self.ending_mark[1], self.copy_recieved_bins) == 1):
                             try: 
                                 result = self.convert_result(self.copy_recieved_bins, self.trim, crc)
@@ -572,8 +582,6 @@ class Receiver(object):
                         self.ending_mark[0] = 0
                 
             elif (freq_bins[self.speed_info[2][0]][self.speed_info[2][1]] == self.ending_freq_bin[1]):
-                
-                #print('detecting ending...')
                 #if one of the ending bit appears, expande the fft scope, start monitoring for 5 frames
                 #create copy of recieved_bin
                 #undo the pointer
@@ -640,9 +648,6 @@ class Receiver(object):
         return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
     
     def check_result(self, a, e, received):
-        
-        
-        ###########CHECK
         minimum_block_length = self.SHARED_CHANNEL * 4
         full_length_a = (int((a-1) / minimum_block_length) + 1)
         full_length_e = (int((e-1) / minimum_block_length) + 1)
@@ -657,18 +662,7 @@ class Receiver(object):
             else:
                 print('recieve failed')
                 return 0
-        
         return 1
-        ###########
-        
-    '''
-        if (len(self.copy_recieved_bins[0]) != len(self.copy_recieved_bins[1])):
-            print('recieve failed')
-            return 0
-        else:
-            return 1
-        '''
-        
         
     def convert_result(self, received, trim = -1, crc = None):
         '''

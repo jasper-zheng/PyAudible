@@ -40,6 +40,7 @@ PyAudible depends on the following dependencies:
 * **Numpy** 1.18.5+  
 
 #### Installation
+PyAudible is currently only available on PyPI.  
 With required dependencies installed, use `pip install pyaudible` to download and install PyAudible.
 
 
@@ -62,11 +63,11 @@ filename = 'transmitter_sample.wav'
 # modulate the message and store the modulated signal to an audio file
 tx.modulate_to_file(message, filename)
 ```
-To convert a message to electrical signals and generate the modulated audio file, first instantiate PyAudible by ``pyaudible.Transmitter()`` with desired parameters (see [Class Transmitter](#class-transmitter)). It will initialise a transmitter for modulating data.   
+To convert a message to electrical signals and generate the modulated audio file, first instantiate PyAudible by ``transmitter.Transmitter()`` with desired parameters (see [Class Transmitter](#class-transmitter)). It will initialise a transmitter for modulating data.   
 
-Modulate a message by calling ``pyaudible.Transmitter.modulate_to_file()`` with input data and the file name, it will modulate the data to audio waveforms and save it to a playable file.
+Modulate a message by calling ``transmitter.Transmitter.modulate_to_file()`` with input data and the file name, it will modulate the data to audio waveforms and save it to a playable file.
 
-To modulate a message without save it to file, or play the audio right after the modulation, call ``pyaudible.Transmitter.modulate()`` or ``pyaudible.Transmitter.modulate_and_play()`` (see [Class Transmitter](#class-transmitter)).
+To modulate a message without save it to file, or play the audio right after the modulation, call ``transmitter.Transmitter.modulate()`` or ``transmitter.Transmitter.modulate_and_play()`` (see [Class Transmitter](#class-transmitter)).
 
 #### Example: Receive and Demodulate Data (Blocking Mode)
 ```python
@@ -81,9 +82,9 @@ rx = receiver.Receiver(sensitivity = 'medium',
 # active the receiver for 30 seconds
 retrieved_data = rx.read_block(30)
 ```
-To detect and demodulate data, first instantiate a receiver on the desired device by `pyaudible.Receiver()` with desired parameters (see [Class Receiver](#class-receiver)). It will initialise a reusable receiver for analysing and demodulating data.
+To detect and demodulate data, first instantiate a receiver on the desired device by `receiver.Receiver()` with desired parameters (see [Class Receiver](#class-receiver)). It will initialise a reusable receiver for analysing and demodulating data.
 
-Open the receiver by calling `pyaudible.Receiver.read_block()`, the receiver will stand-by and continuously detecting audio input. The results will be return in a Python list.
+Open the receiver by calling `receiver.Receiver.read_block()`, the receiver will stand-by and continuously detecting audio input. The results will be return in a Python list.
 
 Note that the Blocking Mode will block the thread until all the required time have been recorded, therefore not recommend for frame based application. Alternatively, use Callback Mode to process inputs by frames (see next section).
 
@@ -118,12 +119,12 @@ while (time.time() - start_time < 30):
 message_list = rx.received_data()
 ```
 
-In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `pyaudible.Receiver.read()`.
+In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `receiver.Receiver.read()`.
 Whenever new data is ready, the receiver will return the converted data as string immediately, even if the transmission is not finish. If the log mode is on, the receiver will also return a integer representing the current status of the connection, to help interacting with the receiver (see [Class Receiver: Callback Mode](#callback-mode)).  
 
 ## Class Transmitter
 
-``class pyaudible.Transmitter``  
+``class transmitter.Transmitter``  
 
 Python interface to modulate and transmit data. Provides methods to:  
   * Convert text to modulated audio waveform
@@ -158,7 +159,7 @@ speed - Specifies the speed of the transmission, type: string
 volume - Specifies the loudness of the transmission, type: float ranged form 0 to 1.  
 *Defaults to 1.0*  
 **Raise**  
-ParameterError - if the parameter `speed` if invalid.
+ParameterError - if the parameter `speed` is invalid.
 
 `text_to_bin(text)`  
 Convert ASCII text to binary signal.  
@@ -180,17 +181,17 @@ filename - Name of the output wav file, type: string
 
 
 ## Class Receiver
-`class pyaudible.Receiver`  
+`class receiver.Receiver`  
 
 Python interface to detect and demodulate broadcasted audio and convert them into text data.
 
 #### Activation Sensitivity
-The sensitivity of the receiver should be defined when instantiating the transmitter by `sensitivity` parameter in the instantiation function (see [pyaudible.Receiver.__ init__()](#)). The options includs ``'low'``, ``'medium'`` and ``'high'``.  
+The sensitivity of the receiver should be defined when instantiating the transmitter by `sensitivity` parameter in the instantiation function (see [receiver.Receiver.__ init__()](#)). The options includs ``'low'``, ``'medium'`` and ``'high'``.  
 
 In the activating process, the receiver perform SNR Check to decide whether the current noise condition is competent to perform successful transmission. Activation Sensitivity defines the threshold that activate the receiver. With a higher sensitivity, the receiver will tend to pass the SNR Check easily and be activated for transmission.  
 
 #### Transmission Speed  
-By default, the transmission speed of the receiver will be automatically determined by the Flow Control Descriptor defined in the Sound Mark. However, there is still an option to use a fixed receving speed, and the receiver will ignore the transmissions that don't match this defined spee. Set a fixed receiving speed by defining the `speed` parameter of the receiver to ``'low'``, ``'medium'`` or ``'high'`` when instantiating. By default, `speed` parameter is set to `auto`.
+By default, the transmission speed of the receiver will be automatically determined by the Flow Control Descriptor defined in the Sound Mark. However, there is still an option to use a fixed receiving speed, and the receiver will ignore the transmissions that don't match this defined speed. Set a fixed receiving speed by defining the `speed` parameter of the receiver to ``'slow'``, ``'medium'`` or ``'fast'`` when instantiating. By default, `speed` parameter is set to `auto`.
 
 #### Listening Modes
 The mode of the receiver will be determined by different methods called after the receiver was instantiated. Includes [Blocking Mode](#blocking-mode) and [Callback Mode](#callback-mode).
@@ -198,15 +199,15 @@ The mode of the receiver will be determined by different methods called after th
 Call `pyaudible.Receiver.read_block()` to use blocking mode. The receiver should be called only once and it will block until all the required time is recorded. After the desired time, call `pyaudible.Receiver.get_received_data()` to retrieve all the received data (see [Example: Receive and Demodulate Data (Blocking Mode)](#example-receive-and-demodulate-data-blocking-mode) for sample code).   
 
 ###### Callback Mode  
-Call `pyaudible.Receiver.read_frame()` to use callback mode. The receiver will only analyse audio in the frames that it is called. Therefore, it should be called in the main loop in a frame-based application (see [Example: Receive and Demodulate Data (Callback Mode)](#example-receive-and-demodulate-data-callback-mode) for sample code).   
+Call `receiver.Receiver.read_frame()` to use callback mode. The receiver will only analyse audio in the frames that it is called. Therefore, it should be called in the main loop in a frame-based application (see [Example: Receive and Demodulate Data (Callback Mode)](#example-receive-and-demodulate-data-callback-mode) for sample code).   
 
-`pyaudible.Receiver.read_frame()` will return decoded text once new data is available. If the parameter `log` is `True`, it will also return a integer flag signifying the status to help the system interacting with the receiver (see next section [System Logs and Status Flags](#system-logs)).   
+`receiver.Receiver.read_frame()` will return decoded text once new data is available. If the parameter `log` is `True`, it will also return a integer flag signifying the status to help the system interacting with the receiver (see next section [System Logs and Status Flags](#system-logs)).   
 
 #### System Logs
 The receiver will maintain essential data for interaction, includes [FFT Logs](#fft-logs), [Status Flags](#status-flags) and [Received Data](#received-data).  
 
 ###### FFT Logs  
-FFT Logs maintains the discrete Fourier transform of the current audio input, which are ready to map into a spectrum form. Use `pyaudible.Receiver.get_fft()` to get FFT Logs.
+FFT Logs maintains the discrete Fourier transform of the current audio input, which are ready to map into a spectrum form. Use `receiver.Receiver.get_fft()` to get FFT Logs.
 
 ###### Status Flags  
 Status Flag maintains the current status of the connection:  
@@ -218,10 +219,10 @@ Status Flag maintains the current status of the connection:
 **5 - Terminated, transmission succeeded:** The connection was terminated, the received contents passed the [Error Detecting Code Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#error-detecting-code), the transmission was succeeded. The receiver will go back to **Status 0** in the next frame.  
 **6 - Terminated, transmission failed:** The connection was terminated, the received contents failed the [Error Detecting Code Check](https://github.com/jasper-zheng/PyAudible/blob/main/documents/TechnicalDetails.md#error-detecting-codee), the transmission was failed. The receiver will go back to **Status 0** in the next frame.   
 
-If the `log` parameter in `pyaudible.Receiver.read_frame()` is `True`, the status will be returned a integer. Or use `pyaudible.Receiver.get_status()` to get the current status.
+If the `log` parameter in `receiver.Receiver.read_frame()` is `True`, the status will be returned a integer. Or use `receiver.Receiver.get_status()` to get the current status.
 
 ###### Received Data  
-Use `pyaudible.Receiver.get_received_data()` to get all the received transmission stored in a list.
+Use `receiver.Receiver.get_received_data()` to get all the received transmission stored in a list.
 
 #### Overview
 `text_to_bin(), modulate(), modulate_to_file(), modulate_and_play()`
@@ -237,6 +238,9 @@ sensitivity - Specifies the sensitivity of the receiver, type: string
 speed - Specifies the speed of the receiver, type: string  
 *‘auto’, ‘slow’, ‘medium’, ‘fast’*  
 *Defaults to ‘auto’*  
+
+**Raises**  
+ParameterError - if the parameter `speed` or `sensitivity` is invalid.
 
 `refresh_audio()`  
 Reload PyAudio module.  
