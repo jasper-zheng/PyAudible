@@ -216,9 +216,7 @@ The evaluations of the system were conducted along with the development. [Phase 
 **04.01.21 V1.1.0**  
 Compatible to any audio backends as long as it provides buffered audio analysis.  
 
-Full update history provided in [Updates](#)
-
-
+Full update history provided in [Updates](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Updates.md).  
 
 
 ## Acknowledgment
