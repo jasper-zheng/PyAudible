@@ -96,7 +96,7 @@ The data link layer specifies the link between the transmitter and the receiver,
 #### Activating and Terminating Sound Mark
 The beginning and ending bits of the transmission sequences are the Activating and Terminating Sound Mark. Each part of the sound mark contains essential session descriptors to establish and terminate the connection.  
 
-![Sound Mark Frequency Usage](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-03.png?raw=true)  
+![Sound Mark Frequency Usage](Graphics/infoboard-03.png)  
 *Figure 3: Sound Mark Frequency Usage*  
 
 The current approach utilised the 1st, 5th and 8th channels as the activating and terminating descriptor. The transmitter broadcasts the marker contains the activating descriptor to activate the transmission. Three channels are taken to prevent the ambient noise from accidentally produce an activating mark.   
@@ -122,7 +122,7 @@ The Error Detecting Code aims to validate the received data using [Cyclic Redund
 ## Protocol Handling (Receiver Status)
 To create interactive and controllable responses, the protocol includes the handling behaviours of the receiver. The receiver maintains seven Status Flags to signifying the status of the current connection.   
 
-![Receiver Status Design](https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/infoboard-02.png?raw=true)
+![Receiver Status Design](Graphics/infoboard-02.png)
 *Figure 4: Receiver Status*  
 
 **Status 0** - Unactivated  
