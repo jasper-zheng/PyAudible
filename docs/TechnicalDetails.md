@@ -14,7 +14,7 @@ This document gives an overview of the technical details in the transmission pro
 
 ## Physical Layer: Multi-channel Carrier Modulation
 
-<img src="https://github.com/jasper-zheng/PyAudible/blob/main/documents/Graphics/multi-channel_carrier.png?raw=true" width="600">  
+<img src="Graphics/multi-channel_carrier.png" width="600">  
 
 *Figure 1: Multi-channel Carrier Modulation*  
 

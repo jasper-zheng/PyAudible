@@ -165,8 +165,8 @@ while (True):
     if app.status !=-1:
         data, app.status = rx.read_frame(log = True)
         
-        '''
-        if (time.time()-frame_time >= 0.5):
+        
+        if (time.time()-frame_time >= 0.2):
             y_fft = rx.get_fft()
             app.line_fft.set_ydata(np.abs(y_fft[0:CHUNK]) * 2 / (256 * CHUNK) )
         
@@ -180,7 +180,7 @@ while (True):
             frame_time = time.time()
 
         frame_count += 1
-        '''
+        
     app.root.update_idletasks()
     app.root.update()
     app.handle_status(data,rx.get_received_data())
