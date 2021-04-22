@@ -20,10 +20,6 @@ import time
 #import PyA_Transmitter as pyaudible
 from pyaudible import transmitter
 
-#matplotlib.use("TkAgg")
-
-#%matplotlib TkAgg
-
 CHUNK = 1024 * 2
 FILTERED_FREQ = 500
 FORMAT = pyaudio.paInt16
@@ -55,20 +51,17 @@ class App(object):
 
     wf = 0
     
-    
     def callback(self,in_data, frame_count, time_info, status):
         data = self.wf.readframes(frame_count)
         return (data, pyaudio.paContinue)
 
     def activate(self):
         
-        
         if self.is_transmitting==False:
             self.p = pyaudio.PyAudio()
             self.btn_activate.config(text="Stop",fg='red')
             
             self.tx = transmitter.Transmitter(speed = self.get_speed(), volume = self.volume/100)
-
             self.tx.modulate_to_file(self.text_area.get('1.0', tk.END)[0:-1],'t.wav')
     
             self.wf = wave.open('t.wav', 'rb')
@@ -105,7 +98,6 @@ class App(object):
         elif self.speed == 2:
             return 'fast'
         
-        
     def speed_l(self):
         self.speed = 0
         self.refresh_speed_btn()
@@ -136,8 +128,6 @@ class App(object):
         self.status=-1
         self.root = tk.Tk()
         self.root.wm_title("Transmitter GUI Demo")
-        #self.frame1 = tk.Frame(master=self.root, height=300, bg='white')
-        #self.frame1.pack(fill=tk.X)
         
         self.text_area = st.ScrolledText(self.root,
                                          width = 38,
@@ -168,61 +158,6 @@ class App(object):
         
         
         self.refresh_speed_btn()
-        
-
-    def handle_status(self, data,received_data):
-        if self.status == 0:
-            self.lbl_status['text'] = 'Waiting for a transmission...'
-        elif self.status == 1:
-            self.lbl_display['text'] = ''
-            self.display = ''
-            self.notification_framecount = 0
-            self.lbl_status['text'] = 'Connecting...'
-           
-        elif self.status == 3:
-            self.notification = 'Connection Failed, increase volume'
-            self.notification_framecount = 1
-        
-        elif self.status == 4:
-            if data:
-                self.display += data
-            self.lbl_status['text'] = 'Listening...'
-            self.lbl_display['text'] = self.display
-        elif self.status == 5:
-            self.notification = 'Text Received Successfully!'
-            self.notification_framecount = 1
-            self.received.append((received_data[-1],time.asctime( time.localtime(time.time()) )))
-            
-            self.update_text()
-            
-        elif self.status == 6:
-            self.notification = 'Transmission failed, try again'
-            self.notification_framecount = 1
-            
-            
-        if self.notification_framecount>0 and self.notification_framecount<60:
-            self.lbl_status['text'] = self.notification
-            self.notification_framecount += 1
-        elif self.notification_framecount >=60:
-            self.notification_framecount = 0
-            self.lbl_display['text'] = ''
-            self.display = ''
-        
-        
-        return 0
-    
-    def update_text(self):
-        texts = ''
-        texts += self.received[-1][1] + '\n' + self.received[-1][0] + '\n\n'
-        
-        
-        self.text_area.configure(state ='normal')
-        self.text_area.insert(tk.INSERT,texts)
-        self.text_area.configure(state ='disabled')
-        
-        
-        
-        return 0
     
     def refresh_audio_state(self):
         if self.is_transmitting and not self.stream.is_active():
@@ -237,14 +172,11 @@ frame_start_time = time.time()
 
 frame_time = time.time()
 
-
-
 app = App()
 
 while (True):
 #while (time.time()-start_time < 60):
 
-    
     data = ''
     if app.status !=-1:
         while (time.time()-frame_time >= 0.1):       
