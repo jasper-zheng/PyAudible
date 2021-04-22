@@ -239,7 +239,6 @@ frame_time = time.time()
 
 
 
-
 app = App()
 
 while (True):

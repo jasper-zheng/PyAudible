@@ -164,9 +164,10 @@ while (True):
     data = ''
     if app.status !=-1:
         data, app.status = rx.read_frame(log = True)
-        y_fft = rx.get_fft()
-
-        while (time.time()-frame_time >= 0.1):
+        
+        '''
+        if (time.time()-frame_time >= 0.5):
+            y_fft = rx.get_fft()
             app.line_fft.set_ydata(np.abs(y_fft[0:CHUNK]) * 2 / (256 * CHUNK) )
         
             app.ax2.draw_artist(app.ax2.patch)
@@ -175,10 +176,11 @@ while (True):
             app.fig.canvas.blit()
     
             app.fig.canvas.flush_events()
+            
             frame_time = time.time()
 
         frame_count += 1
-        
+        '''
     app.root.update_idletasks()
     app.root.update()
     app.handle_status(data,rx.get_received_data())

@@ -12,22 +12,12 @@ The transmitter and the receiver provide simplified Python interface that could 
  - Electronic Key Sharing  
 
 
-This README file provides the following information:  
- * [Quickstart](#)
-   * [Requirements](#)
-   * [Installation](#)
- * [Examples and Demos](#)
- * [Protocol Overview](#)
- * [Documentation](#)
- * [Test and Evaluation](#)
- * [Updates](#)
- * [Acknowledgment](#)
- * [License](#)
+This README file provides a walkthrough of the project, include a quickstart, brief documentation and evaluation.
 
-Other docs include:  
- * [Full Documentation](#)
- * [Protocol Details](#)
- * [Test & Evaluations](#)
+Other docs can be found at:  
+ * [Full Documentation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Documentation.md)
+ * [Protocol Details](https://github.com/jasper-zheng/PyAudible/blob/main/docs/TechnicalDetails.md)
+ * [Test & Evaluations](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md)
 
 ## Quickstart  
 > Tested on Python 3.8  
@@ -48,11 +38,11 @@ transmitter.print_transmitter_version()
 receiver.print_receiver_version()
 ```
 
-After the installation, keep following the examples provided below or refer to the full [documentation](#) for more information.  
+After the installation, keep following the examples provided below or refer to the full [documentation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Documentation.md) for more information.  
 
 ## Examples and Demos
 
-The following examples will demonstrate the basic transmission protocol of PyAudible. More examples could be find in the full [documentation](#).
+The following examples will demonstrate the basic transmission protocol of PyAudible. More examples could be find in the full [documentation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Documentation.md).
 
 #### Example: Modulate and Transmit Data  
 
@@ -115,7 +105,7 @@ The beginning and ending bits of the transmission sequences are the Activating a
 ## Documentation  
 Full documentation provided in [Documentation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Documentation.md).  
 
-Alternatively, the documentation can be generated and viewed via `__doc__`, for example `print(receiver.Receiver.read_block.__doc__)`.
+Alternatively, the documentation can be generated and viewed via `__doc__`, for example `print(receiver.Receiver.read_block.__doc__)`.  
 
 
 ## Test and Evaluation (Overview)  
