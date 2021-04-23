@@ -349,6 +349,9 @@ Since the protocol only provide limited number of channels, the system is assume
 
 #### Experiment Design  
 ##### Test 2.1: System Reliability  
+
+![SNR](Graphics/snr.jpg)  
+
 The testing system includes a MacBook as receiver, and an iPhone as transmitter. Two devices were implemented in a silent room with acoustic control, distanced two meters. A separated speaker and a decibel noise meter were used to produce pre-recored noise and precisely control the signal to noise ratio in the system.   
 
 The test includes 12 rounds, in the first three rounds, the signal to noise ratio was maintained at 1.2, the speed was set to 5, 10, 20 bytes / sec respectively. In the second and the third round, the signal to noise ratio was maintained at 1.5, 2 and 2.5. In each round, 100 pieces random generated data with random length were transmitted through the system, following data was collected:  
