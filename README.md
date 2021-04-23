@@ -115,6 +115,8 @@ Alternatively, the documentation can be generated and viewed via `__doc__`, for 
 
 Full experimentation designs and the evaluation results provided in [Test & Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md) document.
 
+![Experiment](docs/Graphics/experiment.jpg)
+
 The evaluations of the system were conducted along with the development. [Phase I Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md#phase-i-evaluation-noise-resistance-mechanism-reliability) assessed the reliability of the noise resistance mechanism in different noise conditions, and verified that the system can achieve at least 90% reliability with a transmission rate at 20 bytes/sec. [Phase II Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md#phase-ii-evaluation-system-reliability-vs-speed-and-signal-to-noise-ratio) gave a statistical analysis on the reliability with respect to the transmission speed and the signal to noise ratio. The following Speed-Rate-Reliability Lookup Table is taken from the [results of Phase II Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md#test-21-system-reliability-1), which could help users to decide transmission settings based on noise situations:
 
 <table style="font-size:7px">
