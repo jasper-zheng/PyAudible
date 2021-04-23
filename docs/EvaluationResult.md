@@ -359,7 +359,7 @@ The test includes 12 rounds, in the first three rounds, the signal to noise rati
  * **Received Transmission:** Number of times that the transmission reached and accepted by the receiver, regardless the correctness.
  * **Correct Transmission:** Number of times that the transmission reached and accepted by the receiver, and the receiving was correct.   
 
-The transmission success rate `S` is defined as the ratio between total number of correct received data and total number of transmission. The reliability `R` is defined as the ratio between total number of correct received data and total number of received data.  
+The transmission success rate `S` defines the ratio between total number of correct received data and total number of transmission. The reliability `R` defines the ratio between total number of correct received data and total number of received data.  
 
 ![equation](https://latex.codecogs.com/svg.image?S&space;=&space;\frac{CorrectTransmission}{TotalTransmission})  
 
