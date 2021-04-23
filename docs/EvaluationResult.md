@@ -1,6 +1,6 @@
 ###### PyAudible 1.1.0
 # Test & Evaluation
-![Experiment](Graphics/experiment.jpg)
+
 ### Key Takeaway  
 
 The evaluations of the system were conducted along with the development. [Phase I Evaluation](#phase-i-evaluation-noise-resistance-mechanism-reliability) assessed the reliability of the noise resistance mechanism in different noise conditions, and verified that the system can achieve at least 90% reliability with a transmission rate at 20 bytes/sec. [Phase II Evaluation](#phase-ii-evaluation-system-reliability-vs-speed-and-signal-to-noise-ratio) gave a statistical analysis on the reliability with respect to the transmission speed and the signal to noise ratio. The following [Speed-Rate-Reliability Lookup Table](#key-takeaway) is taken from the [results of Phase II Evaluation](#test-21-system-reliability-1), which could help users to decide transmission settings based on noise situations:
@@ -119,6 +119,8 @@ To detect and recover from the noise, the receiver assesses the sound marks to d
 #### Experiment Design
 
 The test consists of two parts, aims at assessing the noise resistance mechanism under two noise conditions: Flatter Continuous Noise and Sudden Disruptive Noise.  
+
+![Experiment](Graphics/experiment.jpg)
 
 ##### Test 1.1: Flatter Continuous Noise  
 
