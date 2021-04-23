@@ -116,6 +116,9 @@ The main purpose of the [Signal to Noise Ratio (SNR)](https://en.wikipedia.org/w
 
 The setting of the threshold might differ between different noise condition. The rise of the threshold will reduce the number of [False Negatives](http://methods.sagepub.com/reference/the-sage-encyclopedia-of-communication-research-methods/i5497.xml), however, it might introduce the increase in [False Positives](https://methods.sagepub.com/Reference//the-sage-encyclopedia-of-communication-research-methods/i5517.xml).   
 
+![SNR](Graphics/snr.jpg)  
+*Figure 4: Power spectrum of received signal under different background noises*  
+
 ###### Error Detecting Code  
 The Error Detecting Code aims to validate the received data using [Cyclic Redundancy Check (CRC)](https://en.wikipedia.org/wiki/Cyclic_redundancy_check). The transmitter produces a hashed fixed-length code (checksum) before the transmission, then attaches it to the error-detecting descriptor in the sound marks. The receiver evaluates the checksum and the transmitted contents. If the contents match the checksum, the transmission will be considered valid. Otherwise, it will be reported as failed transmission, and the system will request another repetition.   
 
@@ -123,7 +126,7 @@ The Error Detecting Code aims to validate the received data using [Cyclic Redund
 To create interactive and controllable responses, the protocol includes the handling behaviours of the receiver. The receiver maintains seven Status Flags to signifying the status of the current connection.   
 
 ![Receiver Status Design](Graphics/infoboard-02.png)
-*Figure 4: Receiver Status*  
+*Figure 5: Receiver Status*  
 
 **Status 0** - Unactivated  
 No established connection. The receiver continuously captures audio, looks for the activating signals.  
