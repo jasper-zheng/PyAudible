@@ -1,0 +1,9 @@
+Hello World!
+
+PyAudible is a Python library for sending and receiving data using audible sound.
+
+SNR Check and Cyclic Redundancy Check (CRC) for Noise Resistance and error detection.
+
+COMP390 Honours Year Project
+
+Hello World!

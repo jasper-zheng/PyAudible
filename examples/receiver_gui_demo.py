@@ -115,6 +115,7 @@ class App(object):
         elif self.status == 4:
             if data:
                 self.display += data
+            
             self.lbl_status['text'] = 'Listening...'
             self.lbl_display['text'] = self.display
         elif self.status == 5:
@@ -123,6 +124,7 @@ class App(object):
             self.received.append((received_data[-1],time.asctime( time.localtime(time.time()) )))
             
             self.update_text()
+            
             
         elif self.status == 6:
             self.notification = 'Transmission failed, try again'
@@ -141,7 +143,7 @@ class App(object):
     def update_text(self):
         texts = ''
         texts += self.received[-1][1] + '\n' + self.received[-1][0] + '\n\n'
-        
+            
         self.text_area.configure(state ='normal')
         self.text_area.insert(tk.INSERT,texts)
         self.text_area.configure(state ='disabled')
@@ -158,6 +160,8 @@ rx = receiver.Receiver()
 
 app = App()
 
+frame_rate = 0.2
+
 while (True):
 #while (time.time()-start_time < 60):
 
@@ -166,7 +170,7 @@ while (True):
         data, app.status = rx.read_frame(log = True)
         
         
-        if (time.time()-frame_time >= 0.2):
+        if (time.time()-frame_time >= frame_rate):
             y_fft = rx.get_fft()
             app.line_fft.set_ydata(np.abs(y_fft[0:CHUNK]) * 2 / (256 * CHUNK) )
         
@@ -184,7 +188,9 @@ while (True):
     app.root.update_idletasks()
     app.root.update()
     app.handle_status(data,rx.get_received_data())
+    
     #app.update_text(rx.get_received_data())
 
 print(frame_count/60)
+
 

@@ -83,7 +83,7 @@ class App(object):
         return 0
     
     def close_audio(self):
-        self.btn_activate.config(text="Activate",fg='black')
+        self.btn_activate.config(text="Transmit",fg='black')
         self.stream.stop_stream()
         self.stream.close()
         self.wf.close()
