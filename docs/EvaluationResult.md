@@ -140,7 +140,7 @@ Following data were recorded:
   * **Fault was Detected:** Number of times that the receiver got incorrect data, but the fault was successfully detected and the transmission aborted.
   * **Fault Detection:** Number of times that the data was successfully transmitted, but an error was mistakenly reported.
 
-To improve the generality of the test, each round of test will repeat until 100 incorrect transmissions were made. The reliability `R` of the noise resistance mechanism could be represented as the probability that the receiver aborted the activation or detected the fault, given that the transmission was not successful. Therefore, let `A` denotes the event that an activation was aborted, `D` denotes the event that a fault was detected, `F` denotes the event that a transmission was failed. According to the axioms of probability theory, the reliability  `R` could be calculated by:  
+To improve the generality of the test, each round of test will repeat until 100 incorrect transmissions were made. The reliability `R` of the noise resistance mechanism represents the probability that the receiver aborts the transmission or detects the fault, given that the transmission is not successful. Therefore, let `A` denotes the event that an activation was aborted, `D` denotes the event that a fault was detected, `F` denotes the event that a transmission was failed. According to the axioms of probability theory, the reliability  `R` could be calculated by:  
 
 ![equation](https://latex.codecogs.com/svg.image?R&space;=&space;P((A&space;\cup&space;D)|F)=\frac{P(A\cup&space;D&space;\cap&space;F)}{P(F)})   
 
