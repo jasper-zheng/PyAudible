@@ -1,52 +1,22 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Mar 28 14:19:52 2021
-
-@author: winter_camp
-"""
+"""PyAudible Receiver GUI Example"""
 
 import tkinter as tk
 import tkinter.scrolledtext as st
 
-import pyaudio
-#import matplotlib
 import matplotlib.pyplot as plt
-from scipy.fftpack import fft, fftfreq
 import time
 
 import numpy as np
 
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
-# Implement the default Matplotlib key bindings.
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
-import matplotlib.animation as animation
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from pyaudible import receiver
 
-#matplotlib.use("TkAgg")
-
-#%matplotlib TkAgg
-
 CHUNK = 1024 * 2
-FILTERED_FREQ = 500
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
 RATE = 44100
+FRAME_RATE = 0.2
 
-FRAMES_PER_FFT = 16 # FFT takes average across how many frames
-SAMPLES_PER_FFT = CHUNK * FRAMES_PER_FFT
-FREQ_STEP = float(RATE)/SAMPLES_PER_FFT
-
-CHANNEL_NUMBER = 4
-SHARED_CHANNEL = 2
-
-FRAME_TIME = 0.2
-
-
-class App(object):
+class GUI(object):
     
     display = ''
     notification = ''
@@ -63,7 +33,7 @@ class App(object):
             self.status = -1
             self.lbl_display['text'] = ''
             self.display = ''
-        print('activate')
+            self.lbl_status['text'] = "Click the button to start receiver"
         return 0
     
     def __init__(self):
@@ -87,7 +57,6 @@ class App(object):
         self.lbl_display.pack(fill=tk.X)
         
         self.fig, self.ax2 = plt.subplots(figsize=(4,1.5))
-        x = np.arange(0, 2 * CHUNK, 2)
         x_fft = np.linspace(0, RATE, CHUNK)
         self.line_fft, = self.ax2.semilogx(x_fft, np.zeros(CHUNK), '-', lw = 0.5,color="black")
         self.ax2.set_xlim(20, RATE/2)
@@ -98,10 +67,28 @@ class App(object):
         canvas = FigureCanvasTkAgg(self.fig, master=self.root)
         self.fig.canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        
+    def on_activate(self):
+        if self.status == -1:
+            return False
+        else:
+            return True
+        
+    def update_text(self, received_list):
+        self.received.append((received_list[-1],time.asctime( time.localtime(time.time()) )))
+        texts = ''
+        texts += self.received[-1][1] + '\n' + self.received[-1][0] + '\n\n'
+            
+        self.text_area.configure(state ='normal')
+        self.text_area.insert(tk.INSERT,texts)
+        self.text_area.configure(state ='disabled')
+        return 0
 
-    def handle_status(self, data,received_data):
+    def handle_status(self, data,status):
+        self.status = status
         if self.status == 0:
             self.lbl_status['text'] = 'Waiting for a transmission...'
+            
         elif self.status == 1:
             self.lbl_display['text'] = ''
             self.display = ''
@@ -115,16 +102,12 @@ class App(object):
         elif self.status == 4:
             if data:
                 self.display += data
-            
             self.lbl_status['text'] = 'Listening...'
             self.lbl_display['text'] = self.display
+            
         elif self.status == 5:
             self.notification = 'Text Received Successfully!'
             self.notification_framecount = 1
-            self.received.append((received_data[-1],time.asctime( time.localtime(time.time()) )))
-            
-            self.update_text()
-            
             
         elif self.status == 6:
             self.notification = 'Transmission failed, try again'
@@ -137,60 +120,51 @@ class App(object):
             self.notification_framecount = 0
             self.lbl_display['text'] = ''
             self.display = ''
+        return 0
+    
+    def update_spectrum(self, fft):
+        self.line_fft.set_ydata(np.abs(fft[0:CHUNK]) * 2 / (256 * CHUNK) )
+        self.ax2.draw_artist(self.ax2.patch)
+        self.ax2.draw_artist(self.line_fft)
+        self.fig.canvas.blit()
+        self.fig.canvas.flush_events()
         
         return 0
     
-    def update_text(self):
-        texts = ''
-        texts += self.received[-1][1] + '\n' + self.received[-1][0] + '\n\n'
-            
-        self.text_area.configure(state ='normal')
-        self.text_area.insert(tk.INSERT,texts)
-        self.text_area.configure(state ='disabled')
-        return 0
+    def update_ui(self):
+        self.root.update_idletasks()
+        self.root.update()
 
-frame_count = 0
-frame_num = 0
-start_time = time.time()
-frame_start_time = time.time()
 
-frame_time = time.time()
-
+# instantiate the GUI and the receiver
+app = GUI()
 rx = receiver.Receiver()
 
-app = App()
-
-frame_rate = 0.2
-
+# main loop
 while (True):
-#while (time.time()-start_time < 60):
 
-    data = ''
-    if app.status !=-1:
-        data, app.status = rx.read_frame(log = True)
+    # if the system is activated
+    if app.on_activate():
         
+        # call the receiver to analyse current audio inpu
+        data, status = rx.read_frame(log = True)
         
-        if (time.time()-frame_time >= frame_rate):
-            y_fft = rx.get_fft()
-            app.line_fft.set_ydata(np.abs(y_fft[0:CHUNK]) * 2 / (256 * CHUNK) )
+        # pass the analyse result to the app
+        app.handle_status(data, status)
         
-            app.ax2.draw_artist(app.ax2.patch)
-            app.ax2.draw_artist(app.line_fft)
-            
-            app.fig.canvas.blit()
+        # update the spectrum
+        spectrum = rx.get_fft()
+        app.update_spectrum(spectrum)
+        
+        # update the text area
+        if status == 5:
+            app.update_text(rx.get_received_data())
     
-            app.fig.canvas.flush_events()
-            
-            frame_time = time.time()
+    # update the UI
+    app.update_ui()
 
-        frame_count += 1
-        
-    app.root.update_idletasks()
-    app.root.update()
-    app.handle_status(data,rx.get_received_data())
-    
-    #app.update_text(rx.get_received_data())
 
-print(frame_count/60)
+
+
 
 
