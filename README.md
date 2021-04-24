@@ -20,7 +20,11 @@ This README file provides a walkthrough of the project, include a quickstart, br
 Other docs can be found at:  
  * [Full Documentation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Documentation.md)
  * [Protocol Details](https://github.com/jasper-zheng/PyAudible/blob/main/docs/TechnicalDetails.md)
- * [Test & Evaluations](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md)
+ * [Test & Evaluations](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md)  
+ 
+
+#### Project Roadmap  
+ ![Roadmap](docs/Graphics/roadmap.jpg)
 
 ## Quickstart  
 > Tested on Python 3.8  
