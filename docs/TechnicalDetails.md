@@ -128,6 +128,9 @@ To create interactive and controllable responses, the protocol includes the hand
 ![Receiver Status Design](Graphics/infoboard-02.png)
 *Figure 5: Receiver Status*  
 
+![Receiver Status Design](Graphics/infoboard-04.png)
+*Figure 6: Receiver Status*  
+
 **Status 0** - Unactivated  
 No established connection. The receiver continuously captures audio, looks for the activating signals.  
 
