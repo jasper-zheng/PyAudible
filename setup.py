@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pyaudible", # Replace with your own username
-    version="1.1.1",
+    version="1.1.0b3",
     author="Jasper Zheng (Shuoyang)",
     author_email="s.zheng14@student.liverpool.ac.uk",
     description="A Python library for sending and receiving data using audible sound.",
@@ -16,9 +16,7 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/jasper-zheng/PyAudible/issues",
     },
     classifiers=[
-        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
-        "License :: OSI Approved :: MIT License",
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),

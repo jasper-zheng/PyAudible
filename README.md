@@ -1,6 +1,8 @@
 # PyAudible 1.1.0  
 
-![PyAudible](docs/Graphics/pyaudible.gif)
+![b](https://img.shields.io/pypi/v/PyAudible) ![b](https://img.shields.io/pypi/pyversions/PyAudible) ![b](https://img.shields.io/pypi/wheel/PyAudible)
+
+![PyAudible](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Graphics/pyaudible.gif?raw=true)
 
 
 A Python library for sending and receiving data using audible sound. PyAudible includes a transmitter and a receiver module that could be implemented on multiple devices, enables the transmission of small amounts of data between separated systems in the vicinity.
@@ -21,17 +23,17 @@ Other docs can be found at:
  * [Full Documentation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Documentation.md)
  * [Protocol Details](https://github.com/jasper-zheng/PyAudible/blob/main/docs/TechnicalDetails.md)
  * [Test & Evaluations](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md)  
- 
+
 
 #### Project Roadmap  
- ![Roadmap](docs/Graphics/roadmap.jpg)
+ ![Roadmap](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Graphics/roadmap.jpg?raw=true)
 
 ## Quickstart  
 > Tested on Python 3.8  
 
 #### Requirements
 
-* **Python** 3.8+  
+* **Python** 3.6+  
 * **PyAudio** 0.2.11+ (speaker access required for the transmitter, microphone access required for the receiver)  
 * **Numpy** 1.18.5+  
 
@@ -119,7 +121,7 @@ Alternatively, the documentation can be generated and viewed via `__doc__`, for 
 
 Full experimentation designs and the evaluation results provided in [Test & Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md) document.
 
-![Experiment](docs/Graphics/experiment.jpg)
+![Experiment](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Graphics/experiment.jpg?raw=true)
 
 The evaluations of the system were conducted along with the development. [Phase I Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md#phase-i-evaluation-noise-resistance-mechanism-reliability) assessed the reliability of the noise resistance mechanism in different noise conditions, and verified that the system can achieve at least 90% reliability with a transmission rate at 20 bytes/sec. [Phase II Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md#phase-ii-evaluation-system-reliability-vs-speed-and-signal-to-noise-ratio) gave a statistical analysis on the reliability with respect to the transmission speed and the signal to noise ratio. The following Speed-Rate-Reliability Lookup Table is taken from the [results of Phase II Evaluation](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md#test-21-system-reliability-1), which could help users to decide transmission settings based on noise situations:
 

@@ -35,7 +35,7 @@ It uses cyclic redundancy check (CRC) for error detection to improve robustness.
 
 #### Requirements
 PyAudible depends on the following dependencies:  
-* **Python** 3.8+  
+* **Python** 3.6+  
 * **PyAudio** 0.2.11+ (speaker access required for the transmitter, microphone access required for the receiver)  
 * **Numpy** 1.18.5+  
 
