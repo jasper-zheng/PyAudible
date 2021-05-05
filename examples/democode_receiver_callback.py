@@ -21,7 +21,8 @@ while (time.time() - start_time < 30):
     # if received data is not empty, add then to the predefined variable
     if data:
         retrieved_data += data
+        
 
 # Received data will also be stored in a list, 
 # it contains messages demodulated from each singal during the standby time
-message_list = rx.received_data()
+message_list = rx.get_received_data()

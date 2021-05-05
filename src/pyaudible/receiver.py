@@ -538,14 +538,14 @@ class Receiver(object):
                         self.d_channel[0][0] = [53,57,58]
                         self.ending_mark[0] = 0
                         self.ending_mark[1]=100*self.get_bin_num(self.most_frequent(self.ending_info[1]),1) + 10*self.get_bin_num(self.most_frequent(self.ending_info[2]),2) + self.get_bin_num(self.most_frequent(self.ending_info[3]),3)
-                        print('Ending marks estimated length: {}'.format(self.ending_mark[1]))
+                        #print('Ending marks estimated length: {}'.format(self.ending_mark[1]))
                         
                         crc_bin = [0,0,0]
                         crc_bin[0] = self.get_bin_num(self.most_frequent(self.ending_info[4]),4)
                         crc_bin[1] = self.get_bin_num(self.most_frequent(self.ending_info[5]),5)
                         crc_bin[2] = self.get_bin_num(self.most_frequent(self.ending_info[6]),6)
                         crc = ''
-                        print(crc_bin)
+                        #print(crc_bin)
                         for i in range(3):
                             if ( crc_bin[i] == 2):
                                 crc += '0'
@@ -691,7 +691,7 @@ class Receiver(object):
         if crc:
             if self.crc_check(binary,'1011',crc):
                 i = 0
-                print('crc {} passed'.format(crc))
+                #print('crc {} passed'.format(crc))
             else:    
                 raise CRCError 
         if trim == -1:

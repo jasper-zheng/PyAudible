@@ -104,7 +104,7 @@ retrieved_data = ''
 
 # create a while loop for 30 seconds
 start_time = time.time()
-while (time.time() - start_time < 30):
+while (time.time() - start_time < 10):
 
     # call the receiver on each frames
     # the receiver will return received data on the fly
@@ -113,10 +113,11 @@ while (time.time() - start_time < 30):
     # if received data is not empty, add then to the predefined variable
     if data:
         retrieved_data += data
+        print(data, end=(''))
 
 # Received data will also be stored in a list,
 # it contains messages demodulated from each singal during the standby time
-message_list = rx.received_data()
+message_list = rx.get_received_data()
 ```
 
 In Callback Mode, after the instantiation, the receiver will be repeatedly called each frame by `receiver.Receiver.read()`.

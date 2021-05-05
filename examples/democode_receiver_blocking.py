@@ -7,4 +7,4 @@ rx = receiver.Receiver(sensitivity = 'medium',
                         speed = 'auto')
 
 # active the receiver for 30 seconds
-retrieved_data = rx.read_block(30)
+retrieved_data = rx.read_block(15)

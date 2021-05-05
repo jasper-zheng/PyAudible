@@ -136,35 +136,33 @@ class GUI(object):
         self.root.update()
 
 
+
+
 # instantiate the GUI and the receiver
 app = GUI()
 rx = receiver.Receiver()
 
 # main loop
 while (True):
-
+    
     # if the system is activated
     if app.on_activate():
         
-        # call the receiver to analyse current audio inpu
+        # call the receiver to analyse current audio input
         data, status = rx.read_frame(log = True)
         
         # pass the analyse result to the app
         app.handle_status(data, status)
         
         # update the spectrum
-        spectrum = rx.get_fft()
-        app.update_spectrum(spectrum)
+        fft = rx.get_fft()
+        app.update_spectrum(fft)
         
         # update the text area
-        if status == 5:
+        if status==5:
             app.update_text(rx.get_received_data())
     
     # update the UI
     app.update_ui()
-
-
-
-
 
 
