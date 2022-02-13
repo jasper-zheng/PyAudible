@@ -25,9 +25,6 @@ Other docs can be found at:
  * [Test & Evaluations](https://github.com/jasper-zheng/PyAudible/blob/main/docs/EvaluationResult.md)  
 
 
-#### Project Roadmap  
- ![Roadmap](https://github.com/jasper-zheng/PyAudible/blob/main/docs/Graphics/roadmap.jpg?raw=true)
-
 ## Quickstart  
 > Tested on Python 3.8  
 
