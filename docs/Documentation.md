@@ -102,7 +102,7 @@ rx = receiver.Receiver(sensitivity = 'medium',
 # create a empty variable to store the received data
 retrieved_data = ''
 
-# create a while loop for 30 seconds
+# create a while loop for 10 seconds
 start_time = time.time()
 while (time.time() - start_time < 10):
 
